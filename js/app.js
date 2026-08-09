@@ -1148,7 +1148,7 @@ route();
   <section class="ppanel ppanel--proof">
     <div class="ppanel__in">
       <span class="label">${(COPY.proof||{}).label||''} — ${(COPY.proof||{}).sublabel||''}</span>
-      ${metrics.map(m=>`<div class="pstat"><b>${m.fig}</b><span>${m.lab}</span></div>`).join('')}
+      ${metrics.map(m=>`<div class="pstat"><b data-fig="${m.fig}">${m.fig}</b><span>${m.lab}</span></div>`).join('')}
     </div>
   </section>
 
@@ -1158,6 +1158,7 @@ route();
       <h2 class="pwork__h">${M.workHeading || ''}</h2>
     </div>
     <div class="pcards">${featured.map(card).join('')}</div>
+    <div class="pcards__rail" aria-hidden="true"><span class="pcards__bar"></span></div>
     <div class="ppanel__in"><a class="btn pbtn--ghost" href="${U(F.work)}">
       <span>${M.workButton || 'See all work'}</span><span class="arrow" aria-hidden="true">→</span></a></div>
   </section>
@@ -1197,6 +1198,41 @@ route();
     if(!d.open) return;
     $$('.pdoes details', reel).forEach(o => { if(o !== d) o.open = false; });
   }));
+
+  /* the numbers climb when the panel arrives, once, the same way they do on a
+     desktop — countUp respects prefers-reduced-motion for us */
+  const proof = $('.ppanel--proof', reel);
+  if(proof && !reduce && 'IntersectionObserver' in window){
+    /* held back until its own turn, so the real figure is never glimpsed
+       before it climbs — countUp writes its first frame synchronously */
+    const figs = $$('.pstat b', proof);
+    figs.forEach(f => { f.style.visibility = 'hidden'; });
+    const io = new IntersectionObserver(es=>es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      io.unobserve(e.target);
+      figs.forEach((f,i)=> setTimeout(()=>{ countUp(f); f.style.visibility = ''; }, i*140));
+    }), {threshold:.35});
+    io.observe(proof);
+  }
+
+  /* how far along the work cards you are, and that there is more of them */
+  const cards = $('.pcards', reel), bar = $('.pcards__bar', reel),
+        railBox = $('.pcards__rail', reel);
+  function cardBar(){
+    if(!cards || !bar || !railBox) return;
+    const frac = cards.clientWidth / cards.scrollWidth;
+    if(frac >= .999){ railBox.style.display = 'none'; return; }
+    railBox.style.display = '';
+    const max = cards.scrollWidth - cards.clientWidth;
+    const p = max > 0 ? cards.scrollLeft / max : 0;
+    bar.style.width = (frac * 100) + '%';
+    bar.style.transform = `translateX(${p * (1 - frac) / frac * 100}%)`;
+  }
+  if(cards){
+    cards.addEventListener('scroll', cardBar, {passive:true});
+    window.addEventListener('resize', cardBar);
+    requestAnimationFrame(cardBar);
+  }
 
   const panels = $$('.ppanel', reel);
   const labels = [M.arrowDoor, M.arrowClaim, M.arrowProof, M.arrowWork,

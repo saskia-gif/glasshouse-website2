@@ -1053,6 +1053,11 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .pcard__lab{font-size:.76rem;color:rgba(242,237,229,.78);margin-top:.3rem;max-width:20ch}
   .pcard__name{margin-top:.7rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
     color:rgba(242,237,229,.7)}
+  /* how far through the cards you are — and that there are more */
+  .pcards__rail{position:relative;height:2px;margin:0 var(--pad) 1.1rem;
+    background:rgba(242,237,229,.22);overflow:hidden}
+  .pcards__bar{position:absolute;inset:0 auto 0 0;width:30%;background:var(--cream);
+    transition:transform .12s linear}
   .pbtn--ghost{border-color:rgba(242,237,229,.45);color:var(--cream);background:none}
   /* the button must never crowd the arrow below it */
   .ppanel--work .ppanel__in:last-child{padding-bottom:.4rem}
