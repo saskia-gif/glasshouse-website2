@@ -45,12 +45,15 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
 /* ---- loading sequence ---- */
 (function(){
   const l=$('#loader'); if(!l) return;
-  /* Pages are separate files now, so without this the house would replay on
-     every click. It plays once when someone arrives, then stays out of the way. */
-  let seen=false;
-  try { seen = sessionStorage.getItem('gh-seen') === '1'; } catch {}
-  if(reduce || seen){ l.classList.add('done'); curtainUp=true; return; }
-  try { sessionStorage.setItem('gh-seen','1'); } catch {}
+  /* Pages are separate files now, so the house would otherwise replay on every
+     click. It plays when someone arrives at the site, and is skipped when they
+     are moving between pages within it. */
+  let internal=false;
+  try {
+    internal = !!document.referrer &&
+               new URL(document.referrer).origin === location.origin;
+  } catch {}
+  if(reduce || internal){ l.classList.add('done'); curtainUp=true; return; }
   document.body.style.overflow='hidden';
   let finished=false;
   const finish=()=>{if(finished)return;finished=true;l.classList.add('out');
