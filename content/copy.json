@@ -229,5 +229,17 @@
     "arrowVoice": "What we do",
     "arrowDoes": "Get in touch",
     "arrowInvite": "Back to top"
+  },
+  "knock": {
+    "on": true,
+    "label": "Get in touch",
+    "heading": "The door’s open.",
+    "text": "Leave an address and we’ll come to you.",
+    "emailLabel": "Email",
+    "button": "Knock",
+    "alt": "Or tell us more",
+    "badEmail": "That address looks incomplete.",
+    "doneHeading": "Knock knock.",
+    "doneText": "We’ve got it. Someone will reply within two working days."
   }
 }

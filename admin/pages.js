@@ -62,7 +62,7 @@ export const PAGES = [
   {
     id: 'p-contact', name: 'Contact', url: '/contact/',
     parts: [
-      {from:'copy', title:'Text on this page', keys:['contactPage','contactEmail','social']},
+      {from:'copy', title:'Text on this page', keys:['contactPage','contactEmail','social','knock']},
       {from:'seopages', pageKey:'contact', title:'SEO — this page'}
     ]
   }

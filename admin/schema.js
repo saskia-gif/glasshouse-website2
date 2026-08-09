@@ -184,6 +184,19 @@ export const SCHEMA = [
         {key:'formspreeId', label:'Formspree form ID', type:'text',
          help:'From formspree.io — the code at the end of your form’s endpoint, e.g. xdkoglqp. Leave blank and the form will not send.'}
       ]},
+      {key:'knock', label:'The corner “Get in touch”', type:'group',
+       help:'The pill in the bottom-right of every page except Contact. It appears once someone scrolls past the first screen, and stays away for the rest of their visit once they close it or use it. It sends to the same place as the contact form.', fields:[
+        {key:'on', label:'Show it', type:'bool'},
+        {key:'label', label:'What the pill says', type:'text'},
+        {key:'heading', label:'Heading when open', type:'text'},
+        {key:'text', label:'Line under the heading', type:'area'},
+        {key:'emailLabel', label:'Field label', type:'text'},
+        {key:'button', label:'Button', type:'text'},
+        {key:'alt', label:'Link to the full form', type:'text'},
+        {key:'badEmail', label:'Message for a bad address', type:'text'},
+        {key:'doneHeading', label:'After sending — heading', type:'text'},
+        {key:'doneText', label:'After sending — sentence', type:'area'}
+      ]},
       {key:'social', label:'Social links', type:'group', fields:[
         {key:'instagram', label:'Instagram URL', type:'text'},
         {key:'tiktok', label:'TikTok URL', type:'text'},

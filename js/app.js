@@ -923,6 +923,115 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   });
 })();
 
+/* ============================================================
+   The corner knock
+   One field, bottom right, on every page but the contact page. It arrives
+   once you are past the first screen, and it does not come back in this tab
+   once you have closed it or used it.
+   ============================================================ */
+(function knockWidget(){
+  const box = $('#knock'); if(!box) return;
+  const K  = (COPY.knock || {});
+  if(K.on === false) return;
+
+  const panel = $('#knockPanel'), trigger = $('#knockOpen'),
+        email = $('#knockEmail'), err = $('#knockErr'), go = $('#knockGo'), alt = $('#knockAlt');
+  const KEY = 'gh-knock-done';
+  let settled = false;
+  try{ settled = sessionStorage.getItem(KEY) === '1'; }catch(e){}
+  const remember = ()=>{ try{ sessionStorage.setItem(KEY,'1'); }catch(e){} };
+
+  if(alt) alt.href = U('contact');
+
+  /* Asking on the contact page would be asking twice. And on the phone
+     homepage the reel puts an arrow button in the same corner — and ends on a
+     full screen of invitation anyway — so it stays out of the way there. */
+  const mute = ()=>{
+    const c = document.querySelector('.route[data-route="contact"]');
+    if(c && c.classList.contains('active')) return true;
+    return document.body.classList.contains('has-reel');
+  };
+
+  function show(){
+    if(settled || mute()){ box.hidden = true; box.classList.remove('is-in'); return; }
+    box.hidden = false;
+    requestAnimationFrame(()=> box.classList.add('is-in'));
+  }
+  function hide(){ box.classList.remove('is-in','is-open'); box.hidden = true; }
+
+  /* once past the first screen */
+  let armed = false;
+  function watch(){
+    if(armed || settled) return;
+    if(mute()) return;
+    if(window.scrollY > window.innerHeight * 0.6){ armed = true; show(); }
+  }
+  window.addEventListener('scroll', watch, {passive:true});
+  watch();
+
+  function open(){ box.classList.add('is-open'); panel.hidden = false; email.focus(); }
+  function close(){ box.classList.remove('is-open'); panel.hidden = true; remember(); hide(); }
+  trigger.addEventListener('click', open);
+  $('#knockClose').addEventListener('click', close);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && box.classList.contains('is-open')) close(); });
+
+  email.addEventListener('input', ()=> box.classList.remove('is-bad'));
+  const ok = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+  function done(){
+    remember();
+    panel.innerHTML = `<div class="knock__top"><span class="knock__gh" aria-hidden="true">gh</span>
+        <span class="knock__t">${K.label || 'Get in touch'}</span>
+        <button class="knock__x" type="button" aria-label="Close">&#10005;</button></div>
+      <div class="knock__done"><span class="knock__gh" aria-hidden="true">gh</span>
+        <h2>${K.doneHeading || 'Knock knock.'}</h2>
+        <p>${K.doneText || 'We have got it. Someone will reply within two working days.'}</p></div>`;
+    $('.knock__x', panel).addEventListener('click', ()=>{ box.classList.remove('is-open'); hide(); });
+    setTimeout(()=>{ if(box.classList.contains('is-open')){ box.classList.remove('is-open'); hide(); } }, 6000);
+  }
+
+  async function knock(){
+    const v = email.value.trim();
+    if(!ok(v)){
+      box.classList.add('is-bad');
+      err.textContent = K.badEmail || 'That address looks incomplete.';
+      email.focus(); return;
+    }
+    const id = ((COPY.contactPage || {}).formspreeId || '').trim();
+    if(!id){
+      box.classList.add('is-bad');
+      err.textContent = (COPY.contactPage || {}).notWired || 'Not connected yet — please email us directly.';
+      return;
+    }
+    box.classList.add('is-sending');
+    const data = new FormData();
+    data.set('email', v);
+    data.set('source', 'Knock — corner widget');
+    data.set('page', location.pathname);
+    data.set('_gotcha', ($('#knock-hp') || {}).value || '');
+    data.set('_subject', `Knock from ${v}`);
+    try{
+      const r = await fetch(/^https?:/.test(id) ? id : `https://formspree.io/f/${id}`,
+        {method:'POST', body:data, headers:{Accept:'application/json'}});
+      if(r.ok){ done(); return; }
+      box.classList.add('is-bad');
+      err.textContent = 'That did not send. Email us directly and we will pick it up.';
+    }catch(e){
+      box.classList.add('is-bad');
+      err.textContent = 'That did not send — you may be offline.';
+    }
+    box.classList.remove('is-sending');
+  }
+  go.addEventListener('click', knock);
+  email.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); knock(); } });
+
+  /* the router swaps routes without a reload */
+  window.addEventListener('popstate', ()=> setTimeout(watch, 80));
+  document.addEventListener('click', ()=> setTimeout(()=>{ if(mute()) hide(); else watch(); }, 80));
+  onPhone.addEventListener ? onPhone.addEventListener('change', ()=>{ if(mute()) hide(); else watch(); })
+                           : onPhone.addListener(()=>{ if(mute()) hide(); else watch(); });
+})();
+
 /* ---- go ---- */
 /* ============================================================
    Blocks that used to be hardcoded in index.html.
