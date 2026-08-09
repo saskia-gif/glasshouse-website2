@@ -83,6 +83,7 @@ $q('#heroWindows').innerHTML=`
 
 /* on a phone the film belongs under the proof, not stacked below the headline */
 function placeFilm(){
+  if(document.body.classList.contains('has-reel')) return;
   const film=$('.phone-wrap'), hero=$('#heroWindows'), below=$('#heroBg');
   if(!film||!hero||!below)return;
   const target=onPhone.matches?below:hero;
@@ -960,5 +961,164 @@ function faqSchema(name){
 }
 
 route();
+
+/* ============================================================
+   THE PHONE HOMEPAGE
+   Seven full screens, each with one job, an arrow at the foot of every
+   one and a tappable progress rail. Every word here comes from the
+   editor; the panels reuse the same content the desktop page uses.
+   ============================================================ */
+(function phoneReel(){
+  const reel = $('#phoneReel');
+  if(!reel) return;
+  const M = COPY.mobileHome || {};
+  if(M.on === false) return;
+
+  const svg = up => `<span aria-hidden="true"><svg width="13" height="15" viewBox="0 0 14 16"
+      fill="none" stroke="currentColor" stroke-width="1.1"><path d="${
+      up ? 'M7 15V2M2 6.5 7 1.5 12 6.5' : 'M7 1v13M2 9.5 7 14.5 12 9.5'}"/></svg></span>`;
+
+  const featured = CASES.filter(c => c.featured).slice(0, 4);
+  const metrics  = (HOME_METRICS || []).slice(0, 3);
+  const quote    = ((COPY.testimonials || {}).items || [])[0] || null;
+  const hero     = COPY.hero || {};
+  const cta      = COPY.cta  || {};
+
+  const card = c => {
+    const src = caseImg(c.slug).card;
+    const m = (c.metrics || [])[0] || {};
+    return `<a class="pcard" href="${U(F.work, c.slug)}">
+      ${src ? pic(src, '', strip(c.client)) : ph('r916','Replace — case image')}
+      <span class="pcard__in">
+        <span class="pcard__fig">${m.fig || ''}</span>
+        <span class="pcard__lab">${m.lab || ''}</span>
+        <span class="pcard__name">${c.client}</span>
+      </span></a>`;
+  };
+
+  reel.innerHTML = `
+  <section class="ppanel ppanel--door" data-tone="dark">
+    <div class="pfilm">
+      <video src="${window.asset(VIDEO)}" poster="${window.asset(POSTER)}"
+             autoplay muted loop playsinline aria-hidden="true"></video>
+    </div>
+    <div class="ppanel__in">
+      <h2 class="pdoor__h">${['line1','line2','line3'].map(k=>`<em>${hero[k]||''}</em>`).join('')}</h2>
+      <p class="pdoor__lede">${hero.ledePhone || hero.lede || ''}</p>
+    </div>
+  </section>
+
+  <section class="ppanel ppanel--claim">
+    <div class="ppanel__in">
+      <span class="label">${M.claimLabel || ''}</span>
+      <p class="pclaim">${M.claim || ''}</p>
+    </div>
+    <svg class="pseal" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><path id="pring" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+      <text><textPath href="#pring">glasshouse · glasshouse · glasshouse · glasshouse · </textPath></text>
+    </svg>
+  </section>
+
+  <section class="ppanel ppanel--proof">
+    <div class="ppanel__in">
+      <span class="label">${(COPY.proof||{}).label||''} — ${(COPY.proof||{}).sublabel||''}</span>
+      ${metrics.map(m=>`<div class="pstat"><b>${m.fig}</b><span>${m.lab}</span></div>`).join('')}
+    </div>
+  </section>
+
+  <section class="ppanel ppanel--work" data-tone="dark">
+    <div class="ppanel__in">
+      <span class="label">${M.workLabel || ''}</span>
+      <h2 class="pwork__h">${M.workHeading || ''}</h2>
+    </div>
+    <div class="pcards">${featured.map(card).join('')}</div>
+    <div class="ppanel__in"><a class="btn pbtn--ghost" href="${U(F.work)}">
+      <span>${M.workButton || 'See all work'}</span><span class="arrow" aria-hidden="true">→</span></a></div>
+  </section>
+
+  ${quote ? `<section class="ppanel ppanel--voice">
+    <div class="ppanel__in">
+      <span class="label">${M.voiceLabel || ''}</span>
+      <blockquote class="pquote">${quote.quote || ''}</blockquote>
+      ${quote.attrib ? `<p class="label pquote__who">${quote.attrib}</p>` : ''}
+    </div>
+  </section>` : ''}
+
+  <section class="ppanel ppanel--does">
+    <div class="ppanel__in">
+      <span class="label">${M.doesLabel || ''}</span>
+      <ul class="pdoes">${SERVICES.map((s,i)=>`<li><a href="${U(F.services,s.slug)}">
+        <i>${String(i+1).padStart(2,'0')}</i><span>${s.title}</span><b>→</b></a></li>`).join('')}</ul>
+    </div>
+  </section>
+
+  <section class="ppanel ppanel--invite" data-tone="dark">
+    <div class="ppanel__in">
+      <h2 class="pinvite__h">${cta.heading || ''}</h2>
+      <p><a class="btn pbtn--cream" href="${U('contact')}"><span>${cta.button || ''}</span>
+        <span class="arrow" aria-hidden="true">→</span></a></p>
+      <p class="pmail">${cta.mailPrefix || ''}
+        <a href="mailto:${COPY.contactEmail||''}">${COPY.contactEmail||''}</a></p>
+    </div>
+  </section>`;
+
+  const panels = $$('.ppanel', reel);
+  const labels = [M.arrowDoor, M.arrowClaim, M.arrowProof, M.arrowWork,
+                  M.arrowVoice, M.arrowDoes, M.arrowInvite].filter(Boolean);
+
+  /* one arrow at the foot of every panel, always in the same place */
+  panels.forEach((p,i)=>{
+    const last = i === panels.length - 1;
+    const b = document.createElement('button');
+    b.className = 'pnext'; b.type = 'button';
+    const text = labels[i] || (last ? 'Back to top' : 'Next');
+    b.setAttribute('aria-label', last ? 'Back to the top' : 'Next: ' + text);
+    b.innerHTML = `<em>${text}</em>${svg(last)}`;
+    b.addEventListener('click', ()=> window.scrollTo({
+      top: last ? 0 : panels[i+1].offsetTop, behavior: reduce ? 'auto' : 'smooth'}));
+    p.appendChild(b);
+  });
+
+  /* the rail: where you are, and a way to skip */
+  const rail = document.createElement('nav');
+  rail.className = 'prail'; rail.setAttribute('aria-label','Sections of this page');
+  rail.innerHTML = panels.map((p,i)=>
+    `<button type="button" aria-label="Go to: ${labels[i]||('section '+(i+1))}"><span><b></b></span></button>`).join('');
+  reel.prepend(rail);
+  const fills = $$('b', rail);
+  $$('button', rail).forEach((btn,i)=> btn.addEventListener('click',
+    ()=> window.scrollTo({top: panels[i].offsetTop, behavior: reduce ? 'auto' : 'smooth'})));
+
+  let last = 0;
+  const nav = document.querySelector('.mullion') || document.querySelector('header');
+  const tick = ()=>{
+    const y = window.scrollY, vh = window.innerHeight;
+    panels.forEach((p,i)=>{
+      const prog = Math.min(1, Math.max(0, (y + vh*0.55 - p.offsetTop) / p.offsetHeight));
+      if(fills[i]) fills[i].style.width = (prog*100) + '%';
+    });
+    const here = panels.find(p=>{const r=p.getBoundingClientRect(); return r.top<=80 && r.bottom>80;});
+    const dark = here && here.dataset.tone === 'dark';
+    document.body.classList.toggle('reel-dark', !!dark);
+    if(y > vh*0.6) document.body.classList.toggle('reel-tuck', y > last + 4);
+    else document.body.classList.remove('reel-tuck');
+    last = y;
+  };
+  window.addEventListener('scroll', tick, {passive:true});
+  window.addEventListener('resize', tick);
+
+  /* only on a phone, and only on the homepage */
+  const apply = ()=>{
+    const on = onPhone.matches && document.querySelector('.route[data-route="home"]').classList.contains('active');
+    reel.hidden = !on;
+    document.body.classList.toggle('has-reel', on);
+    if(on) tick(); else document.body.classList.remove('reel-dark','reel-tuck');
+  };
+  apply();
+  onPhone.addEventListener ? onPhone.addEventListener('change', apply) : onPhone.addListener(apply);
+  window.addEventListener('popstate', ()=> setTimeout(apply, 60));
+  document.addEventListener('click', ()=> setTimeout(apply, 60));
+})();
+
 
 });

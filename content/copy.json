@@ -200,5 +200,22 @@
   "homeWall": {
     "images": [],
     "phoneImages": []
+  },
+  "mobileHome": {
+    "on": true,
+    "claimLabel": "Glasshouse — London",
+    "claim": "We don't just grow <em>audiences</em>. We build <em>communities</em>.",
+    "workLabel": "Selected work",
+    "workHeading": "Brands people wanted to be part of.",
+    "workButton": "See all work",
+    "voiceLabel": "In their words",
+    "doesLabel": "What we do",
+    "arrowDoor": "Come inside",
+    "arrowClaim": "The numbers",
+    "arrowProof": "The work",
+    "arrowWork": "A client",
+    "arrowVoice": "What we do",
+    "arrowDoes": "Get in touch",
+    "arrowInvite": "Back to top"
   }
 }

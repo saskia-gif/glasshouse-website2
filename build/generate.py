@@ -227,7 +227,18 @@ def main():
             print(f"  {'!' if problems else ' '} {r['url']:<34}{', '.join(problems)}")
         browser.close()
 
-    shutil.copy(OUT / "index.html", OUT / "404.html")
+    # the site root must always answer, even if the home page has been given
+    # another path in the editor
+    root = OUT / "index.html"
+    if not root.is_file():
+        first = built[0]["url"] if built else "/"
+        src = OUT / first.strip("/") / "index.html"
+        if src.is_file():
+            shutil.copy(src, root)
+            print(f"\n  ! the home page is set to {first}, not /  —  copied it to the site root as well")
+        else:
+            root.write_text("<!DOCTYPE html><meta charset=utf-8><title>Glasshouse</title>", encoding="utf-8")
+    shutil.copy(root, OUT / "404.html")
     n = sitemap(built)
     robots()
     red = redirects()

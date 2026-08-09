@@ -55,6 +55,25 @@ export const SCHEMA = [
         {key:'button', label:'Button', type:'text'},
         {key:'mailPrefix', label:'Text before the email', type:'text'}
       ]},
+      {key:'mobileHome', label:'Phone homepage', type:'group',
+       help:'On a phone the homepage is seven full screens. Every word here is yours; the pictures, numbers, work, quote and services come from their own sections.', fields:[
+        {key:'on', label:'Use the phone layout', type:'bool'},
+        {key:'claimLabel', label:'Screen 2 — small label', type:'text'},
+        {key:'claim', label:'Screen 2 — the statement', type:'area',
+         help:'Wrap a word in <em>…</em> to set it in the bold sans face'},
+        {key:'workLabel', label:'Screen 4 — label', type:'text'},
+        {key:'workHeading', label:'Screen 4 — heading', type:'text'},
+        {key:'workButton', label:'Screen 4 — button', type:'text'},
+        {key:'voiceLabel', label:'Screen 5 — label', type:'text'},
+        {key:'doesLabel', label:'Screen 6 — label', type:'text'},
+        {key:'arrowDoor', label:'Arrow 1 says', type:'text'},
+        {key:'arrowClaim', label:'Arrow 2 says', type:'text'},
+        {key:'arrowProof', label:'Arrow 3 says', type:'text'},
+        {key:'arrowWork', label:'Arrow 4 says', type:'text'},
+        {key:'arrowVoice', label:'Arrow 5 says', type:'text'},
+        {key:'arrowDoes', label:'Arrow 6 says', type:'text'},
+        {key:'arrowInvite', label:'Arrow 7 says', type:'text'}
+      ]},
       {key:'homeWall', label:'The moving band', type:'group',
        help:'The strip of client stills near the bottom of the homepage. Leave both empty and it builds itself from your case studies\u2019 vertical images.', fields:[
         {key:'images', label:'Pictures — desktop band', type:'list', of:'image'},

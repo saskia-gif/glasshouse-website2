@@ -9,7 +9,7 @@ export const PAGES = [
   {
     id: 'p-home', name: 'Home', url: '/',
     parts: [
-      {from:'copy', title:'Text on this page', keys:['hero','proof','intro','work','testimonials','phone','cta','homeWall']},
+      {from:'copy', title:'Text on this page', keys:['hero','proof','intro','work','testimonials','phone','cta','homeWall','mobileHome']},
       {from:'metrics', title:'The three numbers'},
       {from:'cases', title:'Case studies shown here', note:'The homepage shows the ones marked “Show on the homepage”.'},
       {from:'seopages', pageKey:'home', title:'SEO — this page'}
