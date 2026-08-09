@@ -1,0 +1,93 @@
+{
+  "social-media-management": {
+    "line": "We run accounts end to end, so the brand shows up consistently rather than occasionally.",
+    "caps": [
+      "Content planning",
+      "Calendars",
+      "Copywriting",
+      "Scheduling and publishing",
+      "Optimisation",
+      "Monthly reporting",
+      "Ongoing strategy"
+    ],
+    "proof": "hip-and-healthy",
+    "img": "hip"
+  },
+  "social-strategy": {
+    "line": "Audits, audiences and a growth plan with numbers attached. Usually where a partnership starts.",
+    "caps": [
+      "Account audit",
+      "Competitor research",
+      "Audience understanding",
+      "Platform strategy",
+      "Content pillars",
+      "Tone of voice",
+      "KPIs and growth plan"
+    ],
+    "proof": "grace-and-form",
+    "img": "graceA"
+  },
+  "content-creation": {
+    "line": "Shot fast, edited properly, and made for the platform it lands on rather than adapted to it.",
+    "caps": [
+      "Short-form video",
+      "Photography",
+      "Graphic design",
+      "Reels and TikTok",
+      "UGC-style creative",
+      "Production",
+      "Editing"
+    ],
+    "proof": "gigi-clothing",
+    "img": "gigi"
+  },
+  "creative-campaigns": {
+    "line": "Ideas built to be shared rather than scrolled past, with a launch plan behind them.",
+    "caps": [
+      "Campaign concepts",
+      "Launches",
+      "Social-first activations",
+      "Creative direction",
+      "Production"
+    ],
+    "proof": "simple-healthy",
+    "img": "simple"
+  },
+  "community-management": {
+    "line": "The unglamorous work that turns an audience into a community: being in the comments, every day.",
+    "caps": [
+      "Reactive engagement",
+      "Proactive engagement",
+      "Community building",
+      "Social listening",
+      "Relationship development"
+    ],
+    "proof": "breaking-the-taboo",
+    "img": "taboo"
+  },
+  "influencer-creator-campaigns": {
+    "line": "Creator programmes run end to end, from the first approach to the final report.",
+    "caps": [
+      "Identification",
+      "Outreach",
+      "Negotiation",
+      "Briefing",
+      "Management",
+      "Approvals",
+      "Reporting"
+    ],
+    "proof": "caroline-montague",
+    "img": "caro"
+  },
+  "paid-social": {
+    "line": "Paid amplification of what already works organically, measured against the same KPIs as the rest.",
+    "caps": [
+      "Creative testing",
+      "Audience build-out",
+      "Amplifying organic winners",
+      "Reporting"
+    ],
+    "proof": "wolfe-power-club",
+    "img": "wolfe"
+  }
+}

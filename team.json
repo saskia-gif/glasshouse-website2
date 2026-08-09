@@ -1,0 +1,36 @@
+{
+  "people": [
+    {
+      "name": "[Founder name]",
+      "role": "Co-founder — Strategy",
+      "img": "founder1",
+      "bio": "Placeholder biography. Two or three sentences on background, the accounts she leads and what she is known for internally.",
+      "leads": [
+        "Grace &amp; Form",
+        "Hip &amp; Healthy"
+      ],
+      "note": "Ask her about: the audit that starts every account."
+    },
+    {
+      "name": "[Founder name]",
+      "role": "Co-founder — Creative",
+      "img": "founder2",
+      "bio": "Placeholder biography. Two or three sentences on background, the accounts she leads and what she is known for internally.",
+      "leads": [
+        "Gigi Clothing",
+        "Caroline Montague"
+      ],
+      "note": "Ask her about: the first three seconds."
+    },
+    {
+      "name": "[Team member]",
+      "role": "Social media manager",
+      "img": "team1",
+      "bio": "Placeholder biography. What she runs day to day, and what she was doing before this.",
+      "leads": [
+        "Simple + Healthy"
+      ],
+      "note": "Ask her about: what the comments are really saying."
+    }
+  ]
+}

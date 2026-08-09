@@ -1,0 +1,80 @@
+{
+  "items": [
+    {
+      "slug": "booktok-playbook",
+      "title": "What #BookTok taught us about building an audience from zero",
+      "category": "Strategy",
+      "author": "Glasshouse",
+      "date": "12 June 2026",
+      "featured": true,
+      "excerpt": "Sixteen months, one novelist, no existing audience. The parts of the approach that transfer to any personal brand.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch.",
+        "When we started working with Caroline Montague she had around 5,000 Instagram followers and no TikTok presence. Sixteen months later the account had passed 200,000 followers and 6.7 million likes. What follows is the thinking, not the highlight reel.",
+        "Q:The mistake most personal brands make is treating the platform as a distribution channel for something that already exists. It is not. It is the thing itself.",
+        "H:Start with the room, not the audience",
+        "Placeholder body copy. Each article supports headings, pull quotes, images, video embeds and rich text."
+      ]
+    },
+    {
+      "slug": "tiktok-search-2026",
+      "title": "TikTok is a search engine now. Here is what that changes.",
+      "category": "Platform update",
+      "author": "Glasshouse",
+      "date": "28 May 2026",
+      "featured": false,
+      "excerpt": "Search accounted for 27.3% of views on one of our accounts last year. Captions are the new keywords.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch."
+      ]
+    },
+    {
+      "slug": "community-over-audience",
+      "title": "Community over audience: why the comments matter more than the count",
+      "category": "Point of view",
+      "author": "Glasshouse",
+      "date": "14 May 2026",
+      "featured": false,
+      "excerpt": "A follower is a number. A community turns up, replies and defends you. The difference shows up in revenue.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch."
+      ]
+    },
+    {
+      "slug": "creator-briefs",
+      "title": "How to brief a creator so the content actually works",
+      "category": "Influencer",
+      "author": "Glasshouse",
+      "date": "30 April 2026",
+      "featured": false,
+      "excerpt": "Most creator briefs are brand guidelines with a deadline attached. Here is the version we send.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch."
+      ]
+    },
+    {
+      "slug": "short-form-retention",
+      "title": "Six to nine seconds: reading retention properly",
+      "category": "Insight",
+      "author": "Glasshouse",
+      "date": "9 April 2026",
+      "featured": false,
+      "excerpt": "Average watch time tells you more than views. What we look at first when an account stalls.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch."
+      ]
+    },
+    {
+      "slug": "agency-news-studio",
+      "title": "We have moved: inside the new Glasshouse studio",
+      "category": "Agency news",
+      "author": "Glasshouse",
+      "date": "21 March 2026",
+      "featured": false,
+      "excerpt": "More space to film, and a permanent set for the podcast work.",
+      "body": [
+        "Placeholder article. Replace with final copy before launch."
+      ]
+    }
+  ]
+}

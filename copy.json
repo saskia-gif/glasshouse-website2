@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "line1": "Invite",
+    "line2": "people",
+    "lede": "We create social strategies that invite people inside \u2014 building brands by making audiences feel part of the story.",
+    "ledePhone": "We create social strategies by making audiences feel part of the story.",
+    "line3": "inside"
+  },
+  "proof": {
+    "label": "Proof",
+    "sublabel": "Across client accounts"
+  },
+  "work": {
+    "label": "Selected work",
+    "sublabel": "Four of them"
+  },
+  "testimonials": {
+    "label": "In their words",
+    "quote1": "They built a personal brand audiences don't just follow \u2014 they connect with."
+  },
+  "cta": {
+    "heading": "Ready to invite people in?"
+  },
+  "phone": {
+    "workLine": "Four years of work, in one place.",
+    "statement": "We don't just grow audiences. We build communities."
+  },
+  "contactEmail": "hello@theglasshouse.agency",
+  "meta": {
+    "title": "Glasshouse \u2014 social-first creative agency, London",
+    "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story."
+  }
+}

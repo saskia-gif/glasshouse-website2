@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "slug": "social-media-management",
+      "title": "Social media management",
+      "text": "Content planning and calendars, copywriting, scheduling, publishing, optimisation, monthly reporting and the ongoing strategy that sits behind all of it. We run accounts end to end so the brand shows up consistently, not occasionally."
+    },
+    {
+      "slug": "social-strategy",
+      "title": "Social strategy",
+      "text": "Audits, competitor research, audience understanding, platform strategy, content pillars, creative direction, tone of voice, KPIs and a growth plan with numbers attached. Usually where a partnership starts."
+    },
+    {
+      "slug": "content-creation",
+      "title": "Content creation",
+      "text": "Short-form video, photography, graphic design, Reels and TikToks, UGC-style creative, production and editing. Shot fast, edited properly, made for the platform it lands on."
+    },
+    {
+      "slug": "creative-campaigns",
+      "title": "Creative campaigns",
+      "text": "Campaign concepts, launches, social-first activations, creative direction and production \u2014 built to be shared rather than scrolled past."
+    },
+    {
+      "slug": "community-management",
+      "title": "Community management",
+      "text": "Reactive and proactive engagement, community building, social listening and relationship development. The unglamorous work that turns an audience into a community."
+    },
+    {
+      "slug": "influencer-creator-campaigns",
+      "title": "Influencer &amp; creator campaigns",
+      "text": "Identification, outreach, negotiation, briefing, management, approvals and reporting. We have run creator programmes for Hackett London, Taylor &amp; Hart, WithMe and Focus Bear."
+    },
+    {
+      "slug": "paid-social",
+      "title": "Paid social",
+      "text": "Paid amplification of what already works organically \u2014 creative testing, audience build-out, and reporting tied to the same KPIs as the rest of the account."
+    }
+  ]
+}
