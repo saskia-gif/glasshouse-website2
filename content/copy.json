@@ -61,28 +61,24 @@
     "viewLabel": "View case study",
     "filters": [
       {
-        "label": "Social strategy",
-        "match": "Social strategy"
+        "label": "Wellness",
+        "match": "Wellness"
       },
       {
-        "label": "Content creation",
-        "match": "Content creation"
+        "label": "Beauty ",
+        "match": "Beauty "
       },
       {
-        "label": "Social media management",
-        "match": "Social media management"
+        "label": "Fashion",
+        "match": "Fashion"
       },
       {
-        "label": "Creative campaigns",
-        "match": "Creative campaigns"
+        "label": "Hospitality",
+        "match": "Hospitality"
       },
       {
-        "label": "Influencer & creator campaigns",
-        "match": "Influencer &amp; creator campaigns"
-      },
-      {
-        "label": "Community management",
-        "match": "Community management"
+        "label": "Personalities",
+        "match": "Personalities"
       }
     ]
   },
