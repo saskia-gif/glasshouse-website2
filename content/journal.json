@@ -15,7 +15,8 @@
         "H:Start with the room, not the audience",
         "Placeholder body copy. Each article supports headings, pull quotes, images, video embeds and rich text."
       ],
-      "img": "assets/img/j1.webp"
+      "img": "assets/img/j1.webp",
+      "seoTitle": "How #BookTok builds an audience from zero"
     },
     {
       "slug": "tiktok-search-2026",
@@ -28,7 +29,8 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "assets/img/j2.webp"
+      "img": "assets/img/j2.webp",
+      "seoTitle": "TikTok as a search engine: what it changes"
     },
     {
       "slug": "community-over-audience",
@@ -41,7 +43,8 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "assets/img/j3.webp"
+      "img": "assets/img/j3.webp",
+      "seoTitle": "Why comments matter more than the follower count"
     },
     {
       "slug": "creator-briefs",
