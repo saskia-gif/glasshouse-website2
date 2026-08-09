@@ -399,8 +399,12 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
 .scroll-cue:hover .cue-arrow,.scroll-cue:focus-visible .cue-arrow{stroke:var(--ink)}
 @keyframes cueIn{from{opacity:0}to{opacity:1}}
 @keyframes cueBob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.hero h1 .ln{display:block;overflow:hidden}
-.hero h1 .ln i{display:block;font-style:normal;transform:translateY(102%);
+.hero h1 .ln{display:block;overflow:hidden;
+  /* the mask has to clear the glyphs — line-height is .84, so a tall ascender
+     or an italic terminal would otherwise be shaved off. The negative margins
+     cancel the padding, so the layout is unchanged. */
+  padding:.16em .14em .14em 0;margin:-.16em -.14em -.14em 0}
+.hero h1 .ln i{display:block;font-style:normal;transform:translateY(125%);
   animation:lineUp 1.05s 1.15s var(--ease-pane) forwards}
 .hero h1 .ln:nth-child(2) i{animation-delay:1.25s}
 .hero h1 .ln:nth-child(3) i{animation-delay:1.35s}

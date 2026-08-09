@@ -2,13 +2,14 @@
    Glasshouse editor — forms in, JSON out, committed to GitHub.
    ============================================================ */
 import {SCHEMA} from './schema.js';
+import {PAGES, SITEWIDE} from './pages.js';
 import {cfg, checkAccess, getFile, putFile, putBinary, listImages, listMedia, getBinary, removeFile} from './github.js';
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const el = (tag, cls, txt) => { const n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n; };
 
-let state = { id:null, data:null, sha:null, dirty:false, images:[], media:[] };
+let state = { id:null, data:null, sha:null, dirty:false, images:[], media:[], files:{}, dirtyFiles:new Set() };
 
 /* ---------- setup screen ---------- */
 function showSetup(msg){
@@ -35,7 +36,7 @@ $('#setup-form').addEventListener('submit', async e => {
     const repo = await checkAccess();
     $('#setup').hidden = true; $('#app').hidden = false;
     $('#repo-name').textContent = repo.full_name;
-    buildNav(); openCollection(SCHEMA[0].id); startPreview();
+    buildNav(); openPage(PAGES[0].id); startPreview();
   } catch(err){
     showSetup(err.message);
   } finally {
@@ -51,15 +52,121 @@ $('#sign-out').addEventListener('click', () => {
 /* ---------- navigation ---------- */
 function buildNav(){
   const nav = $('#nav'); nav.innerHTML = '';
-  SCHEMA.forEach(c => {
-    const b = el('button','nav-item',c.title);
+
+  const heading = t => { const h = el('p','nav-head', t); nav.append(h); };
+  const item = (id, label, go) => {
+    const b = el('button','nav-item', label);
     b.onclick = () => {
       if(state.dirty && !confirm('Discard unsaved changes?')) return;
-      openCollection(c.id);
+      go();
     };
-    b.dataset.id = c.id;
+    b.dataset.id = id;
     nav.append(b);
+    return b;
+  };
+
+  heading('Pages');
+  PAGES.forEach(pg => item(pg.id, pg.name, () => openPage(pg.id)));
+
+  heading('Whole site');
+  SITEWIDE.forEach(sw => item(sw.id, sw.name, () => openCollection(sw.id)));
+}
+
+/* everything for one page, wherever it lives */
+async function openPage(id){
+  const pg = PAGES.find(p => p.id === id);
+  if(!pg) return;
+  state = { id, page:pg, data:null, sha:null, dirty:false,
+            images:state.images, media:state.media, usage:state.usage,
+            files:{}, dirtyFiles:new Set() };
+  $$('.nav-item').forEach(b => b.classList.toggle('on', b.dataset.id === id));
+  $('#panel').innerHTML = '<p class="muted">Loading…</p>';
+  $('#save').disabled = true;
+  previewFollowPage(pg);
+
+  const needed = [...new Set(pg.parts.map(part => sectionFile(part.from)).filter(Boolean))];
+  try {
+    await Promise.all(needed.map(async f => {
+      const {text, sha} = await getFile(f);
+      state.files[f] = { data: JSON.parse(text), sha };
+    }));
+    if(pg.parts.some(part => partNeedsImages(part))) await ensureImages();
+    renderPage(pg);
+  } catch(err){
+    $('#panel').innerHTML = '';
+    $('#panel').append(note('Could not open this page: ' + err.message, 'bad'));
+  }
+}
+
+function partNeedsImages(part){
+  const c = SCHEMA.find(x => x.id === part.from);
+  if(!c) return false;
+  if(c.shape === 'map' || c.shape === 'keyed') return true;
+  return hasImageField(c.fields);
+}
+
+function renderPage(pg){
+  const p = $('#panel'); p.innerHTML = '';
+  p.append(el('h2', null, pg.name));
+  const sub = el('p','muted');
+  sub.textContent = 'Everything on ' + (pg.url === '/' ? 'the homepage' : pg.url);
+  p.append(sub);
+
+  pg.parts.forEach(part => {
+    const c = SCHEMA.find(x => x.id === part.from);
+    if(!c) return;
+    const file = c.file;
+    const data = (state.files[file] || {}).data;
+    if(!data) return;
+    renderFile = file;
+
+    const box = el('section','part');
+    if(part.title || c.title) box.append(el('h3','sub', part.title || c.title));
+    if(part.note) box.append(el('p','muted', part.note));
+
+    if(part.pageKey){
+      /* one entry out of seo.json's page list */
+      const entry = (data.pages || []).find(x => x.key === part.pageKey);
+      if(entry){
+        const seoFields = (c.fields[0] && c.fields[0].fields) || [];
+        renderGroup(box, seoFields.filter(f => f.key !== 'name'), entry);
+      }
+    } else if(part.keys){
+      /* some of the groups inside copy.json */
+      const chosen = c.fields.filter(f => part.keys.includes(f.key));
+      renderGroup(box, chosen, data);
+    } else if(c.shape === 'list'){
+      renderList(box, c, listOf(data));
+    } else if(c.shape === 'keyed'){
+      renderKeyedInto(box, c, data);
+    } else {
+      renderGroup(box, c.fields, data);
+    }
+    p.append(box);
   });
+
+  renderFile = null;
+  markClean();
+}
+
+function renderKeyedInto(parent, c, data){
+  const box = el('div','records');
+  Object.keys(data).forEach(key => {
+    const card = el('details','record');
+    card.append(el('summary', null, key.replace(/-/g,' ')));
+    const body = el('div','record-body');
+    renderGroup(body, c.fields, data[key]);
+    card.append(body);
+    box.append(card);
+  });
+  parent.append(box);
+}
+
+function previewFollowPage(pg){
+  const sel = document.getElementById('preview-page');
+  if(!sel || sel.dataset.pinned === '1') return;
+  sel.value = pg.url;
+  refreshPreview();
 }
 
 async function openCollection(id){
@@ -132,6 +239,7 @@ function renderGroup(parent, fields, obj){
 }
 
 function field(f, obj){
+  const owner = renderFile;
   const wrap = el('div','field');
   if(f.type !== 'group') wrap.append(el('label',null,f.label));
   if(f.help) wrap.append(el('span','help',f.help));
@@ -147,7 +255,7 @@ function field(f, obj){
   }
   if(f.type === 'bool'){
     const i = el('input'); i.type='checkbox'; i.checked = !!val;
-    i.onchange = () => { obj[f.key] = i.checked; markDirty(); };
+    i.onchange = () => { obj[f.key] = i.checked; markDirty(owner); };
     const row = el('label','switch'); row.append(i, el('span',null,f.label));
     wrap.innerHTML = ''; wrap.append(row);
     return wrap;
@@ -161,7 +269,7 @@ function field(f, obj){
     (f.options||[]).forEach(o => sel.append(new Option(o, o)));
     if(val && !(f.options||[]).includes(val)) sel.append(new Option(val, val));
     sel.value = val || (f.options||[])[0] || '';
-    sel.onchange = () => { obj[f.key] = sel.value; markDirty(); };
+    sel.onchange = () => { obj[f.key] = sel.value; markDirty(owner); };
     wrap.append(sel);
     return wrap;
   }
@@ -178,7 +286,7 @@ function field(f, obj){
   if(f.type === 'rich') input.rows = 6;
   if(f.type === 'area') input.rows = 3;
   input.value = val == null ? '' : val;
-  input.oninput = () => { obj[f.key] = input.value; markDirty(); };
+  input.oninput = () => { obj[f.key] = input.value; markDirty(owner); };
   wrap.append(input);
   return wrap;
 }
@@ -205,6 +313,7 @@ const makeBlock = (kind, text) =>
   kind === 'quote'   ? 'Q:' + text : text;
 
 function blockEditor(f, obj){
+  const owner = renderFile;
   const box = el('div','list blocks');
   if(!Array.isArray(obj[f.key])) obj[f.key] = [];
   const arr = obj[f.key];
@@ -223,15 +332,15 @@ function blockEditor(f, obj){
       kindSel.value = kind;
       kindSel.onchange = () => {
         arr[i] = makeBlock(kindSel.value, blockText(item));
-        markDirty(); draw();
+        markDirty(owner); draw();
       };
       head.append(kindSel);
 
       const up = el('button','mini','↑'), dn = el('button','mini','↓'),
             rm = el('button','mini danger','Remove');
-      up.onclick = () => { if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); draw(); } };
-      dn.onclick = () => { if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); draw(); } };
-      rm.onclick = () => { if(confirm('Remove this block?')){ arr.splice(i,1); markDirty(); draw(); } };
+      up.onclick = () => { if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(owner); draw(); } };
+      dn.onclick = () => { if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(owner); draw(); } };
+      rm.onclick = () => { if(confirm('Remove this block?')){ arr.splice(i,1); markDirty(owner); draw(); } };
       head.append(up, dn, rm);
       row.append(head);
 
@@ -242,26 +351,26 @@ function blockEditor(f, obj){
 
         const cap = el('input'); cap.type = 'text'; cap.placeholder = 'Caption (optional)';
         cap.value = blk.caption || '';
-        cap.oninput = () => { blk.caption = cap.value; markDirty(); };
+        cap.oninput = () => { blk.caption = cap.value; markDirty(owner); };
         row.append(cap);
 
         const alt = el('input'); alt.type = 'text';
         alt.placeholder = 'Alt text for this use (optional)';
         alt.value = blk.alt || '';
-        alt.oninput = () => { blk.alt = alt.value; markDirty(); };
+        alt.oninput = () => { blk.alt = alt.value; markDirty(owner); };
         row.append(alt);
 
         const wideWrap = el('label','switch');
         const wide = el('input'); wide.type = 'checkbox';
         wide.checked = blk.width === 'wide';
-        wide.onchange = () => { blk.width = wide.checked ? 'wide' : 'normal'; markDirty(); };
+        wide.onchange = () => { blk.width = wide.checked ? 'wide' : 'normal'; markDirty(owner); };
         wideWrap.append(wide, el('span', null, 'Run wider than the text'));
         row.append(wideWrap);
       } else {
         const ta = el('textarea');
         ta.rows = kind === 'text' ? 4 : 2;
         ta.value = blockText(item);
-        ta.oninput = () => { arr[i] = makeBlock(kind, ta.value); markDirty(); };
+        ta.oninput = () => { arr[i] = makeBlock(kind, ta.value); markDirty(owner); };
         row.append(ta);
       }
       box.append(row);
@@ -270,7 +379,7 @@ function blockEditor(f, obj){
     const bar = el('div','block-add');
     BLOCK_KINDS.forEach(([v, label]) => {
       const b = el('button','add','+ ' + label);
-      b.onclick = () => { arr.push(makeBlock(v, '')); markDirty(); draw(); };
+      b.onclick = () => { arr.push(makeBlock(v, '')); markDirty(owner); draw(); };
       bar.append(b);
     });
     box.append(bar);
@@ -280,6 +389,7 @@ function blockEditor(f, obj){
 }
 
 function listEditor(f, obj){
+  const owner = renderFile;
   const box = el('div','list');
   if(!Array.isArray(obj[f.key])) obj[f.key] = [];
   const arr = obj[f.key];
@@ -291,9 +401,9 @@ function listEditor(f, obj){
       const head = el('div','list-head');
       head.append(el('span','idx',String(i+1)));
       const up = el('button','mini','↑'), dn = el('button','mini','↓'), rm = el('button','mini danger','Remove');
-      up.onclick = () => { if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); draw(); } };
-      dn.onclick = () => { if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); draw(); } };
-      rm.onclick = () => { if(confirm('Remove this?')){ arr.splice(i,1); markDirty(); draw(); } };
+      up.onclick = () => { if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(owner); draw(); } };
+      dn.onclick = () => { if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(owner); draw(); } };
+      rm.onclick = () => { if(confirm('Remove this?')){ arr.splice(i,1); markDirty(owner); draw(); } };
       head.append(up,dn,rm);
       row.append(head);
       if(f.of === 'group'){
@@ -302,7 +412,7 @@ function listEditor(f, obj){
         row.append(imagePicker(arr, i));
       } else {
         const i2 = el('input'); i2.type='text'; i2.value = item ?? '';
-        i2.oninput = () => { arr[i] = i2.value; markDirty(); };
+        i2.oninput = () => { arr[i] = i2.value; markDirty(owner); };
         row.append(i2);
       }
       box.append(row);
@@ -310,7 +420,7 @@ function listEditor(f, obj){
     const add = el('button','add', f.of === 'image' ? '+ Add image' : '+ Add');
     add.onclick = () => {
       arr.push(f.of === 'group' ? Object.fromEntries(f.fields.map(x=>[x.key,''])) : '');
-      markDirty(); draw();
+      markDirty(owner); draw();
     };
     box.append(add);
   };
@@ -335,9 +445,9 @@ function renderList(parent, c, arr){
       }
       const tools = el('div','list-head');
       const up = el('button','mini','↑ Move up'), dn = el('button','mini','↓ Move down'), rm = el('button','mini danger','Delete');
-      up.onclick=()=>{ if(i>0){[arr[i-1],arr[i]]=[arr[i],arr[i-1]];markDirty();draw();} };
-      dn.onclick=()=>{ if(i<arr.length-1){[arr[i+1],arr[i]]=[arr[i],arr[i+1]];markDirty();draw();} };
-      rm.onclick=()=>{ if(confirm('Delete this entry?')){arr.splice(i,1);markDirty();draw();} };
+      up.onclick=()=>{ if(i>0){[arr[i-1],arr[i]]=[arr[i],arr[i-1]];markDirty(owner);draw();} };
+      dn.onclick=()=>{ if(i<arr.length-1){[arr[i+1],arr[i]]=[arr[i],arr[i+1]];markDirty(owner);draw();} };
+      rm.onclick=()=>{ if(confirm('Delete this entry?')){arr.splice(i,1);markDirty(owner);draw();} };
       tools.append(up,dn,rm);
       body.append(tools);
       card.append(body);
@@ -347,7 +457,7 @@ function renderList(parent, c, arr){
     add.onclick = () => {
       const blank = Array.isArray(arr[0]) ? ['','']
         : Object.fromEntries(c.fields.map(f=>[f.key, f.type==='bool'?false : f.type==='list'?[] : '']));
-      arr.unshift(blank); markDirty(); draw();
+      arr.unshift(blank); markDirty(owner); draw();
     };
     box.append(add);
   };
@@ -450,7 +560,7 @@ function renderMap(parent){
       alt.oninput = () => {
         if(alt.value.trim()) state.data._alt[m.path] = alt.value.trim();
         else delete state.data._alt[m.path];
-        markDirty();
+        markDirty(owner);
       };
       main.append(alt);
     }
@@ -524,7 +634,7 @@ function renderMap(parent){
         if(state.data._alt) delete state.data._alt[m.path];
         state.media = await listMedia();
         state.images = state.media.map(x => x.path);
-        markDirty();
+        markDirty(owner);
         render(SCHEMA.find(x => x.id === state.id));
       } catch(e){ alertBox(e.message); del.textContent = 'Delete'; }
     };
@@ -556,6 +666,7 @@ async function repointEverywhere(from, to){
 }
 
 function imagePicker(obj, key, opts){
+  const owner = renderFile;
   const kind = (opts && opts.kind) || 'image';
   const box = el('div','picker');
   const preview = el('div','picker-preview');
@@ -589,7 +700,7 @@ function imagePicker(obj, key, opts){
   if(cur && !options.includes(cur)) sel.append(new Option(cur + '  (old name)', cur));
   sel.value = cur;
 
-  sel.onchange = () => { obj[key] = sel.value; paint(); markDirty(); };
+  sel.onchange = () => { obj[key] = sel.value; paint(); markDirty(owner); };
 
   /* upload straight from here, rather than going to the library first */
   const up = el('label','mini upload'); up.textContent = 'Upload';
@@ -621,7 +732,7 @@ function imagePicker(obj, key, opts){
       sel.value = dest;
       obj[key] = dest;
       paint();
-      markDirty();
+      markDirty(owner);
       up.textContent = 'Upload';
       file.value = '';
     } catch(e){ alertBox(e.message); up.textContent = 'Upload'; file.value=''; }
@@ -635,16 +746,36 @@ function imagePicker(obj, key, opts){
 
 
 /* ---------- saving ---------- */
-function markDirty(){ state.dirty = true; $('#save').disabled = false; $('#status').textContent = 'Unsaved changes'; schedulePreview(); }
-function markClean(){ state.dirty = false; $('#save').disabled = true; $('#status').textContent = ''; schedulePreview(); }
+let renderFile = null;   /* which file the part being drawn belongs to */
+function markDirty(file){
+  if(file) state.dirtyFiles.add(file);
+  else if(state.id && !state.page) state.dirtyFiles.add(sectionFile(state.id));
+  state.dirty = true; $('#save').disabled = false;
+  $('#status').textContent = 'Unsaved changes'; schedulePreview();
+}
+function markClean(){ state.dirty = false; state.dirtyFiles.clear();
+  $('#save').disabled = true; $('#status').textContent = ''; schedulePreview(); }
+const sectionFile = id => (SCHEMA.find(x => x.id === id) || {}).file;
 
 $('#save').addEventListener('click', async () => {
-  const c = SCHEMA.find(x => x.id === state.id);
   const btn = $('#save'); btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    const text = JSON.stringify(state.data, null, 2) + '\n';
-    JSON.parse(text);                       // never commit something broken
-    state.sha = await putFile(c.file, text, state.sha, `Edit ${c.title} via editor`);
+    if(state.page){
+      /* a page can span several files — write only the ones that changed */
+      const label = state.page.name;
+      for(const file of [...state.dirtyFiles]){
+        const holder = state.files[file];
+        if(!holder) continue;
+        const text = JSON.stringify(holder.data, null, 2) + '\n';
+        JSON.parse(text);                   // never commit something broken
+        holder.sha = await putFile(file, text, holder.sha, `Edit ${label} via editor`);
+      }
+    } else {
+      const c = SCHEMA.find(x => x.id === state.id);
+      const text = JSON.stringify(state.data, null, 2) + '\n';
+      JSON.parse(text);
+      state.sha = await putFile(c.file, text, state.sha, `Edit ${c.title} via editor`);
+    }
     markClean();
     $('#status').textContent = 'Saved. The site updates in about a minute.';
   } catch(err){
@@ -666,7 +797,7 @@ window.addEventListener('beforeunload', e => { if(state.dirty){ e.preventDefault
     const repo = await checkAccess();
     $('#setup').hidden = true; $('#app').hidden = false;
     $('#repo-name').textContent = repo.full_name;
-    buildNav(); openCollection(SCHEMA[0].id); startPreview();
+    buildNav(); openPage(PAGES[0].id); startPreview();
   } catch(err){ showSetup(err.message); }
 })();
 

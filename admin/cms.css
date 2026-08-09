@@ -147,3 +147,12 @@ button:hover:not(:disabled){background:var(--ink)}
 .block-row .picker{margin-top:.5rem}
 .block-row input[type=text]{margin-top:.5rem}
 .block-row .switch{margin-top:.5rem}
+
+/* ---- the editor, arranged by page ---- */
+.nav-head{font:600 .68rem/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:1rem .7rem .45rem}
+.nav-head:first-child{margin-top:.2rem}
+.part{border-top:1px solid var(--line);padding-top:1.4rem;margin-top:1.8rem}
+.part:first-of-type{border-top:0;padding-top:0;margin-top:1.2rem}
+.part>.sub{margin-bottom:.9rem}
+.part>.muted{margin:-.5rem 0 1rem}
