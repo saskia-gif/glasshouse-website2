@@ -20,28 +20,36 @@
     "para2": "From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.",
     "closing": "Growth is transparent, human, and impossible to ignore.",
     "signoff": "",
-    "image": "assets/img/DC903D5D-8AF5-4714-B93E-ABA7E60DAA8D_1_105_c.jpeg",
+    "image": "",
     "imageAlt": ""
   },
   "work": {
     "label": "Selected work",
-    "sublabel": "have a peek "
+    "sublabel": "Four of them"
   },
   "testimonials": {
     "label": "In their words",
     "items": [
       {
-        "quote": "\"Their strategy and creative direction helped scale the channels quickly, generating millions of views.\"",
-        "attrib": "Indiana Woodward"
+        "quote": "\"Their strategy and creative direction helped scale the channels quickly, generating millions of views, strong engagement, and a clear, premium identity.\"",
+        "attrib": ""
       },
       {
-        "quote": "\"The only agency we've worked with that understood the audience before the algorithm, helping us launch our socials to 600K views in under a month.\"",
-        "attrib": "Villa Sartiano "
+        "quote": "The only agency we've worked with that understood the audience before the algorithm.",
+        "attrib": "Placeholder — replace with client quote"
+      },
+      {
+        "quote": "We went from posting when we remembered to a calendar we actually trust.",
+        "attrib": "Placeholder — replace with client quote"
+      },
+      {
+        "quote": "They tell us what didn't work before we have to ask.",
+        "attrib": "Placeholder — replace with client quote"
       }
     ]
   },
   "phone": {
-    "workLine": "Our work, one place.",
+    "workLine": "Four years of work, in one place.",
     "statement": "We don't just grow audiences. We build communities.",
     "contactCta": "Get in touch"
   },
@@ -61,24 +69,28 @@
     "viewLabel": "View case study",
     "filters": [
       {
-        "label": "Wellness",
-        "match": "Wellness"
+        "label": "Social strategy",
+        "match": "Social strategy"
       },
       {
-        "label": "Beauty ",
-        "match": "Beauty "
+        "label": "Content creation",
+        "match": "Content creation"
       },
       {
-        "label": "Fashion",
-        "match": "Fashion"
+        "label": "Social media management",
+        "match": "Social media management"
       },
       {
-        "label": "Hospitality",
-        "match": "Hospitality"
+        "label": "Creative campaigns",
+        "match": "Creative campaigns"
       },
       {
-        "label": "Personalities",
-        "match": "Personalities"
+        "label": "Influencer & creator campaigns",
+        "match": "Influencer &amp; creator campaigns"
+      },
+      {
+        "label": "Community management",
+        "match": "Community management"
       }
     ]
   },
@@ -192,5 +204,9 @@
     "nextLabel": "Next project",
     "ctaLine": "Or start one of your own",
     "ctaButton": "Get in touch"
+  },
+  "homeWall": {
+    "images": [],
+    "phoneImages": []
   }
 }

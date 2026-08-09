@@ -45,15 +45,16 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
 /* ---- loading sequence ---- */
 (function(){
   const l=$('#loader'); if(!l) return;
-  /* Pages are separate files now, so the house would otherwise replay on every
-     click. It plays when someone arrives at the site, and is skipped when they
-     are moving between pages within it. */
+  /* The house belongs to the front door. It plays when someone arrives at the
+     homepage — including on a reload — and never anywhere else: not on the
+     inner pages, and not when clicking between them. */
+  const atHome = location.pathname.replace(B,'').replace(/\/index\.html$/,'').replace(/\/+$/,'') === '';
   let internal=false;
   try {
     internal = !!document.referrer &&
                new URL(document.referrer).origin === location.origin;
   } catch {}
-  if(reduce || internal){ l.classList.add('done'); curtainUp=true; return; }
+  if(reduce || !atHome || internal){ l.classList.add('done'); curtainUp=true; return; }
   document.body.style.overflow='hidden';
   let finished=false;
   const finish=()=>{if(finished)return;finished=true;l.classList.add('out');
@@ -90,10 +91,16 @@ function placeFilm(){
 onPhone.addEventListener?onPhone.addEventListener('change',placeFilm):onPhone.addListener(placeFilm);
 
 /* the wall of work — real client stills, moving slowly */
-const WALL=CASES.flatMap(c=>(c.gallery||[]).slice(0,2)).map(imgPath).filter(Boolean);
+/* The moving band and the mobile grid. Choose pictures in the editor, or leave
+   the list empty and they build themselves from the case studies. */
+const chosenWall=((COPY.homeWall||{}).images||[]).map(imgPath).filter(Boolean);
+const WALL=chosenWall.length
+  ? chosenWall
+  : CASES.flatMap(c=>(c.gallery||[]).slice(0,2)).map(imgPath).filter(Boolean);
 $q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
 
-const PH_GRID=CASES.map(c=>(c.gallery||[])[0]).map(imgPath).filter(Boolean).slice(0,4);
+const chosenGrid=((COPY.homeWall||{}).phoneImages||[]).map(imgPath).filter(Boolean);
+const PH_GRID=(chosenGrid.length?chosenGrid:CASES.map(c=>(c.gallery||[])[0]).map(imgPath).filter(Boolean)).slice(0,4);
 if($('#phGrid'))$q('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client content')).join('');
 
 /* the homepage portrait — a picture once one is chosen, a brief until then */

@@ -55,6 +55,11 @@ export const SCHEMA = [
         {key:'button', label:'Button', type:'text'},
         {key:'mailPrefix', label:'Text before the email', type:'text'}
       ]},
+      {key:'homeWall', label:'The moving band', type:'group',
+       help:'The strip of client stills near the bottom of the homepage. Leave both empty and it builds itself from your case studies\u2019 vertical images.', fields:[
+        {key:'images', label:'Pictures — desktop band', type:'list', of:'image'},
+        {key:'phoneImages', label:'Pictures — mobile grid', type:'list', of:'image', help:'Four is the most that show'}
+      ]},
       {key:'workPage', label:'Work page', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
         {key:'heading', label:'Heading', type:'text'},
