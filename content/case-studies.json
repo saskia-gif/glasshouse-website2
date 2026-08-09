@@ -46,9 +46,9 @@
       "quoteBy": "Account summary — replace with client testimonial",
       "card": "assets/img/gigi.webp",
       "gallery": [
-        "assets/img/gigiA.webp",
         "assets/img/gigiB.webp",
-        "assets/img/gigiC.webp"
+        "assets/img/gigiC.webp",
+        "assets/img/gigiB.webp"
       ]
     },
     {
