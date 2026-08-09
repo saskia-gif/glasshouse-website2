@@ -826,15 +826,102 @@ toggle.addEventListener('click',()=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 
-/* ---- contact form (prototype) ---- */
-$q('#contactForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const f=e.target, msg=$('#formMsg');
-  const missing=['name','email','message'].filter(n=>!f[n].value.trim());
-  if(missing.length){msg.style.color='#B4544A';msg.textContent=`Add your ${missing.join(', ')} and we'll pick it up from there.`;f[missing[0]].focus();return;}
-  msg.style.color='var(--sage)';
-  msg.textContent='Thanks — this prototype does not send yet. Connect the form to your handler on build.';
-});
+/* ============================================================
+   Contact form
+   The service chips come from the same list as the services page, so they
+   never drift. Errors are shown against the field that caused them. If a
+   Formspree id is set in the editor the form sends; if it is not, it says so
+   rather than pretending.
+   ============================================================ */
+(function contactForm(){
+  /* $q hands back a stub when the element is absent, and the generated pages
+     strip every route but their own — so ask for the real node or nothing */
+  const f = $('#contactForm'); if(!f) return;
+  const CP = (COPY.contactPage || {});
+
+  /* --- the service chips --- */
+  const need = $('#needChips');
+  if(need){
+    const opts = SERVICES.map(s => s.title).concat(CP.needOther || 'Something else');
+    need.innerHTML = opts.map((t,i) =>
+      `<label class="chip"><input type="checkbox" name="need" value="${t.replace(/"/g,'&quot;')}"
+        id="need-${i}"><span>${t}</span></label>`).join('');
+  }
+
+  /* --- errors sit under the field they belong to --- */
+  const fieldOf = el => el.closest('.field');
+  function fail(el, text){
+    const box = fieldOf(el); if(!box) return;
+    box.classList.add('is-bad');
+    let e = box.querySelector('.field__err');
+    if(!e){ e = document.createElement('span'); e.className='field__err'; box.appendChild(e); }
+    e.textContent = text;
+  }
+  function clear(el){ const box = fieldOf(el); if(box) box.classList.remove('is-bad'); }
+  $$('.field input,.field textarea', f).forEach(el=>{
+    el.addEventListener('input', ()=>{
+      clear(el);
+      const box = fieldOf(el); if(box) box.classList.toggle('is-filled', !!el.value.trim());
+    });
+  });
+
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  function problems(){
+    const out = [];
+    if(!f.name.value.trim())    out.push([f.name, 'We need something to call you.']);
+    if(!f.email.value.trim())   out.push([f.email, 'We need an address to reply to.']);
+    else if(!emailOk(f.email.value.trim())) out.push([f.email, 'That address looks incomplete.']);
+    if(!f.message.value.trim()) out.push([f.message, 'Tell us a little about it.']);
+    return out;
+  }
+
+  const msg = $('#formMsg');
+  function say(text, bad){ if(!msg) return; msg.style.color = bad ? '#B4544A' : 'var(--sage)'; msg.textContent = text; }
+
+  function done(){
+    const box = document.createElement('div');
+    box.className = 'form-done';
+    box.innerHTML = `<h2 class="display">${CP.doneHeading || 'Thank you — that has reached us.'}</h2>
+      <p>${CP.doneText || 'We read everything that comes in and reply within two working days.'}</p>`;
+    f.replaceWith(box);
+    box.setAttribute('tabindex','-1'); box.focus();
+  }
+
+  f.addEventListener('submit', async e=>{
+    e.preventDefault();
+    $$('.field', f).forEach(b => b.classList.remove('is-bad'));
+    const bad = problems();
+    if(bad.length){
+      bad.forEach(([el,text]) => fail(el, text));
+      say(bad.length === 1 ? 'One thing to fix.' : `${bad.length} things to fix.`, true);
+      bad[0][0].focus();
+      return;
+    }
+
+    const id = (CP.formspreeId || '').trim();
+    if(!id){
+      say(CP.notWired || 'This form is not connected yet — please email us directly and we will pick it up.', true);
+      return;
+    }
+
+    say('Sending…');
+    f.classList.add('is-sending');
+    const data = new FormData(f);
+    data.set('need', $$('input[name="need"]:checked', f).map(i => i.value).join(', ') || '—');
+    data.set('_subject', `Enquiry from ${f.name.value.trim()}`);
+    try{
+      const r = await fetch(/^https?:/.test(id) ? id : `https://formspree.io/f/${id}`,
+        {method:'POST', body:data, headers:{Accept:'application/json'}});
+      if(r.ok){ done(); return; }
+      const j = await r.json().catch(()=>({}));
+      say((j.errors && j.errors[0] && j.errors[0].message)
+          || 'That did not send. Email us directly and we will pick it up.', true);
+    }catch(err){
+      say('That did not send — you may be offline. Email us directly and we will pick it up.', true);
+    }
+    f.classList.remove('is-sending');
+  });
+})();
 
 /* ---- go ---- */
 /* ============================================================

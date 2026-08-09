@@ -179,8 +179,20 @@
     "emailLabel": "Email",
     "socialLabel": "Social",
     "socialHandle": "@theglasshouse.agency",
-    "formNote": "Prototype form — connect to your form handler or CRM on build.",
-    "formButton": "Let's talk"
+    "formNote": "No automated sequence. A person reads it and replies.",
+    "formButton": "Let's talk",
+    "needLabel": "What do you need help with?",
+    "needHint": "Choose as many as apply",
+    "needOther": "Something else",
+    "budgetLabel": "Monthly budget",
+    "nextLabel": "What happens next",
+    "next1": "We read it properly and reply within two working days.",
+    "next2": "A thirty-minute call to understand the brand and what good looks like.",
+    "next3": "A proposal with scope, timings and numbers attached.",
+    "doneHeading": "Thank you — that has reached us.",
+    "doneText": "We read everything that comes in and reply within two working days.",
+    "notWired": "This form is not connected yet — please email us directly and we will pick it up.",
+    "formspreeId": ""
   },
   "contactEmail": "hello@theglasshouse.agency",
   "meta": {

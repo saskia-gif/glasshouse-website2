@@ -168,8 +168,21 @@ export const SCHEMA = [
         {key:'emailLabel', label:'Email label', type:'text'},
         {key:'socialLabel', label:'Social label', type:'text'},
         {key:'socialHandle', label:'Social handle', type:'text'},
+        {key:'needLabel', label:'Question above the service chips', type:'text'},
+        {key:'needHint', label:'Hint under that question', type:'text'},
+        {key:'needOther', label:'Last chip (the catch-all)', type:'text'},
+        {key:'budgetLabel', label:'Question above the budget chips', type:'text'},
+        {key:'nextLabel', label:'“What happens next” heading', type:'text'},
+        {key:'next1', label:'What happens next — 01', type:'area'},
+        {key:'next2', label:'What happens next — 02', type:'area'},
+        {key:'next3', label:'What happens next — 03', type:'area'},
         {key:'formNote', label:'Note under the form', type:'text'},
-        {key:'formButton', label:'Form button', type:'text'}
+        {key:'notWired', label:'Shown if no Formspree ID is set', type:'text'},
+        {key:'formButton', label:'Form button', type:'text'},
+        {key:'doneHeading', label:'After sending — heading', type:'text'},
+        {key:'doneText', label:'After sending — sentence', type:'area'},
+        {key:'formspreeId', label:'Formspree form ID', type:'text',
+         help:'From formspree.io — the code at the end of your form’s endpoint, e.g. xdkoglqp. Leave blank and the form will not send.'}
       ]},
       {key:'social', label:'Social links', type:'group', fields:[
         {key:'instagram', label:'Instagram URL', type:'text'},

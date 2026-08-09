@@ -333,7 +333,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap sec">
     <div class="sill"><span class="label" data-copy="contactPage.label">Contact</span><span class="label" data-copy="contactPage.sublabel">We reply within two working days</span></div>
     <div class="grid">
-      <div style="grid-column:span 5" class="rv">
+      <div style="grid-column:span 5" class="rv contact-aside">
         <div class="room room-sage contact-panel">
           <h1 class="display xl" data-copy="contactPage.heading">The door's open.</h1>
           <p class="lede" style="margin-top:1.2rem" data-copy="contactPage.lede">Have a brand, a brief, or just a feeling that your socials could be doing more? Tell us about it.</p>
@@ -342,6 +342,14 @@ window.addEventListener('error',function(){document.documentElement.classList.re
             <p class="label" data-copy="contactPage.socialLabel">Social</p><p style="margin:.5rem 0 0" data-copy="contactPage.socialHandle">@theglasshouse.agency</p>
           </div>
         </div>
+        <div class="next rv d2">
+          <p class="label" data-copy="contactPage.nextLabel">What happens next</p>
+          <ol class="next__list">
+            <li><span class="next__n">01</span><span data-copy="contactPage.next1">We read it properly and reply within two working days.</span></li>
+            <li><span class="next__n">02</span><span data-copy="contactPage.next2">A thirty-minute call to understand the brand and what good looks like.</span></li>
+            <li><span class="next__n">03</span><span data-copy="contactPage.next3">A proposal with scope, timings and numbers attached.</span></li>
+          </ol>
+        </div>
       </div>
       <div style="grid-column:span 6/-1" class="rv d2">
         <form class="form" id="contactForm" novalidate>
@@ -349,16 +357,24 @@ window.addEventListener('error',function(){document.documentElement.classList.re
           <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
           <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" autocomplete="organization"></div>
           <div class="field"><label for="f-site">Website or social handle</label><input id="f-site" name="handle"></div>
-          <div class="field full"><label for="f-need">What do you need help with?</label>
-            <select id="f-need" name="need">
-              <option>Social media management</option><option>Social strategy</option><option>Content creation</option>
-              <option>Creative campaign</option><option>Community management</option><option>Influencer &amp; creator campaigns</option>
-              <option>Paid social</option><option>Something else</option>
-            </select></div>
-          <div class="field"><label for="f-budget">Monthly budget</label>
-            <select id="f-budget" name="budget"><option>Under £2,500</option><option>£2,500 – £5,000</option><option>£5,000 – £10,000</option><option>£10,000+</option><option>Not sure yet</option></select></div>
+          <fieldset class="chips full">
+            <legend class="label" data-copy="contactPage.needLabel">What do you need help with?</legend>
+            <p class="chips__hint" data-copy="contactPage.needHint">Choose as many as apply</p>
+            <div class="chips__row" id="needChips"></div>
+          </fieldset>
+          <fieldset class="chips full">
+            <legend class="label" data-copy="contactPage.budgetLabel">Monthly budget</legend>
+            <div class="chips__row" id="budgetChips">
+              <label class="chip"><input type="radio" name="budget" value="Under £2,500"><span>Under £2,500</span></label>
+              <label class="chip"><input type="radio" name="budget" value="£2,500 – £5,000"><span>£2,500 – £5,000</span></label>
+              <label class="chip"><input type="radio" name="budget" value="£5,000 – £10,000"><span>£5,000 – £10,000</span></label>
+              <label class="chip"><input type="radio" name="budget" value="£10,000+"><span>£10,000+</span></label>
+              <label class="chip"><input type="radio" name="budget" value="Not sure yet"><span>Not sure yet</span></label>
+            </div>
+          </fieldset>
           <div class="field"><label for="f-hear">How did you hear about us?</label><input id="f-hear" name="source"></div>
           <div class="field full"><label for="f-msg">Message</label><textarea id="f-msg" name="message" required></textarea></div>
+          <div class="hp" aria-hidden="true"><label for="f-hp">Leave this empty</label><input id="f-hp" name="_gotcha" tabindex="-1" autocomplete="off"></div>
           <div class="form-note">
             <small data-copy="contactPage.formNote">Prototype form — connect to your form handler or CRM on build.</small>
             <button class="btn btn--solid" type="submit"><span data-copy="contactPage.formButton">Let's talk</span><span class="arrow" aria-hidden="true">→</span></button>
