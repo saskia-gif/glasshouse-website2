@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Glasshouse — edit the site</title>
+<link rel="icon" href="../assets/img/favicon.png">
+<link rel="stylesheet" href="cms.css">
+</head>
+<body>
+
+<!-- ---------- first run: connect to GitHub ---------- -->
+<section id="setup" class="setup" hidden>
+  <form id="setup-form" class="card">
+    <h1>Edit the Glasshouse site</h1>
+    <p class="muted">One-time setup. Everything stays in this browser.</p>
+    <p id="setup-msg" class="note bad" hidden></p>
+
+    <label>GitHub username or organisation
+      <input id="f-owner" required placeholder="saskiagregson-williams" autocomplete="off">
+    </label>
+    <label>Repository name
+      <input id="f-repo" required placeholder="glasshouse-website" autocomplete="off">
+    </label>
+    <label>Branch
+      <input id="f-branch" value="main" autocomplete="off">
+    </label>
+    <label>Access token
+      <input id="f-token" type="password" required placeholder="github_pat_…" autocomplete="off">
+    </label>
+
+    <details class="how">
+      <summary>How do I get a token?</summary>
+      <ol>
+        <li>Go to <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
+        <li>Token name: anything, e.g. <em>Glasshouse editor</em></li>
+        <li>Expiration: 1 year</li>
+        <li>Repository access: <strong>Only select repositories</strong> → choose your site repo</li>
+        <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong></li>
+        <li>Generate, then copy the token and paste it above</li>
+      </ol>
+      <p class="muted">The token is stored only in this browser. Anyone using this
+      computer and browser could edit the site, so use a token limited to this one
+      repository, and sign out on a shared machine.</p>
+    </details>
+
+    <button type="submit">Connect</button>
+  </form>
+</section>
+
+<!-- ---------- the editor ---------- -->
+<div id="app" class="app" hidden>
+  <header class="bar">
+    <span class="brand">glasshouse<em>editor</em></span>
+    <span class="repo" id="repo-name"></span>
+    <span class="spacer"></span>
+    <span id="status" class="status"></span>
+    <a class="mini" href="../" target="_blank" rel="noopener">View site ↗</a>
+    <button id="save" disabled>Save</button>
+    <button id="sign-out" class="mini">Sign out</button>
+  </header>
+  <div class="body">
+    <nav id="nav" class="side"></nav>
+    <main id="panel" class="panel"></main>
+  </div>
+</div>
+
+<script type="module" src="cms.js"></script>
+</body>
+</html>
