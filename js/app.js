@@ -1047,8 +1047,13 @@ route();
   <section class="ppanel ppanel--does">
     <div class="ppanel__in">
       <span class="label">${M.doesLabel || ''}</span>
-      <ul class="pdoes">${SERVICES.map((s,i)=>`<li><a href="${U(F.services,s.slug)}">
-        <i>${String(i+1).padStart(2,'0')}</i><span>${s.title}</span><b>→</b></a></li>`).join('')}</ul>
+      <ul class="pdoes">${SERVICES.map((s,i)=>`<li><details name="pdoes">
+        <summary><i>${String(i+1).padStart(2,'0')}</i><span>${s.title}</span
+          ><b class="pdoes__chev" aria-hidden="true">+</b></summary>
+        <div class="pdoes__body">${s.text ? `<p>${s.text}</p>` : ''}
+          <a class="pdoes__more" href="${U(F.services,s.slug)}"><span>See the service</span
+            ><span aria-hidden="true">→</span></a>
+        </div></details></li>`).join('')}</ul>
     </div>
   </section>
 
@@ -1061,6 +1066,11 @@ route();
         <a href="mailto:${COPY.contactEmail||''}">${COPY.contactEmail||''}</a></p>
     </div>
   </section>`;
+
+  $$('.pdoes details', reel).forEach(d => d.addEventListener('toggle', ()=>{
+    if(!d.open) return;
+    $$('.pdoes details', reel).forEach(o => { if(o !== d) o.open = false; });
+  }));
 
   const panels = $$('.ppanel', reel);
   const labels = [M.arrowDoor, M.arrowClaim, M.arrowProof, M.arrowWork,

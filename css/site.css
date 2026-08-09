@@ -994,7 +994,7 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   body.has-reel main{padding-top:0}
 
   .ppanel{position:relative;min-height:100svh;display:flex;flex-direction:column;
-    justify-content:center;padding:calc(var(--navh) + 1.5rem) 0 clamp(6rem,17vw,7.5rem);
+    justify-content:center;padding:calc(var(--navh) + 1.5rem) 0 clamp(7.5rem,20vw,9rem);
     scroll-snap-align:start;background:var(--cream);color:var(--ink)}
   .ppanel__in{padding:0 var(--pad);position:relative;z-index:1}
   #phoneReel{scroll-snap-type:y proximity}
@@ -1035,10 +1035,10 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .pwork__h{font-family:var(--display);font-weight:300;font-size:clamp(1.9rem,8.5vw,2.5rem);
     line-height:1;letter-spacing:-.03em;margin-top:.7rem;max-width:14ch;color:var(--cream)}
   .pcards{display:flex;gap:.9rem;overflow-x:auto;scroll-snap-type:x mandatory;
-    padding:1.2rem var(--pad) 1.4rem;-webkit-overflow-scrolling:touch}
+    padding:1rem var(--pad) 1.1rem;-webkit-overflow-scrolling:touch}
   .pcards::-webkit-scrollbar{display:none}
   .pcard{flex:0 0 76%;scroll-snap-align:center;position:relative;overflow:hidden;
-    aspect-ratio:9/13;background:#111;display:block}
+    aspect-ratio:9/12;max-height:44svh;background:#111;display:block}
   .pcard .pic,.pcard img{width:100%;height:100%;object-fit:cover}
   .pcard::after{content:"";position:absolute;inset:0;
     background:linear-gradient(180deg,rgba(36,30,24,0) 38%,rgba(36,30,24,.86) 100%)}
@@ -1049,6 +1049,8 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .pcard__name{margin-top:.7rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
     color:rgba(242,237,229,.7)}
   .pbtn--ghost{border-color:rgba(242,237,229,.45);color:var(--cream);background:none}
+  /* the button must never crowd the arrow below it */
+  .ppanel--work .ppanel__in:last-child{padding-bottom:.4rem}
   .pbtn--cream{background:var(--cream);color:var(--ink);border-color:var(--cream)}
 
   /* 5 the voice */
@@ -1057,15 +1059,27 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
     line-height:1.16;letter-spacing:-.02em;max-width:20ch;margin:1rem 0 0}
   .pquote__who{margin-top:1.4rem}
 
-  /* 6 what we do */
-  .pdoes{list-style:none;margin:1.2rem 0 0;padding:0}
+  /* 6 what we do — each service opens for what it actually means */
+  .pdoes{list-style:none;margin:1.1rem 0 0;padding:0}
   .pdoes li{border-top:1px solid rgba(36,30,24,.16)}
   .pdoes li:last-child{border-bottom:1px solid rgba(36,30,24,.16)}
-  .pdoes a{display:flex;align-items:baseline;gap:.9rem;padding:.95rem .1rem;
-    font-family:var(--display);font-weight:300;font-size:1.18rem;letter-spacing:-.02em}
+  .pdoes summary{display:flex;align-items:baseline;gap:.9rem;padding:.72rem .1rem;
+    font-family:var(--display);font-weight:300;font-size:1.08rem;letter-spacing:-.02em;
+    cursor:pointer;list-style:none;-webkit-tap-highlight-color:transparent}
+  .pdoes summary::-webkit-details-marker{display:none}
+  .pdoes summary::marker{content:""}
   .pdoes i{font-style:normal;font-family:var(--ui);font-size:.6rem;letter-spacing:.2em;
     color:var(--muted);min-width:1.7rem}
-  .pdoes b{margin-left:auto;font-weight:400;color:var(--muted)}
+  .pdoes__chev{margin-left:auto;font-weight:300;color:var(--muted);font-size:1.05rem;
+    line-height:1;display:inline-block;transition:transform .28s var(--ease)}
+  .pdoes details[open] .pdoes__chev{transform:rotate(45deg)}
+  .pdoes details[open] summary{padding-bottom:.35rem}
+  /* the description lines up with the title, not the number */
+  .pdoes__body{padding:0 .1rem .9rem 2.7rem;max-width:40ch}
+  .pdoes__body p{margin:0;font-size:.85rem;line-height:1.5;color:rgba(36,30,24,.72)}
+  .pdoes__more{display:inline-flex;align-items:center;gap:.45rem;margin-top:.75rem;
+    font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+    border-bottom:1px solid rgba(36,30,24,.3);padding-bottom:.15rem}
 
   /* 7 the invitation */
   .ppanel--invite{background:var(--brown);color:var(--cream);text-align:center;
@@ -1096,8 +1110,17 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .prail b{display:block;height:100%;width:0;background:var(--ink);transition:width .35s ease}
   body.reel-dark .prail span{background:rgba(242,237,229,.28)}
   body.reel-dark .prail b{background:var(--cream)}
-  body.reel-dark .mullion,body.reel-dark .brand{color:var(--cream)}
-  body.reel-dark .brand img{filter:invert(1)}
+  /* the header bar stays cream over a dark panel, so the wordmark stays dark
+     too — inverting it here would put white on cream (see .is-dark rule above) */
+  /* a 667pt phone has ~180px less to play with — tighten rather than spill */
+  @media(max-height:700px){
+    .pcard{max-height:34svh}
+    .pwork__h{font-size:clamp(1.55rem,7.2vw,2rem)}
+    .pdoes summary{padding:.6rem .1rem;font-size:1rem}
+    .pdoes__body p{font-size:.8rem;line-height:1.45}
+    .pdoes__body{padding-left:.1rem;padding-bottom:.75rem}
+  }
+
   body.reel-tuck .prail{transform:translateY(-160%);opacity:0}
   body.reel-tuck .mullion{transform:translateY(-100%);opacity:0}
   .mullion{transition:transform .35s ease,opacity .35s ease}
