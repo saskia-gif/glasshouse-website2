@@ -209,8 +209,12 @@ def main():
             page.wait_for_function("document.querySelector('.route.active') !== null", timeout=15000)
             page.wait_for_timeout(250)
             page.evaluate("""() => {
+                // only this route's markup is kept, so pages don't duplicate each other
                 document.querySelectorAll('.route:not(.active)').forEach(el => el.remove());
-                const l = document.getElementById('loader'); if (l) l.remove();
+                // the loading sequence stays in the page — it is aria-hidden and
+                // carries no indexable text — but reset so it plays for a visitor
+                const l = document.getElementById('loader');
+                if (l) l.classList.remove('out', 'done');
                 document.querySelectorAll('.rv,.rv-pane').forEach(el => el.classList.add('in'));
             }""")
             html = finish(page.content())

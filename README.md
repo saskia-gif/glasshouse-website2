@@ -1,145 +1,145 @@
 # Glasshouse — website
 
-A static site: plain HTML, CSS and JavaScript. No build step, no framework,
-no server to maintain. All the words and pictures live in `/content` and
-`/assets`, and there is a visual editor at `/admin`.
+A static site with a visual editor. All the words and pictures live in
+`/content` as JSON; a build step turns them into real pages.
+
+**Live:** https://saskia-gif.github.io/glasshouse-website2/
+**Editor:** https://saskia-gif.github.io/glasshouse-website2/admin/
 
 ---
 
-## 1. Put it online (about 15 minutes, once)
+## 1. Changing the site
 
-1. Create a GitHub account if you don't have one, then create a **new repository**
-   called `glasshouse-website`. Make it **public**.
-2. Upload every file and folder from this bundle into it — GitHub's
-   *Add file → Upload files* accepts a drag of the whole folder.
-3. In the repo, go to **Settings → Pages**. Under *Source*, choose
-   **Deploy from a branch**, branch `main`, folder `/ (root)`. Save.
-4. Wait a minute or two. Your site is live at
-   `https://YOUR-USERNAME.github.io/glasshouse-website/`.
-
-### Your own domain
-In **Settings → Pages → Custom domain**, enter `theglasshouse.agency`.
-Then at your domain registrar add these DNS records:
-
-| Type  | Name | Value |
-|-------|------|-------|
-| A     | @    | 185.199.108.153 |
-| A     | @    | 185.199.109.153 |
-| A     | @    | 185.199.110.153 |
-| A     | @    | 185.199.111.153 |
-| CNAME | www  | YOUR-USERNAME.github.io |
-
-Tick *Enforce HTTPS* once it becomes available.
-
----
-
-## 2. Edit the site
-
-Go to **`your-site.com/admin/`**. First time only, it asks for four things:
+Go to `/admin/`. First time on a device it asks for four things:
 
 | | |
 |---|---|
-| GitHub username | e.g. `saskiagregson-williams` |
-| Repository name | `glasshouse-website` |
+| GitHub username | `saskia-gif` |
+| Repository name | `glasshouse-website2` |
 | Branch | `main` |
-| Access token | see below |
+| Access token | see *Making a token* below |
 
-### Making your access token (2 minutes, once)
+Edit, press **Save**. That writes to GitHub, GitHub rebuilds the site, and the
+change is live in about two minutes. The panel on the right shows your unsaved
+changes as you type, at either desktop or phone width.
 
-1. Go to **github.com/settings/personal-access-tokens/new**
-2. Name it anything — *Glasshouse editor*
-3. Expiration: 1 year
-4. Repository access: **Only select repositories** → pick your site repo
-5. Permissions → Repository permissions → **Contents: Read and write**
-6. Generate, copy the token, paste it into the editor
+There is nothing else to do. No files to download, no commands to run.
 
-That's it. The token is saved in your browser, so you only do this once per
-device. **Read this before you paste it:** the token lives in that browser's
-storage, so anyone with access to your computer and browser could edit the
-site. Keep it limited to this one repository as above, and use *Sign out* on
-a shared machine. It never travels anywhere except to GitHub.
+### Making a token (once)
 
-### Using it
+1. **github.com/settings/personal-access-tokens/new**
+2. Name it anything, expiry 1 year
+3. Repository access: **Only select repositories** → `glasshouse-website2`
+4. Permissions → Repository permissions → **Contents: Read and write**
+5. Generate, copy, paste into the editor
 
-The left column lists everything you can change:
+The token lives in that browser only. Keep it limited to this one repository and
+use *Sign out* on a shared machine. Add **Workflows: Read and write** as well if
+you ever need to change the build itself.
 
-- **Homepage & shared text** — headlines, intro lines, section labels, closing invitation
-- **The three numbers** — the figures under the hero and what each measures
-- **Case studies** — all seven; add, reorder, delete, and edit every field
-- **Services**, **Journal**, **Team**, **Open roles**, **Values**, **FAQ**, **About — at a glance**
-- **Pictures & video** — see which file each image name points at, and upload replacements
+### What the editor covers
 
-Edit, then press **Save**. That writes the change straight to GitHub and the
-live site updates within about a minute. The editor refuses to save anything
-that isn't valid, so you can't break the site by mistyping, and it warns you
-if you try to leave with unsaved changes.
+Every visible word and every picture. Sixteen sections:
 
-If two people edit the same thing at once, whoever saves second is told to
-reload rather than silently overwriting the other's work.
+- **Homepage & shared text** — every page's headings, intro copy, section
+  labels, buttons, testimonials, the three "How it works" steps, social links
+- **The three numbers**, **Case studies**, **Services**, **Journal**, **Team**,
+  **Open roles**, **Values**, **FAQ**, **About — at a glance**, **Service pages**
+- **SEO — pages / site & schema / redirects / robots.txt**
+- **Pictures & film** — the media library
 
-## 3. Change pictures and video
-
-1. Put the new file in `assets/img/` (pictures) or `assets/video/` (film).
-2. Point at it — either upload with the same filename to replace it, or edit
-   `content/images.json` so the name points at your new file.
-
-**Formats:** images as `.webp` or `.jpg`, ideally under 300KB each.
-Vertical images should be 9:16. Video as `.mp4`, H.264, muted, under 3MB.
-
-The hero film is `assets/video/hero.mp4` with a still at
-`assets/video/hero-poster.webp` — replace both together.
+Journal articles are built from blocks: paragraph, heading, pull quote, picture.
+Pictures can go anywhere in a piece, with a caption and an option to run wider
+than the text column.
 
 ---
 
-## 4. Before you launch — four things still to do
-
-1. **Fonts.** The design is drawn for Canela (Commercial Type) and Neue Haas
-   Grotesk (Monotype). Neither can be shipped without a licence, so the site
-   currently falls back to Fraunces. Buy the web licences, drop the `.woff2`
-   files into a `fonts/` folder with the names listed at the top of
-   `css/site.css`, and the whole site switches over.
-2. **The contact form doesn't send anything yet.** It validates and shows a
-   confirmation, but nothing arrives. Free options: Formspree, Netlify Forms,
-   or Basin. About 20 minutes to connect.
-3. **Replace the placeholder people.** `content/team.json` has
-   `[Founder name]` and `[Team member]`, and the photos are stand-ins.
-4. **Replace the placeholder testimonials.** Four on desktop, one on mobile,
-   all currently marked "Placeholder — replace with client quote".
-
----
-
-## 5. Previewing on your own computer
-
-Double-clicking `index.html` will **not** work — browsers block a page from
-loading its own content files that way. Instead, in Terminal:
+## 2. How it is put together
 
 ```
-cd path/to/this/folder
-python3 -m http.server 8000
-```
-
-Then open `http://localhost:8000`. Stop it with Ctrl-C.
-
----
-
-## What's in the folder
-
-```
-index.html            the whole site (one page, several routes)
+index.html            the shell — one <section class="route"> per page type
 css/site.css          all styling
-js/content.js         loads /content, fills the page
-js/app.js             behaviour — navigation, animation, the loading sequence
+js/content.js         loads /content/*.json, applies data-copy, exposes globals
+js/app.js             routing, rendering, motion, structured data
 content/*.json        everything editable
-assets/img/           pictures and logos
-assets/video/         the hero film and its poster frame
-admin/                the visual editor
-.nojekyll             tells GitHub Pages not to process the files
+assets/img|video/     pictures and film
+admin/                the editor (schema.js decides what it shows)
+build/generate.py     the static site generator
+.github/workflows/    runs the generator on every push
 ```
 
-## A note on how it's built
+**Routing is real paths**, not hash fragments: `/work/gigi-clothing/`,
+`/services/paid-social/`, `/journal/<slug>/`. Old `#/…` links redirect
+automatically.
 
-Routes are hash-based (`/#/work`, `/#/case/gigi-clothing`). This is what lets
-the whole site run from one file with no server. The trade-off is that Google
-indexes these less well than real URLs. If search traffic matters — and for
-"social media agency London" it will — the next step is moving to Astro or
-Next.js with real paths. The content files here transfer across unchanged.
+**The generator loads the real site in a real browser**, renders each route,
+strips the other routes out, and saves one HTML file per URL — with its title,
+description, canonical, breadcrumbs and JSON-LD already in the source. It does
+not re-implement the site, so generated pages cannot drift from the editor.
+It also writes `sitemap.xml`, `robots.txt`, redirect pages and `404.html`, and
+audits every page for missing H1s, over-long titles and images without alt text.
+
+To run it yourself: `python3 build/generate.py` → `dist/`
+
+### Deployment
+
+GitHub Pages is set to **Source: GitHub Actions**. Pushing to `main` triggers
+`.github/workflows/build.yml`, which installs Chromium, runs the generator and
+publishes `dist/`. Do not switch Pages back to "deploy from a branch" — that
+would serve the unbuilt source and lose every real URL.
+
+---
+
+## 3. Conventions worth knowing
+
+- **Image fields store a real path** (`assets/img/x.webp`). Old short nicknames
+  still resolve, so nothing broke when this changed.
+- **Alt text lives in `content/images.json` under `_alt`**, keyed by path —
+  written once per picture, used everywhere. Edited in the media library.
+- **`_video` and `_poster`** in the same file are the homepage film and its
+  still frame.
+- **The Work page filter bar** is defined in `copy.json → workPage.filters`.
+  Each button has a label and a match term; leave the list empty and it builds
+  itself from the case studies' Services.
+- **Renaming a file in the library** copies it, rewrites every reference, then
+  removes the old one. Deleting warns how many places use it first.
+- **Anything with `data-copy="a.b"` in index.html** is filled from `copy.json`.
+  Add the attribute and the key, and it becomes editable — no JS needed.
+
+---
+
+## 4. Still to do
+
+1. **Fonts.** Designed for Canela (Commercial Type) and Neue Haas Grotesk
+   (Monotype); neither can be shipped without a licence, so it falls back to
+   Fraunces. Buy the web licences, drop the `.woff2` files into `fonts/` with
+   the names at the top of `css/site.css`, and the whole site switches over.
+2. **The contact form does not send anything.** It validates and confirms, but
+   nothing arrives. Formspree, Netlify Forms or Basin — about 20 minutes.
+3. **Placeholder team members** in `content/team.json`.
+4. **Three journal titles exceed 65 characters** — the build flags them each
+   time. Set a shorter *SEO — title tag* on each.
+5. **Redirects are not true 301s.** GitHub Pages cannot issue one; what is
+   generated is an instant client-side redirect plus a canonical. Moving to
+   Cloudflare Pages or Netlify would make them real 301s with no other change.
+6. **A 2.3MB PNG** (`Screenshot-2026-08-08…png`) is doing duty as the studio
+   image. Everything else is 5–48KB. Convert it to WebP.
+
+---
+
+## 5. If you are an AI assistant picking this up
+
+Read this file first, then `admin/schema.js` — it is the map of what is
+editable and which file each thing lives in.
+
+Three rules learned the hard way on this project:
+
+1. **The editor is the source of truth for `/content`.** Pull the live version
+   of a content file before changing it, and merge — do not push a local copy
+   over it. Real edits have been lost that way.
+2. **Verify by building.** `python3 build/generate.py` renders all 27 pages and
+   reports problems. Screenshot before and after; most "broken" full-page
+   screenshots are just scroll-reveal animations that have not fired.
+3. **GitHub is not reachable from every environment.** If `git push` fails with
+   a host-allowlist error, the work still has to reach the user — write the
+   files to their machine and give them a one-line script to run.
