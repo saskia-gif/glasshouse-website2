@@ -372,7 +372,17 @@ function renderCase(slug){
 function renderArticle(slug){
   const a=JOURNAL.find(x=>x.slug===slug)||JOURNAL[0];
   const rel=JOURNAL.filter(x=>x.slug!==a.slug).slice(0,3);
+  /* A body entry is either a line of text — plain, "H:" for a heading,
+     "Q:" for a pull quote — or a picture: {img:"assets/img/x.webp", caption:"…"} */
   const body=a.body.map(p=>{
+    if(p && typeof p === 'object'){
+      const src=imgPath(p.img);
+      if(!src) return ph('r169','Replace — article image');
+      const wide = p.width === 'wide' ? ' article-fig--wide' : '';
+      return `<figure class="article-fig${wide}">${pic(src,'',p.alt||a.title)}`
+           + `${p.caption?`<figcaption>${p.caption}</figcaption>`:''}</figure>`;
+    }
+    if(typeof p !== 'string') return '';
     if(p.startsWith('Q:'))return `<blockquote>${p.slice(2)}</blockquote>`;
     if(p.startsWith('H:'))return `<h3>${p.slice(2)}</h3>`;
     return `<p>${p}</p>`;

@@ -967,3 +967,13 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .crumbs{padding-top:.7rem}
   .crumbs ol{font-size:.62rem;letter-spacing:.12em;gap:.4rem}
 }
+
+
+/* ---------- pictures inside an article ---------- */
+.article-fig{margin:clamp(2rem,4vw,3rem) 0}
+.article-fig img{width:100%;height:auto;display:block}
+.article-fig figcaption{margin-top:.7rem;font-size:var(--t-label);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+@media(min-width:900px){
+  .article-fig--wide{width:min(112%,calc(100% + 8vw));margin-left:-4vw}
+}

@@ -169,6 +169,10 @@ function field(f, obj){
     wrap.append(listEditor(f, obj));
     return wrap;
   }
+  if(f.type === 'blocks'){
+    wrap.append(blockEditor(f, obj));
+    return wrap;
+  }
   const input = (f.type === 'text') ? el('input') : el('textarea');
   if(f.type === 'text') input.type = 'text';
   if(f.type === 'rich') input.rows = 6;
@@ -177,6 +181,102 @@ function field(f, obj){
   input.oninput = () => { obj[f.key] = input.value; markDirty(); };
   wrap.append(input);
   return wrap;
+}
+
+/* An article is a list of blocks: text, heading, quote or picture.
+   Text blocks are stored as plain strings so older articles keep working. */
+const BLOCK_KINDS = [
+  ['text',    'Paragraph'],
+  ['heading', 'Heading'],
+  ['quote',   'Pull quote'],
+  ['image',   'Picture'],
+];
+
+const blockKind = b => (b && typeof b === 'object') ? 'image'
+  : (typeof b === 'string' && b.startsWith('H:')) ? 'heading'
+  : (typeof b === 'string' && b.startsWith('Q:')) ? 'quote' : 'text';
+
+const blockText = b => typeof b !== 'string' ? ''
+  : (b.startsWith('H:') || b.startsWith('Q:')) ? b.slice(2) : b;
+
+const makeBlock = (kind, text) =>
+  kind === 'image'   ? {img:'', caption:'', width:'normal'} :
+  kind === 'heading' ? 'H:' + text :
+  kind === 'quote'   ? 'Q:' + text : text;
+
+function blockEditor(f, obj){
+  const box = el('div','list blocks');
+  if(!Array.isArray(obj[f.key])) obj[f.key] = [];
+  const arr = obj[f.key];
+
+  const draw = () => {
+    box.innerHTML = '';
+    arr.forEach((item, i) => {
+      const kind = blockKind(item);
+      const row = el('div','list-row block-row');
+
+      const head = el('div','list-head');
+      head.append(el('span','idx', String(i+1)));
+
+      const kindSel = el('select','block-kind');
+      BLOCK_KINDS.forEach(([v, label]) => kindSel.append(new Option(label, v)));
+      kindSel.value = kind;
+      kindSel.onchange = () => {
+        arr[i] = makeBlock(kindSel.value, blockText(item));
+        markDirty(); draw();
+      };
+      head.append(kindSel);
+
+      const up = el('button','mini','↑'), dn = el('button','mini','↓'),
+            rm = el('button','mini danger','Remove');
+      up.onclick = () => { if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); draw(); } };
+      dn.onclick = () => { if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); draw(); } };
+      rm.onclick = () => { if(confirm('Remove this block?')){ arr.splice(i,1); markDirty(); draw(); } };
+      head.append(up, dn, rm);
+      row.append(head);
+
+      if(kind === 'image'){
+        if(typeof arr[i] !== 'object') arr[i] = {img:'', caption:'', width:'normal'};
+        const blk = arr[i];
+        row.append(imagePicker(blk, 'img'));
+
+        const cap = el('input'); cap.type = 'text'; cap.placeholder = 'Caption (optional)';
+        cap.value = blk.caption || '';
+        cap.oninput = () => { blk.caption = cap.value; markDirty(); };
+        row.append(cap);
+
+        const alt = el('input'); alt.type = 'text';
+        alt.placeholder = 'Alt text for this use (optional)';
+        alt.value = blk.alt || '';
+        alt.oninput = () => { blk.alt = alt.value; markDirty(); };
+        row.append(alt);
+
+        const wideWrap = el('label','switch');
+        const wide = el('input'); wide.type = 'checkbox';
+        wide.checked = blk.width === 'wide';
+        wide.onchange = () => { blk.width = wide.checked ? 'wide' : 'normal'; markDirty(); };
+        wideWrap.append(wide, el('span', null, 'Run wider than the text'));
+        row.append(wideWrap);
+      } else {
+        const ta = el('textarea');
+        ta.rows = kind === 'text' ? 4 : 2;
+        ta.value = blockText(item);
+        ta.oninput = () => { arr[i] = makeBlock(kind, ta.value); markDirty(); };
+        row.append(ta);
+      }
+      box.append(row);
+    });
+
+    const bar = el('div','block-add');
+    BLOCK_KINDS.forEach(([v, label]) => {
+      const b = el('button','add','+ ' + label);
+      b.onclick = () => { arr.push(makeBlock(v, '')); markDirty(); draw(); };
+      bar.append(b);
+    });
+    box.append(bar);
+  };
+  draw();
+  return box;
 }
 
 function listEditor(f, obj){

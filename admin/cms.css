@@ -137,3 +137,13 @@ button:hover:not(:disabled){background:var(--ink)}
 .picker .mini.upload{flex:0 0 auto;align-self:flex-start}
 .picker{align-items:flex-start}
 .picker select{align-self:flex-start}
+
+/* ---- article block editor ---- */
+.blocks .block-row{border-left:3px solid var(--sage);padding-left:.9rem}
+.block-kind{width:auto;min-width:9rem;margin:0}
+.block-add{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}
+.block-add .add{margin:0}
+.block-row textarea{margin-top:.5rem}
+.block-row .picker{margin-top:.5rem}
+.block-row input[type=text]{margin-top:.5rem}
+.block-row .switch{margin-top:.5rem}

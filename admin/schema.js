@@ -230,7 +230,8 @@ export const SCHEMA = [
       {key:'canonical', label:'SEO — canonical URL', type:'text', help:'Blank points at itself'},
       {key:'prev', label:'SEO — rel=prev', type:'text'},
       {key:'next', label:'SEO — rel=next', type:'text'},
-      {key:'body', label:'Article', type:'rich'}
+      {key:'body', label:'Article', type:'blocks',
+       help:'Build the piece block by block. Add a picture wherever you want one.'}
     ]
   },
   {
