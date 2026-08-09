@@ -38,5 +38,6 @@
   "j5": "assets/img/j5.webp",
   "j6": "assets/img/j6.webp",
   "_video": "assets/video/hero.mp4",
-  "_poster": "assets/video/hero-poster.webp"
+  "_poster": "assets/video/hero-poster.webp",
+  "_alt": {}
 }

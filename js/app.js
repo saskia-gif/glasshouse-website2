@@ -25,7 +25,7 @@ const B=window.BASE||'';
 /* every internal link is a real path, so the page exists for a crawler */
 const U=(...parts)=>B+'/'+parts.filter(Boolean).map(x=>String(x).replace(/^\/|\/$/g,'')).join('/')+(parts.length?'/':'');
 const HOME=B+'/';
-const ALT=(SEO.alt||{});
+const ALT=(window.ALTTEXT||{});
 /* alt text set in the editor wins; otherwise we fall back to something sensible */
 const altFor=(src,fallback='')=>String(ALT[src]||fallback||'').replace(/"/g,'&quot;');
 const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${window.asset(src)}" alt="${altFor(src,alt)}" loading="lazy" decoding="async">`;

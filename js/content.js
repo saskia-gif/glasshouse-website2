@@ -25,9 +25,18 @@ const CONTENT_FILES = {
   SEO:            'seo'
 };
 
+/* When the editor is showing a preview it puts the work-in-progress JSON here,
+   so the page renders what you are typing rather than what is saved. */
+function previewOverrides(){
+  try { return JSON.parse(sessionStorage.getItem('gh-preview') || '{}'); }
+  catch { return {}; }
+}
+
 async function loadContent(){
+  const preview = previewOverrides();
   const entries = await Promise.all(
     Object.entries(CONTENT_FILES).map(async ([key, file]) => {
+      if(preview[file] !== undefined) return [key, preview[file]];
       const res = await fetch(asset(`content/${file}.json`), {cache:'no-cache'});
       if(!res.ok) throw new Error(`content/${file}.json failed (${res.status})`);
       return [key, await res.json()];
@@ -42,6 +51,7 @@ async function loadContent(){
   }
   window.VIDEO  = data.IMAGES._video;
   window.POSTER = data.IMAGES._poster;
+  window.ALTTEXT = data.IMAGES._alt || {};
 
   /* the editor stores lists as {items:[…]} — unwrap them for the site */
   const unwrap = v => (v && !Array.isArray(v) && Array.isArray(v.items)) ? v.items : v;

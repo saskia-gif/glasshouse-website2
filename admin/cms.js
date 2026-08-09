@@ -35,7 +35,7 @@ $('#setup-form').addEventListener('submit', async e => {
     const repo = await checkAccess();
     $('#setup').hidden = true; $('#app').hidden = false;
     $('#repo-name').textContent = repo.full_name;
-    buildNav(); openCollection(SCHEMA[0].id);
+    buildNav(); openCollection(SCHEMA[0].id); startPreview();
   } catch(err){
     showSetup(err.message);
   } finally {
@@ -64,6 +64,7 @@ function buildNav(){
 
 async function openCollection(id){
   const c = SCHEMA.find(x => x.id === id);
+  previewFollowSection(id);
   state = { id, data:null, sha:null, dirty:false, images: state.images, media: state.media, usage: state.usage };
   $$('.nav-item').forEach(b => b.classList.toggle('on', b.dataset.id === id));
   $('#panel').innerHTML = '<p class="muted">Loading…</p>';
@@ -71,8 +72,7 @@ async function openCollection(id){
   try {
     const {text, sha} = await getFile(c.file);
     state.data = JSON.parse(text); state.sha = sha;
-    if(c.shape === 'map' || c.shape === 'image' || c.shape === 'keyed' || hasImageField(c.fields)
-        || (c.fields||[]).some(f=>f.type==='altmap')) await ensureImages();
+    if(c.shape === 'map' || c.shape === 'image' || c.shape === 'keyed' || hasImageField(c.fields)) await ensureImages();
     if(c.shape === 'map') await loadUsage();
     render(c);
   } catch(err){
@@ -115,7 +115,6 @@ function render(c){
   if(c.hint) p.append(el('p','muted',c.hint));
 
   if(c.shape === 'map')       renderMap(p);
-  else if(c.fields && c.fields.length===1 && c.fields[0].type==='altmap') renderAltMap(p, c.fields[0]);
   else if(c.shape === 'keyed')renderKeyed(p, c);
   else if(c.shape === 'list') renderList(p, c, listOf(state.data));
   else                        renderGroup(p, c.fields, state.data);
@@ -253,31 +252,6 @@ function renderList(parent, c, arr){
   parent.append(box);
 }
 
-/* alt text, one row per picture in the library */
-function renderAltMap(parent, f){
-  if(!state.data[f.key]) state.data[f.key] = {};
-  const map = state.data[f.key];
-  const box = el('div','records');
-  const pics = state.media.filter(m => !isVideoPath(m.path));
-  if(!pics.length) box.append(note('No pictures found yet.',''));
-  pics.forEach(m => {
-    const row = el('div','map-row');
-    const img = el('img','thumb'); img.src = '../' + m.path; img.loading='lazy'; img.alt='';
-    row.append(img);
-    row.append(el('span','map-key', m.path.split('/').pop()));
-    const inp = el('input'); inp.type='text';
-    inp.placeholder = 'Describe this picture';
-    inp.value = map[m.path] || '';
-    inp.oninput = () => {
-      if(inp.value.trim()) map[m.path] = inp.value.trim(); else delete map[m.path];
-      markDirty();
-    };
-    row.append(inp);
-    box.append(row);
-  });
-  parent.append(box);
-}
-
 /* files keyed by slug — service-detail.json */
 function renderKeyed(parent, c){
   const box = el('div','records');
@@ -361,6 +335,19 @@ function renderMap(parent){
                    used ? `used ${used}×` : 'not used yet');
     row.append(tag);
 
+    if(!isVideoPath(m.path)){
+      if(!state.data._alt) state.data._alt = {};
+      const alt = el('input'); alt.type='text'; alt.className='alt';
+      alt.placeholder = 'Alt text — what the picture shows';
+      alt.value = state.data._alt[m.path] || '';
+      alt.oninput = () => {
+        if(alt.value.trim()) state.data._alt[m.path] = alt.value.trim();
+        else delete state.data._alt[m.path];
+        markDirty();
+      };
+      row.append(alt);
+    }
+
     const ren = el('button','mini','Rename');
     ren.onclick = async () => {
       const next = safeName(name.value.trim());
@@ -373,6 +360,10 @@ function renderMap(parent){
         const dest = folder + next;
         const {buffer, sha} = await getBinary(m.path);
         await putBinary(dest, buffer, `Rename ${oldName} to ${next}`);
+        if(state.data._alt && state.data._alt[m.path]){
+          state.data._alt[dest] = state.data._alt[m.path];
+          delete state.data._alt[m.path];
+        }
         await repointEverywhere(m.path, dest);
         await removeFile(m.path, sha, `Remove ${oldName} after rename`);
         state.media = await listMedia();
@@ -449,8 +440,8 @@ function imagePicker(obj, key, opts){
 
 
 /* ---------- saving ---------- */
-function markDirty(){ state.dirty = true; $('#save').disabled = false; $('#status').textContent = 'Unsaved changes'; }
-function markClean(){ state.dirty = false; $('#save').disabled = true; $('#status').textContent = ''; }
+function markDirty(){ state.dirty = true; $('#save').disabled = false; $('#status').textContent = 'Unsaved changes'; schedulePreview(); }
+function markClean(){ state.dirty = false; $('#save').disabled = true; $('#status').textContent = ''; schedulePreview(); }
 
 $('#save').addEventListener('click', async () => {
   const c = SCHEMA.find(x => x.id === state.id);
@@ -480,6 +471,138 @@ window.addEventListener('beforeunload', e => { if(state.dirty){ e.preventDefault
     const repo = await checkAccess();
     $('#setup').hidden = true; $('#app').hidden = false;
     $('#repo-name').textContent = repo.full_name;
-    buildNav(); openCollection(SCHEMA[0].id);
+    buildNav(); openCollection(SCHEMA[0].id); startPreview();
   } catch(err){ showSetup(err.message); }
 })();
+
+
+/* ============================================================
+   LIVE PREVIEW
+   The panel on the right is the real site, in an iframe, reading your
+   work-in-progress instead of what is saved. Every keystroke is handed
+   over; the frame reloads a moment after you stop typing.
+   ============================================================ */
+const PREVIEW_PAGES = [
+  ['/',                    'Home'],
+  ['/work/',               'Work'],
+  ['/services/',           'Services'],
+  ['/about/',              'About'],
+  ['/journal/',            'Journal'],
+  ['/careers/',            'Careers'],
+  ['/contact/',            'Contact'],
+];
+
+const previewEl   = () => document.getElementById('preview');
+const frame       = () => document.getElementById('preview-frame');
+let previewTimer  = null;
+let previewOn     = localStorage.getItem('gh-preview-off') !== '1';
+
+/* the base path the site is served from, worked out from this page's URL */
+const SITE_BASE = location.pathname.replace(/\/admin\/?$/, '') || '';
+
+function previewURL(){
+  const sel = document.getElementById('preview-page');
+  const p = (sel && sel.value) || '/';
+  return SITE_BASE + p + (p.includes('?') ? '&' : '?') + 'preview=' + Date.now();
+}
+
+/* hand the current, unsaved content to the site */
+function stashPreview(){
+  try {
+    const all = JSON.parse(sessionStorage.getItem('gh-preview') || '{}');
+    const c = SCHEMA.find(x => x.id === state.id);
+    if(c && state.data){
+      const name = c.file.replace(/^content\//, '').replace(/\.json$/, '');
+      all[name] = state.data;
+    }
+    sessionStorage.setItem('gh-preview', JSON.stringify(all));
+  } catch { /* a very large edit can exceed the quota — the preview just lags */ }
+}
+
+function refreshPreview(){
+  if(!previewOn) return;
+  stashPreview();
+  const f = frame();
+  if(f) f.src = previewURL();
+  previewEl()?.classList.remove('stale');
+}
+
+function schedulePreview(){
+  if(!previewOn) return;
+  previewEl()?.classList.add('stale');
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(refreshPreview, 700);
+}
+
+function buildPreviewPages(){
+  const sel = document.getElementById('preview-page');
+  if(!sel) return;
+  const extra = [];
+  const add = (file, folder, labelKey, prefix) => {
+    try {
+      const raw = state.cache && state.cache[file];
+      if(!raw) return;
+      const list = Array.isArray(raw) ? raw : (raw.items || []);
+      list.forEach(it => it.slug && extra.push([`/${folder}/${it.slug}/`, `${prefix} — ${it[labelKey] || it.slug}`]));
+    } catch {}
+  };
+  add('case-studies', 'work', 'client', 'Case');
+  add('services', 'services', 'title', 'Service');
+  add('journal', 'journal', 'title', 'Post');
+  const keep = sel.value;
+  sel.innerHTML = '';
+  [...PREVIEW_PAGES, ...extra].forEach(([p, label]) => sel.append(new Option(label, p)));
+  if(keep) sel.value = keep;
+}
+
+/* the section you are editing decides which page is most useful to show */
+const PAGE_FOR_SECTION = {
+  copy:'/', metrics:'/', cases:'/work/', services:'/services/', servicedetail:'/services/',
+  journal:'/journal/', team:'/about/', values:'/about/', facts:'/about/',
+  vacancies:'/careers/', faq:'/services/', images:'/', seopages:'/', seosite:'/',
+  seoredirects:'/', seorobots:'/'
+};
+
+function previewFollowSection(id){
+  const sel = document.getElementById('preview-page');
+  if(!sel || !PAGE_FOR_SECTION[id]) return;
+  if(sel.dataset.pinned === '1') return;
+  sel.value = PAGE_FOR_SECTION[id];
+}
+
+function setPreviewOn(on){
+  previewOn = on;
+  localStorage.setItem('gh-preview-off', on ? '0' : '1');
+  document.querySelector('.body')?.classList.toggle('no-preview', !on);
+  const b = document.getElementById('toggle-preview');
+  if(b) b.textContent = on ? 'Hide preview' : 'Show preview';
+  if(on) refreshPreview();
+}
+
+async function startPreview(){
+  state.cache = {};
+  await Promise.all(['case-studies','services','journal'].map(async n => {
+    try { state.cache[n] = JSON.parse((await getFile('content/' + n + '.json')).text); } catch {}
+  }));
+  initPreview();
+}
+
+function initPreview(){
+  buildPreviewPages();
+  const sel = document.getElementById('preview-page');
+  sel?.addEventListener('change', () => { sel.dataset.pinned = '1'; refreshPreview(); });
+  document.getElementById('preview-refresh')?.addEventListener('click', refreshPreview);
+  document.getElementById('toggle-preview')?.addEventListener('click', () => setPreviewOn(!previewOn));
+  document.querySelectorAll('.preview__sizes .mini').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.preview__sizes .mini').forEach(x => x.classList.toggle('on', x === b));
+      const w = b.dataset.w;
+      frame().style.width = w === '0' ? '100%' : w + 'px';
+    });
+  });
+  setPreviewOn(previewOn);
+}
+
+/* clear the preview data when the editor is closed, so the public site
+   is never left showing someone's unsaved draft */
+window.addEventListener('beforeunload', () => { try { sessionStorage.removeItem('gh-preview'); } catch {} });

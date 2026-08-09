@@ -124,6 +124,5 @@
     }
   ],
   "redirects": [],
-  "robotsTxt": "User-agent: *\nAllow: /\n\nSitemap: {{SITEMAP}}\n",
-  "alt": {}
+  "robotsTxt": "User-agent: *\nAllow: /\n\nSitemap: {{SITEMAP}}\n"
 }

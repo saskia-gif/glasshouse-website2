@@ -373,14 +373,6 @@ export const SCHEMA = [
     ]
   },
   {
-    id:'seoalt', file:'content/seo.json', title:'SEO — image alt text',
-    hint:'What each picture shows, for screen readers and image search. Written once per file and used everywhere that picture appears.',
-    shape:'object',
-    fields:[
-      {key:'alt', label:'Alt text by file', type:'altmap'}
-    ]
-  },
-  {
     id:'seorobots', file:'content/seo.json', title:'SEO — robots.txt',
     hint:'Served at /robots.txt. {{SITEMAP}} is replaced with the real sitemap address when the site builds.',
     shape:'object',
@@ -390,7 +382,7 @@ export const SCHEMA = [
   },
   {
     id:'images', file:'content/images.json', title:'Pictures & film',
-    hint:'Upload everything here, then pick it on whichever page you want it. Renaming a file updates every page that uses it.',
+    hint:'Upload everything here, then pick it on whichever page you want it. Alt text is written once per picture and used everywhere it appears. Renaming a file updates every page that uses it.',
     shape:'map'
   }
 ];

@@ -56,13 +56,26 @@
     <span class="repo" id="repo-name"></span>
     <span class="spacer"></span>
     <span id="status" class="status"></span>
-    <a class="mini" href="../" target="_blank" rel="noopener">View site ↗</a>
+    <button id="toggle-preview" class="mini">Hide preview</button>
+    <a class="mini" href="../" target="_blank" rel="noopener">Open site ↗</a>
     <button id="save" disabled>Save</button>
     <button id="sign-out" class="mini">Sign out</button>
   </header>
   <div class="body">
     <nav id="nav" class="side"></nav>
     <main id="panel" class="panel"></main>
+    <aside id="preview" class="preview">
+      <div class="preview__bar">
+        <select id="preview-page" aria-label="Page to preview"></select>
+        <button id="preview-refresh" class="mini" title="Reload the preview">Refresh</button>
+        <span class="preview__sizes">
+          <button class="mini on" data-w="0">Desktop</button>
+          <button class="mini" data-w="390">Phone</button>
+        </span>
+      </div>
+      <div class="preview__stage"><iframe id="preview-frame" title="Preview"></iframe></div>
+      <p class="preview__note muted">Showing your unsaved changes. Press Save to publish them.</p>
+    </aside>
   </div>
 </div>
 
