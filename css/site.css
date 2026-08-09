@@ -907,28 +907,24 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
 }
 
 
-/* ---------- phones: one movement at a time ----------
-   The desktop sequence overlaps a turn, a door swing and a push through the
-   screen. On a small, slower device those read as three separate jolts, so the
-   phone gets the same beats played one after another, and fades instead of
-   pushing. */
+/* ---------- phones: the house is drawn, not animated ----------
+   A rotating box inside a perspective context makes the phone rebuild the whole
+   3D layer on every frame, which is what the stutter was. Here the geometry is
+   set once and never transformed again — only opacity animates, which the
+   compositor handles for free. The door softens open instead of swinging. */
 @media(max-width:700px){
   .loader{perspective:900px}
-  .gh{--ghs:.62;transform:scale(var(--ghs)) rotateX(4deg) rotateY(0deg);
-      animation:ghSettle 1.1s var(--ease) forwards}
-  .gh__door{animation:ghDoorOpen .8s 1.1s var(--ease-pane) forwards}
-  .loader__scene{animation:ghFade .65s 2s var(--ease) forwards}
-  .loader__mark{animation:fadeUp .7s .5s var(--ease) forwards}
-  .loader__skip{animation:fadeUp .5s 1s var(--ease) forwards}
+  .gh{transform:scale(.62) rotateX(4deg) rotateY(0deg);animation:none;opacity:1}
+  .gh__door{animation:ghDoorSoften .8s .85s var(--ease) forwards}
+  .loader__scene{animation:none}
+  .loader__mark{animation:fadeUp .6s .3s var(--ease) forwards}
+  .loader__skip{animation:fadeUp .5s .85s var(--ease) forwards}
   .ph-cta--second{width:100%;justify-content:center;margin-top:.7rem}
 }
-@media(max-width:700px) and (max-height:560px){ .gh{--ghs:.5} }
-@keyframes ghSettle{
-  from{transform:scale(calc(var(--ghs) - .05)) rotateX(6deg) rotateY(-48deg);opacity:0}
-  40%{opacity:1}
-  to{transform:scale(var(--ghs)) rotateX(4deg) rotateY(0deg);opacity:1}
+@media(max-width:700px) and (max-height:560px){
+  .gh{transform:scale(.5) rotateX(4deg) rotateY(0deg)}
 }
-@keyframes ghFade{to{opacity:0;transform:scale(.97)}}
+@keyframes ghDoorSoften{to{opacity:0}}
 
 
 /* ---------- phones: the footer centres, and stops repeating itself ----------

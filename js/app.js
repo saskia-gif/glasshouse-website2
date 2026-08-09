@@ -40,7 +40,7 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
       l.classList.add('done');document.body.style.overflow='';
       curtainUp=true;flushMetrics();
     },600);};
-  setTimeout(finish,2600);
+  setTimeout(finish, onPhone.matches ? 1800 : 2600);   /* the phone has less to show */
   l.addEventListener('click',finish);
   document.addEventListener('keydown',finish,{once:true});
 })();
