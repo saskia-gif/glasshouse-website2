@@ -132,3 +132,8 @@ button:hover:not(:disabled){background:var(--ink)}
   .media-row{grid-template-columns:3.4rem minmax(0,1fr)}
   .media-tools{grid-column:2;padding-top:.3rem}
 }
+
+/* the picker's own upload button */
+.picker .mini.upload{flex:0 0 auto;align-self:flex-start}
+.picker{align-items:flex-start}
+.picker select{align-self:flex-start}

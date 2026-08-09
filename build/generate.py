@@ -108,11 +108,19 @@ def copy_static():
         if (ROOT / f).is_file():
             shutil.copy(ROOT / f, OUT / f)
     admin = OUT / "admin" / "index.html"
-    if admin.is_file():                       # the editor must never be indexed
+    if admin.is_file():
         h = admin.read_text(encoding="utf-8")
-        if "noindex" not in h:
-            admin.write_text(h.replace("<head>", '<head>\n<meta name="robots" content="noindex, nofollow">'),
-                             encoding="utf-8")
+        if "noindex" not in h:                # the editor must never be indexed
+            h = h.replace("<head>", '<head>\n<meta name="robots" content="noindex, nofollow">')
+        # stamp the editor's own files with a content hash, so a browser can
+        # never serve you yesterday's editor
+        import hashlib
+        for name in ("cms.css", "cms.js"):
+            f = OUT / "admin" / name
+            if f.is_file():
+                v = hashlib.sha1(f.read_bytes()).hexdigest()[:8]
+                h = h.replace(f'"{name}"', f'"{name}?v={v}"')
+        admin.write_text(h, encoding="utf-8")
 
 
 def audit(html):

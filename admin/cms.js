@@ -106,6 +106,9 @@ async function loadUsage(){
 }
 const isVideoPath = p => /\.(mp4|webm|mov|m4v)$/i.test(p||'');
 
+const safeName = n => n.replace(/[^\w.\-]/g,'-');
+const alertBox = msg => alert(msg);
+
 /* ---------- rendering ---------- */
 function note(text, kind){ const n = el('p','note '+(kind||''),text); return n; }
 
@@ -432,8 +435,6 @@ function renderMap(parent){
   parent.append(lib);
 }
 
-const safeName = n => n.replace(/[^\w.\-]/g,'-');
-const alertBox = msg => alert(msg);
 
 /* which files are referenced, and how often — shown next to each row */
 function collectUsage(){ return state.usage || {}; }
@@ -489,7 +490,45 @@ function imagePicker(obj, key, opts){
   sel.value = cur;
 
   sel.onchange = () => { obj[key] = sel.value; paint(); markDirty(); };
-  box.append(sel, preview);
+
+  /* upload straight from here, rather than going to the library first */
+  const up = el('label','mini upload'); up.textContent = 'Upload';
+  const file = el('input'); file.type = 'file'; file.hidden = true;
+  file.accept = kind === 'video' ? 'video/*' : 'image/*';
+  file.onchange = async () => {
+    const f = file.files[0]; if(!f) return;
+    const isVid = /^video\//.test(f.type) || isVideoPath(f.name);
+    if(kind === 'video' && !isVid){ alertBox('That slot takes a film. Choose an .mp4.'); file.value=''; return; }
+    if(kind !== 'video' && isVid){ alertBox('That slot takes a picture, not a film.'); file.value=''; return; }
+    up.textContent = 'Uploading…';
+    try {
+      const buf = await f.arrayBuffer();
+      if(isVid && buf.byteLength > 3.5*1024*1024 &&
+         !confirm('That film is ' + Math.round(buf.byteLength/1048576) + 'MB. Films over about 3MB make the page slow. Use it anyway?')){
+        up.textContent = 'Upload'; file.value=''; return;
+      }
+      const dest = (isVid ? 'assets/video/' : 'assets/img/') + safeName(f.name);
+      const existed = state.media.some(m => m.path === dest);
+      if(existed && !confirm('There is already a file called "' + safeName(f.name) + '". Replace it everywhere it is used?')){
+        up.textContent = 'Upload'; file.value=''; return;
+      }
+      await putBinary(dest, buf, `Upload ${f.name}`);
+      state.media = await listMedia();
+      state.images = state.media.map(m => m.path);
+      /* offer the new file here without losing what is on screen */
+      if(![...sel.options].some(o => o.value === dest))
+        sel.append(new Option(dest.split('/').pop(), dest));
+      sel.value = dest;
+      obj[key] = dest;
+      paint();
+      markDirty();
+      up.textContent = 'Upload';
+      file.value = '';
+    } catch(e){ alertBox(e.message); up.textContent = 'Upload'; file.value=''; }
+  };
+  up.append(file);
+
+  box.append(sel, up, preview);
   paint();
   return box;
 }
