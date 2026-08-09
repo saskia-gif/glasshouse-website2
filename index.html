@@ -106,9 +106,9 @@ window.addEventListener('error',function(){document.documentElement.classList.re
           <span class="txt-phone" data-copy="hero.ledePhone">We create social strategies by making audiences feel part of the story.</span>
         </p>
         <div class="hero__meta">
-          <a class="btn btn--solid only-wide" href="#/work"><span>See the work</span><span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn--solid only-phone" href="#/work"><span>See our work</span><span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn" href="#/contact"><span>Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--solid only-wide" href="#/work"><span data-copy="hero.ctaWork">See the work</span><span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--solid only-phone" href="#/work"><span data-copy="hero.ctaWorkPhone">See our work</span><span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="#/contact"><span data-copy="hero.ctaContact">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
 
         </div>
       </div>
@@ -131,13 +131,13 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap sec">
     <div class="grid">
       <div style="grid-column:span 6" class="rv">
-        <p class="display lg" style="margin-bottom:1.6rem">We don't just grow audiences. We cultivate communities that thrive in the open.</p>
+        <p class="display lg" style="margin-bottom:1.6rem" data-copy="intro.statement">We don't just grow audiences. We cultivate communities that thrive in the open.</p>
         <div class="measure" style="color:var(--body-2)">
-          <p>Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.</p>
-          <p>From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.</p>
+          <p data-copy="intro.para1">Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.</p>
+          <p data-copy="intro.para2">From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.</p>
         </div>
-        <p class="display md" style="border-top:1px solid var(--line);padding-top:1.2rem;margin-top:2rem">Growth is transparent, human, and impossible to ignore.</p>
-        <p class="label" style="margin-top:1.1rem">Shatter ceilings. Grow without limits.</p>
+        <p class="display md" style="border-top:1px solid var(--line);padding-top:1.2rem;margin-top:2rem" data-copy="intro.closing">Growth is transparent, human, and impossible to ignore.</p>
+        <p class="label" style="margin-top:1.1rem" data-copy="intro.signoff">Shatter ceilings. Grow without limits.</p>
       </div>
       <div style="grid-column:span 5/-1;align-self:start" class="rv d2" id="introMedia"></div>
     </div>
@@ -155,16 +155,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <!-- TESTIMONIALS -->
   <div class="wrap sec--tight wide-only">
     <div class="sill"><span class="label" data-copy="testimonials.label">In their words</span></div>
-    <div class="quotes">
-      <blockquote class="quote rv" data-copy="testimonials.quote1">They built a personal brand audiences don't just follow — they connect with.</p>
-        <div class="attrib">Placeholder — replace with client quote</div></blockquote>
-      <blockquote class="quote rv d2">"The only agency we've worked with that understood the audience before the algorithm."
-        <div class="attrib">Placeholder — replace with client quote</div></blockquote>
-      <blockquote class="quote rv">"We went from posting when we remembered to a calendar we actually trust."
-        <div class="attrib">Placeholder — replace with client quote</div></blockquote>
-      <blockquote class="quote rv d2">"They tell us what didn't work before we have to ask."
-        <div class="attrib">Placeholder — replace with client quote</div></blockquote>
-    </div>
+    <div class="quotes" id="quotes"></div>
   </div>
 
   </section>
@@ -185,8 +176,8 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <section class="room room-brown">
     <div class="wrap cta">
       <h2 class="display xl rv" data-copy="cta.heading">Ready to invite people in?</h2>
-      <a class="btn btn--solid" href="#/contact"><span>Come inside</span><span class="arrow" aria-hidden="true">→</span></a>
-      <p class="cta__mail rv">or email <a href="mailto:hello@theglasshouse.agency" data-copy="contactEmail">hello@theglasshouse.agency</a></p>
+      <a class="btn btn--solid" href="#/contact"><span data-copy="cta.button">Come inside</span><span class="arrow" aria-hidden="true">→</span></a>
+      <p class="cta__mail rv"><span data-copy="cta.mailPrefix">or email</span> <a href="mailto:hello@theglasshouse.agency" data-copy="contactEmail">hello@theglasshouse.agency</a></p>
     </div>
     <div class="wall" aria-hidden="true"><div class="wall__track" id="wall"></div></div>
 
@@ -196,16 +187,16 @@ window.addEventListener('error',function(){document.documentElement.classList.re
 <!-- ============ WORK INDEX ============ -->
 <section class="route room room-cream" data-route="work">
   <div class="wrap sec">
-    <div class="sill"><span class="label">Work</span><span class="label" id="workCount"></span></div>
-    <h1 class="display xl rv" style="max-width:16ch;margin-bottom:clamp(2.5rem,6vw,4.5rem)">Brands people wanted to be part of.</h1>
+    <div class="sill"><span class="label" data-copy="workPage.label">Work</span><span class="label" id="workCount"></span></div>
+    <h1 class="display xl rv" style="max-width:16ch;margin-bottom:clamp(2.5rem,6vw,4.5rem)" data-copy="workPage.heading">Brands people wanted to be part of.</h1>
     <div class="filters" id="filters" role="group" aria-label="Filter work by service"></div>
     <div class="cards" id="workCards"></div>
   </div>
   <section class="room room-sage"><div class="wrap sec">
-    <div class="sill"><span class="label">Yours next</span></div>
+    <div class="sill"><span class="label" data-copy="workPage.nextLabel">Yours next</span></div>
     <div class="grid" style="align-items:end">
-      <h2 class="display lg rv" style="grid-column:span 7;max-width:18ch">Every one of these started with someone describing a feeling their socials weren't giving them.</h2>
-      <p style="grid-column:span 4/-1" class="rv d2"><a class="btn btn--solid" href="#/contact"><span>Start a project</span><span class="arrow" aria-hidden="true">→</span></a></p>
+      <h2 class="display lg rv" style="grid-column:span 7;max-width:18ch" data-copy="workPage.nextHeading">Every one of these started with someone describing a feeling their socials weren't giving them.</h2>
+      <p style="grid-column:span 4/-1" class="rv d2"><a class="btn btn--solid" href="#/contact"><span data-copy="workPage.nextButton">Start a project</span><span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
   </div></section>
 </section>
@@ -216,10 +207,10 @@ window.addEventListener('error',function(){document.documentElement.classList.re
 <!-- ============ SERVICES ============ -->
 <section class="route room room-cream" data-route="services">
   <div class="wrap sec">
-    <div class="sill"><span class="label">Services</span><span class="label">Social-first, end to end</span></div>
-    <h1 class="display xl rv" style="max-width:15ch">Strategy, content and community — under one roof.</h1>
+    <div class="sill"><span class="label" data-copy="servicesPage.label">Services</span><span class="label" data-copy="servicesPage.sublabel">Social-first, end to end</span></div>
+    <h1 class="display xl rv" style="max-width:15ch" data-copy="servicesPage.heading">Strategy, content and community — under one roof.</h1>
     <div class="svc-top">
-      <p class="lede rv d2">We can run everything, or slot into the part you're missing. Most clients start with one service and open the rest of the house over time.</p>
+      <p class="lede rv d2" data-copy="servicesPage.lede">We can run everything, or slot into the part you're missing. Most clients start with one service and open the rest of the house over time.</p>
       <nav class="svc-index rv d3" id="svcIndex" aria-label="Jump to a service"></nav>
     </div>
   </div>
@@ -227,43 +218,39 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap" id="svcBlocks"></div>
 
   <section class="room room-sage"><div class="wrap sec">
-    <div class="sill"><span class="label">How it works</span><span class="label">Every engagement, same three moves</span></div>
-    <div class="steps">
-      <div class="step rv"><span class="step__n">01</span><h3 class="display lg">Audit and strategy</h3><p>Two to three weeks. We go through the account, the competitors and the audience, and come back with content pillars, a tone of voice and the numbers we are aiming at.</p></div>
-      <div class="step rv d2"><span class="step__n">02</span><h3 class="display lg">Make the work</h3><p>Filming days, editing, design. We build a bank of content before anything goes live, so the account never runs on whatever was to hand that week.</p></div>
-      <div class="step rv d3"><span class="step__n">03</span><h3 class="display lg">Run and report</h3><p>Daily publishing and community management, monthly reporting against the KPIs we set, and a standing call. What worked gets made again; what did not gets said out loud.</p></div>
-    </div>
+    <div class="sill"><span class="label" data-copy="servicesPage.stepsLabel">How it works</span><span class="label" data-copy="servicesPage.stepsSublabel">Every engagement, same three moves</span></div>
+    <div class="steps" id="steps"></div>
   </div></section>
 
   <div class="wrap sec faq-wrap">
     <div class="faq-side">
-      <div class="sill"><span class="label">Questions</span></div>
-      <p class="display lg" style="max-width:14ch">The things people ask before the first call.</p>
-      <p style="color:var(--body-2);margin-top:1.2rem;max-width:32ch">If yours is not here, ask it directly — we would rather answer than have you guess.</p>
-      <p style="margin-top:1.6rem"><a class="btn" href="#/contact"><span>Ask us</span><span class="arrow" aria-hidden="true">→</span></a></p>
+      <div class="sill"><span class="label" data-copy="servicesPage.faqLabel">Questions</span></div>
+      <p class="display lg" style="max-width:14ch" data-copy="servicesPage.faqHeading">The things people ask before the first call.</p>
+      <p style="color:var(--body-2);margin-top:1.2rem;max-width:32ch" data-copy="servicesPage.faqNote">If yours is not here, ask it directly — we would rather answer than have you guess.</p>
+      <p style="margin-top:1.6rem"><a class="btn" href="#/contact"><span data-copy="servicesPage.faqButton">Ask us</span><span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
     <div id="faq"></div>
   </div>
 
   <section class="room room-brown"><div class="wrap cta">
-    <h2 class="display xl rv">Tell us what you're building.</h2>
-    <a class="btn btn--solid" href="#/contact"><span>Let's talk</span><span class="arrow" aria-hidden="true">→</span></a>
+    <h2 class="display xl rv" data-copy="servicesPage.ctaHeading">Tell us what you're building.</h2>
+    <a class="btn btn--solid" href="#/contact"><span data-copy="servicesPage.ctaButton">Let's talk</span><span class="arrow" aria-hidden="true">→</span></a>
   </div></section>
 </section>
 
 <!-- ============ ABOUT ============ -->
 <section class="route room room-cream" data-route="about">
   <div class="wrap sec">
-    <div class="sill"><span class="label">About</span><span class="label">London</span></div>
-    <h1 class="display xl rv" style="max-width:13ch">Inside the Glasshouse.</h1>
+    <div class="sill"><span class="label" data-copy="aboutPage.label">About</span><span class="label" data-copy="aboutPage.sublabel">London</span></div>
+    <h1 class="display xl rv" style="max-width:13ch" data-copy="aboutPage.heading">Inside the Glasshouse.</h1>
     <div class="about-open">
       <div class="rv">
-        <p class="about-lead">Welcome to the Glasshouse. We create social strategies that invite people inside — building brands by making audiences feel part of the story.</p>
+        <p class="about-lead" data-copy="aboutPage.lead">Welcome to the Glasshouse. We create social strategies that invite people inside — building brands by making audiences feel part of the story.</p>
         <div class="measure" style="color:var(--body-2);margin-top:1.4rem">
-          <p>We don't just grow audiences, we cultivate communities that thrive in the open. Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.</p>
-          <p>From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity. At the Glasshouse, growth is transparent, human, and impossible to ignore.</p>
+          <p data-copy="aboutPage.para1">We don't just grow audiences, we cultivate communities that thrive in the open. Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.</p>
+          <p data-copy="aboutPage.para2">From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity. At the Glasshouse, growth is transparent, human, and impossible to ignore.</p>
         </div>
-        <p class="about-sign display">Shatter ceilings. Grow without limits.</p>
+        <p class="about-sign display" data-copy="aboutPage.signoff">Shatter ceilings. Grow without limits.</p>
       </div>
       <dl class="facts rv d2" id="aboutFacts"></dl>
     </div>
@@ -272,28 +259,26 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap"><div class="collage rv" id="collage"></div></div>
 
   <section class="room room-sage"><div class="wrap sec">
-    <div class="sill"><span class="label">Who you'll work with</span><span class="label">Small on purpose</span></div>
+    <div class="sill"><span class="label" data-copy="aboutPage.peopleLabel">Who you'll work with</span><span class="label" data-copy="aboutPage.peopleSublabel">Small on purpose</span></div>
     <div class="people" id="people"></div>
-    <p class="people__note rv">Three of us, full time. Beyond that we work with a regular bench of freelance
-      editors, photographers and motion designers — briefed by us, never handed off.
-      <a href="#/careers">See who we're looking for →</a></p>
+    <p class="people__note rv" data-copy="aboutPage.peopleNote"></p>
   </div></section>
 
   <div class="wrap sec">
-    <div class="sill"><span class="label">How we work</span></div>
+    <div class="sill"><span class="label" data-copy="aboutPage.valuesLabel">How we work</span></div>
     <div class="values" id="values"></div>
   </div>
 
   <section class="room room-brown"><div class="wrap cta">
-    <h2 class="display xl rv" style="max-width:18ch">There's usually a desk free.</h2>
-    <a class="btn btn--solid" href="#/careers"><span>See open roles</span><span class="arrow" aria-hidden="true">→</span></a>
+    <h2 class="display xl rv" style="max-width:18ch" data-copy="aboutPage.ctaHeading">There's usually a desk free.</h2>
+    <a class="btn btn--solid" href="#/careers"><span data-copy="aboutPage.ctaButton">See open roles</span><span class="arrow" aria-hidden="true">→</span></a>
   </div></section>
 </section>
 
 <!-- ============ JOURNAL ============ -->
 <section class="route room room-cream" data-route="journal">
   <div class="wrap page-head">
-    <div class="sill"><span class="label">Journal</span><span class="label">Insight, trends and platform news</span></div>
+    <div class="sill"><span class="label" data-copy="journalPage.label">Journal</span><span class="label" data-copy="journalPage.sublabel">Insight, trends and platform news</span></div>
   </div>
   <section class="room room-sage"><div class="wrap sec--tight" style="padding-top:clamp(2rem,4vw,3.5rem)">
     <div id="jrnFeature"></div>
@@ -309,31 +294,31 @@ window.addEventListener('error',function(){document.documentElement.classList.re
 <!-- ============ CAREERS ============ -->
 <section class="route room room-cream" data-route="careers">
   <div class="wrap sec">
-    <div class="sill"><span class="label">Careers</span><span class="label">London / hybrid</span></div>
-    <h1 class="display xl rv" style="max-width:10ch">Come inside.</h1>
+    <div class="sill"><span class="label" data-copy="careersPage.label">Careers</span><span class="label" data-copy="careersPage.sublabel">London / hybrid</span></div>
+    <h1 class="display xl rv" style="max-width:10ch" data-copy="careersPage.heading">Come inside.</h1>
     <div class="grid" style="margin-top:clamp(2.5rem,6vw,4rem)">
       <div style="grid-column:span 6" class="rv">
         <div class="measure" style="color:var(--body-2)">
-          <p>We're a small team that ships a lot. Everyone here writes, films, edits or strategises — often all four in a week. You'll work directly with founders and directly with clients, from day one.</p>
-          <p>We hire for taste and curiosity over years of experience. If you can explain why something worked, you're already most of the way there.</p>
+          <p data-copy="careersPage.para1">We're a small team that ships a lot. Everyone here writes, films, edits or strategises — often all four in a week. You'll work directly with founders and directly with clients, from day one.</p>
+          <p data-copy="careersPage.para2">We hire for taste and curiosity over years of experience. If you can explain why something worked, you're already most of the way there.</p>
         </div>
       </div>
-      <div style="grid-column:span 5/-1" class="rv d2"><img class="pic r32" src="assets/img/team4.webp" alt="The team at work" loading="lazy"></div>
+      <div style="grid-column:span 5/-1" class="rv d2" id="careersMedia"></div>
     </div>
   </div>
   <section class="room room-sage">
   <div class="wrap sec--tight">
-    <div class="sill"><span class="label">Open roles</span></div>
+    <div class="sill"><span class="label" data-copy="careersPage.rolesLabel">Open roles</span></div>
     <div id="vacancies"></div>
     <div class="grid" style="margin-top:clamp(2.5rem,5vw,4rem)">
       <div style="grid-column:span 6">
-        <h3 class="display lg">Freelancers &amp; collaborators</h3>
-        <p style="color:var(--body-2);margin-top:.8rem;max-width:44ch">We keep a working list of editors, photographers, motion designers and community managers. Send a reel or a folder — that's enough.</p>
+        <h3 class="display lg" data-copy="careersPage.freelanceHeading">Freelancers &amp; collaborators</h3>
+        <p style="color:var(--body-2);margin-top:.8rem;max-width:44ch" data-copy="careersPage.freelanceText">We keep a working list of editors, photographers, motion designers and community managers. Send a reel or a folder — that's enough.</p>
       </div>
       <div style="grid-column:span 5/-1">
-        <h3 class="display lg">Open applications</h3>
-        <p style="color:var(--body-2);margin-top:.8rem;max-width:44ch">No suitable role listed? Tell us what you'd want to do here and what you'd want to be paid to do it.</p>
-        <p style="margin-top:1.4rem"><a class="btn" href="#/contact"><span>Apply</span><span class="arrow" aria-hidden="true">→</span></a></p>
+        <h3 class="display lg" data-copy="careersPage.openHeading">Open applications</h3>
+        <p style="color:var(--body-2);margin-top:.8rem;max-width:44ch" data-copy="careersPage.openText">No suitable role listed? Tell us what you'd want to do here and what you'd want to be paid to do it.</p>
+        <p style="margin-top:1.4rem"><a class="btn" href="#/contact"><span data-copy="careersPage.openButton">Apply</span><span class="arrow" aria-hidden="true">→</span></a></p>
       </div>
     </div>
   </div>
@@ -343,15 +328,15 @@ window.addEventListener('error',function(){document.documentElement.classList.re
 <!-- ============ CONTACT ============ -->
 <section class="route room room-cream" data-route="contact">
   <div class="wrap sec">
-    <div class="sill"><span class="label">Contact</span><span class="label">We reply within two working days</span></div>
+    <div class="sill"><span class="label" data-copy="contactPage.label">Contact</span><span class="label" data-copy="contactPage.sublabel">We reply within two working days</span></div>
     <div class="grid">
       <div style="grid-column:span 5" class="rv">
         <div class="room room-sage contact-panel">
-          <h1 class="display xl">The door's open.</h1>
-          <p class="lede" style="margin-top:1.2rem">Have a brand, a brief, or just a feeling that your socials could be doing more? Tell us about it.</p>
+          <h1 class="display xl" data-copy="contactPage.heading">The door's open.</h1>
+          <p class="lede" style="margin-top:1.2rem" data-copy="contactPage.lede">Have a brand, a brief, or just a feeling that your socials could be doing more? Tell us about it.</p>
           <div style="margin-top:2rem;border-top:1px solid var(--line);padding-top:1.3rem">
-            <p class="label">Email</p><p style="margin:.5rem 0 1.2rem"><a href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a></p>
-            <p class="label">Social</p><p style="margin:.5rem 0 0">@theglasshouse.agency</p>
+            <p class="label" data-copy="contactPage.emailLabel">Email</p><p style="margin:.5rem 0 1.2rem"><a href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a></p>
+            <p class="label" data-copy="contactPage.socialLabel">Social</p><p style="margin:.5rem 0 0" data-copy="contactPage.socialHandle">@theglasshouse.agency</p>
           </div>
         </div>
       </div>
@@ -372,8 +357,8 @@ window.addEventListener('error',function(){document.documentElement.classList.re
           <div class="field"><label for="f-hear">How did you hear about us?</label><input id="f-hear" name="source"></div>
           <div class="field full"><label for="f-msg">Message</label><textarea id="f-msg" name="message" required></textarea></div>
           <div class="form-note">
-            <small>Prototype form — connect to your form handler or CRM on build.</small>
-            <button class="btn btn--solid" type="submit"><span>Let's talk</span><span class="arrow" aria-hidden="true">→</span></button>
+            <small data-copy="contactPage.formNote">Prototype form — connect to your form handler or CRM on build.</small>
+            <button class="btn btn--solid" type="submit"><span data-copy="contactPage.formButton">Let's talk</span><span class="arrow" aria-hidden="true">→</span></button>
           </div>
           <p class="full" id="formMsg" role="status" style="margin:0;color:var(--sage);font-size:.9rem"></p>
         </form>

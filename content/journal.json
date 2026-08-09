@@ -14,7 +14,8 @@
         "Q:The mistake most personal brands make is treating the platform as a distribution channel for something that already exists. It is not. It is the thing itself.",
         "H:Start with the room, not the audience",
         "Placeholder body copy. Each article supports headings, pull quotes, images, video embeds and rich text."
-      ]
+      ],
+      "img": "j1"
     },
     {
       "slug": "tiktok-search-2026",
@@ -26,7 +27,8 @@
       "excerpt": "Search accounted for 27.3% of views on one of our accounts last year. Captions are the new keywords.",
       "body": [
         "Placeholder article. Replace with final copy before launch."
-      ]
+      ],
+      "img": "j2"
     },
     {
       "slug": "community-over-audience",
@@ -38,7 +40,8 @@
       "excerpt": "A follower is a number. A community turns up, replies and defends you. The difference shows up in revenue.",
       "body": [
         "Placeholder article. Replace with final copy before launch."
-      ]
+      ],
+      "img": "j3"
     },
     {
       "slug": "creator-briefs",
@@ -50,7 +53,8 @@
       "excerpt": "Most creator briefs are brand guidelines with a deadline attached. Here is the version we send.",
       "body": [
         "Placeholder article. Replace with final copy before launch."
-      ]
+      ],
+      "img": "j4"
     },
     {
       "slug": "short-form-retention",
@@ -62,7 +66,8 @@
       "excerpt": "Average watch time tells you more than views. What we look at first when an account stalls.",
       "body": [
         "Placeholder article. Replace with final copy before launch."
-      ]
+      ],
+      "img": "j5"
     },
     {
       "slug": "agency-news-studio",
@@ -74,7 +79,8 @@
       "excerpt": "More space to film, and a permanent set for the podcast work.",
       "body": [
         "Placeholder article. Replace with final copy before launch."
-      ]
+      ],
+      "img": "j6"
     }
   ]
 }

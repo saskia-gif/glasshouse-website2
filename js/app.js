@@ -16,17 +16,13 @@ let metricIO=null;
 let io=null;  /* scroll-reveal observer — declared here because renderCards() uses it on first paint */
 const brief=(cls,tag,note)=>`<div class="ph brief ${cls}" role="img" aria-label="Placeholder: ${note}"><span class="brief__in"><span class="label">${tag}</span><p>${note}</p></span></div>`;
 const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
-const CASE_IMG={
-  'gigi-clothing'   :{card:IMG.gigi,  v:[IMG.gigiA,IMG.gigiB,IMG.gigiC]},
-  'caroline-montague':{card:IMG.caro, v:[IMG.caroA,IMG.caroB,IMG.caroC]},
-  'grace-and-form'  :{card:IMG.grace, v:[IMG.graceA,IMG.graceB,IMG.graceC]},
-  'hip-and-healthy' :{card:IMG.hip,   v:[IMG.hipA,IMG.hipB,IMG.hipC]},
-  'simple-healthy'  :{card:IMG.simple,v:[IMG.simpleA,IMG.simpleB,IMG.simpleC]},
-  'wolfe-power-club':{card:IMG.wolfe, v:[]},
-  'breaking-the-taboo':{card:IMG.taboo,v:[IMG.tabooA,IMG.tabooB]}
-};
-const JRN_IMG=[IMG.j1,IMG.j2,IMG.j3,IMG.j4,IMG.j5,IMG.j6];
-const media=(slug,i,cls,alt)=>{const m=CASE_IMG[slug]; const src=m&&m.v[i];
+/* Every picture is chosen in the editor. These read the name stored on each
+   record (e.g. "gigiA") and turn it into a real file path via images.json. */
+const imgPath=name=>(name&&IMG[name])||'';
+const caseImg=slug=>{const c=CASES.find(x=>x.slug===slug)||{};
+  return {card:imgPath(c.card), v:(c.gallery||[]).map(imgPath).filter(Boolean)};};
+const jrnImg=a=>imgPath(a&&a.img);
+const media=(slug,i,cls,alt)=>{const src=caseImg(slug).v[i];
   return src?pic(src,cls,alt):ph(cls,'Replace — '+cls.replace('r','')+' media');};
 const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?` data-tone="${tone}"`:''} role="img" aria-label="Placeholder: ${label.replace(/"/g,'')}"></div>`;
 
@@ -49,7 +45,7 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
 /* ---- hero ---- */
 $('#heroWindows').innerHTML=`
   <div class="phone-wrap rv">
-    <span class="phone-cap">In the feed — client film</span>
+    <span class="phone-cap">${(COPY.hero&&COPY.hero.filmCaption)||'In the feed — client film'}</span>
     <div class="phone-frame">
       <span class="phone-panel" aria-hidden="true"></span>
       <div class="phone">
@@ -209,7 +205,7 @@ function renderCards(filter='All'){
   $('#workCards').innerHTML=list.map(c=>`
     <a class="card rv" href="#/case/${c.slug}">
       <span class="card__frame">
-        ${(CASE_IMG[c.slug]&&CASE_IMG[c.slug].card)?pic(CASE_IMG[c.slug].card,'r43',c.client.replace(/&amp;/g,'and')):ph('r43','Replace — hero 4:3')}
+        ${caseImg(c.slug).card?pic(caseImg(c.slug).card,'r43',c.client.replace(/&amp;/g,'and')):ph('r43','Replace — hero 4:3')}
         <span class="card__tag"><b>${c.metrics[0].fig}</b><span>${c.metrics[0].lab}</span></span>
       </span>
       <span class="card__meta">
@@ -232,22 +228,22 @@ $('#filters').addEventListener('click',e=>{
 /* ---- journal ---- */
 const feat=JOURNAL.find(a=>a.featured)||JOURNAL[0];
 $('#jrnFeature').innerHTML=`<a class="feature rv" href="#/journal/${feat.slug}">
-  <span class="jrn__frame">${pic(JRN_IMG[0],'r32',feat.title)}</span>
-  <span><span class="label">Featured — ${feat.category}</span>
+  <span class="jrn__frame">${jrnImg(feat)?pic(jrnImg(feat),'r32',feat.title):ph('r32','Replace — journal image')}</span>
+  <span><span class="label">${(COPY.journalPage&&COPY.journalPage.featuredPrefix)||'Featured'} — ${feat.category}</span>
   <h2 class="display lg" style="margin:1rem 0 .8rem">${feat.title}</h2>
   <span style="color:var(--body-2);display:block;max-width:44ch">${feat.excerpt}</span>
   <span class="label" style="display:block;margin-top:1.4rem">${feat.date}</span>
-  <span class="card__cta" style="padding-top:1rem">Read the piece <span class="arrow" aria-hidden="true">→</span></span></span></a>`;
+  <span class="card__cta" style="padding-top:1rem">${(COPY.journalPage&&COPY.journalPage.readMore)||'Read the piece'} <span class="arrow" aria-hidden="true">→</span></span></span></a>`;
 const cats=[...new Set(JOURNAL.map(a=>a.category))];
 $('#jrnFilters').innerHTML=['All',...cats].map((f,i)=>`<button aria-pressed="${i===0}" data-f="${f}">${f}</button>`).join('');
 function renderJournal(filter='All'){
   $('#jrnGrid').innerHTML=JOURNAL.filter(a=>!a.featured&&(filter==='All'||a.category===filter)).map(a=>`
     <a class="rv" href="#/journal/${a.slug}">
-      <span class="jrn__frame">${pic(JRN_IMG[(JOURNAL.indexOf(a)%JRN_IMG.length)],'r32',a.title)}</span>
+      <span class="jrn__frame">${jrnImg(a)?pic(jrnImg(a),'r32',a.title):ph('r32','Replace — journal image')}</span>
       <span class="jrn__meta"><span class="label">${a.category}</span><span class="label">${a.date}</span></span>
       <h3>${a.title}</h3>
       <p>${a.excerpt}</p>
-      <span class="card__cta">Read <span class="arrow" aria-hidden="true">→</span></span>
+      <span class="card__cta">${(COPY.journalPage&&COPY.journalPage.readShort)||'Read'} <span class="arrow" aria-hidden="true">→</span></span>
     </a>`).join('');
   observeReveals();
 }
@@ -262,7 +258,7 @@ $('#jrnFilters').addEventListener('click',e=>{
 function renderCase(slug){
   const c=CASES.find(x=>x.slug===slug)||CASES[0];
   const next=CASES[(CASES.indexOf(c)+1)%CASES.length];
-  const m=CASE_IMG[c.slug]||{v:[]};
+  const m=caseImg(c.slug);
   const chapter=(t,b)=>`<div class="cs-chapter rv"><h2 class="label">${t}</h2><p class="chapter-copy">${b}</p></div>`;
   /* a still in a device frame, marked for the video that replaces it */
   const inPhone=(src,cap)=>`
@@ -347,7 +343,7 @@ function renderArticle(slug){
     <div class="sill"><a class="label" href="#/journal" style="color:var(--ink)">← Journal</a><span class="label">${a.category}</span></div>
     <h1 class="display xl" style="max-width:18ch">${a.title}</h1>
     <p class="label" style="margin-top:1.6rem">${a.author} — ${a.date}</p>
-    <div style="margin-top:clamp(2rem,4vw,3rem)" class="rv-pane">${pic(JRN_IMG[JOURNAL.indexOf(a)%JRN_IMG.length],'r169',a.title)}</div>
+    <div style="margin-top:clamp(2rem,4vw,3rem)" class="rv-pane">${jrnImg(a)?pic(jrnImg(a),'r169',a.title):ph('r169','Replace — article image')}</div>
     <div class="article-body" style="margin-top:clamp(2.5rem,5vw,4rem)">
       <p class="lede" style="max-width:none">${a.excerpt}</p>${body}
     </div>
@@ -355,10 +351,10 @@ function renderArticle(slug){
   <section class="room room-sage"><div class="wrap sec">
     <div class="sill"><span class="label">Related reading</span></div>
     <div class="jrn">${rel.map(r=>`<a href="#/journal/${r.slug}">
-      <span class="jrn__frame">${pic(JRN_IMG[JOURNAL.indexOf(r)%JRN_IMG.length],'r32',r.title)}</span>
+      <span class="jrn__frame">${jrnImg(r)?pic(jrnImg(r),'r32',r.title):ph('r32','Replace — journal image')}</span>
       <span class="jrn__meta"><span class="label">${r.category}</span><span class="label">${r.date}</span></span>
       <h3>${r.title}</h3><p>${r.excerpt}</p>
-      <span class="card__cta">Read <span class="arrow" aria-hidden="true">→</span></span></a>`).join('')}</div>
+      <span class="card__cta">${(COPY.journalPage&&COPY.journalPage.readShort)||'Read'} <span class="arrow" aria-hidden="true">→</span></span></a>`).join('')}</div>
   </div></section>`;
   return a;
 }
@@ -565,5 +561,34 @@ $('#contactForm').addEventListener('submit',e=>{
 
 /* ---- go ---- */
 route();
+/* ============================================================
+   Blocks that used to be hardcoded in index.html.
+   They now render from content/copy.json so the editor owns them.
+   ============================================================ */
+(function(){
+  /* testimonials — add or remove as many as you like */
+  const box=$('#quotes');
+  if(box && COPY.testimonials && Array.isArray(COPY.testimonials.items)){
+    box.innerHTML=COPY.testimonials.items.map((q,i)=>`
+      <blockquote class="quote rv${i%2?' d2':''}">${q.quote||''}
+        ${q.attrib?`<div class="attrib">${q.attrib}</div>`:''}</blockquote>`).join('');
+  }
+
+  /* the three steps on the Services page */
+  const steps=$('#steps');
+  if(steps && COPY.servicesPage && Array.isArray(COPY.servicesPage.steps)){
+    steps.innerHTML=COPY.servicesPage.steps.map((st,i)=>`
+      <div class="step rv${i?` d${i+1}`:''}"><span class="step__n">${st.n||String(i+1).padStart(2,'0')}</span>
+      <h3 class="display lg">${st.title||''}</h3><p>${st.text||''}</p></div>`).join('');
+  }
+
+  /* the picture on the Careers page */
+  const cm=$('#careersMedia');
+  if(cm){
+    const src=imgPath(COPY.careersPage&&COPY.careersPage.image);
+    cm.innerHTML=src?pic(src,'r32','The team at work'):ph('r32','Replace — careers image');
+  }
+  observeReveals();
+})();
 
 });

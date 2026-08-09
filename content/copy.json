@@ -2,13 +2,24 @@
   "hero": {
     "line1": "Invite",
     "line2": "people",
+    "line3": "inside",
     "lede": "We create social strategies that invite people inside — building brands by making audiences feel part of the story.",
     "ledePhone": "We create social strategies by making audiences feel part of the story.",
-    "line3": "inside"
+    "filmCaption": "In the feed — client film",
+    "ctaWork": "See the work",
+    "ctaContact": "Get in touch",
+    "ctaWorkPhone": "See our work"
   },
   "proof": {
     "label": "Proof",
     "sublabel": "Across client accounts"
+  },
+  "intro": {
+    "statement": "We don't just grow audiences. We cultivate communities that thrive in the open.",
+    "para1": "Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.",
+    "para2": "From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.",
+    "closing": "Growth is transparent, human, and impossible to ignore.",
+    "signoff": "Shatter ceilings. Grow without limits."
   },
   "work": {
     "label": "Selected work",
@@ -16,18 +27,122 @@
   },
   "testimonials": {
     "label": "In their words",
-    "quote1": "\"Their strategy and creative direction helped scale the channels quickly, generating millions of views, strong engagement, and a clear, premium identity.\""
-  },
-  "cta": {
-    "heading": "Ready to invite people in?"
+    "items": [
+      {
+        "quote": "They built a personal brand audiences don't just follow — they connect with.",
+        "attrib": "Placeholder — replace with client quote"
+      },
+      {
+        "quote": "The only agency we've worked with that understood the audience before the algorithm.",
+        "attrib": "Placeholder — replace with client quote"
+      },
+      {
+        "quote": "We went from posting when we remembered to a calendar we actually trust.",
+        "attrib": "Placeholder — replace with client quote"
+      },
+      {
+        "quote": "They tell us what didn't work before we have to ask.",
+        "attrib": "Placeholder — replace with client quote"
+      }
+    ]
   },
   "phone": {
     "workLine": "Four years of work, in one place.",
     "statement": "We don't just grow audiences. We build communities."
   },
+  "cta": {
+    "heading": "Ready to invite people in?",
+    "button": "Come inside",
+    "mailPrefix": "or email"
+  },
+  "workPage": {
+    "label": "Work",
+    "heading": "Brands people wanted to be part of.",
+    "nextLabel": "Yours next",
+    "nextHeading": "Every one of these started with someone describing a feeling their socials weren't giving them.",
+    "nextButton": "Start a project"
+  },
+  "servicesPage": {
+    "label": "Services",
+    "sublabel": "Social-first, end to end",
+    "heading": "Strategy, content and community — under one roof.",
+    "lede": "We can run everything, or slot into the part you're missing. Most clients start with one service and open the rest of the house over time.",
+    "stepsLabel": "How it works",
+    "stepsSublabel": "Every engagement, same three moves",
+    "steps": [
+      {
+        "n": "01",
+        "title": "Audit and strategy",
+        "text": "Two to three weeks. We go through the account, the competitors and the audience, and come back with content pillars, a tone of voice and the numbers we are aiming at."
+      },
+      {
+        "n": "02",
+        "title": "Make the work",
+        "text": "Filming days, editing, design. We build a bank of content before anything goes live, so the account never runs on whatever was to hand that week."
+      },
+      {
+        "n": "03",
+        "title": "Run and report",
+        "text": "Daily publishing and community management, monthly reporting against the KPIs we set, and a standing call. What worked gets made again; what did not gets said out loud."
+      }
+    ],
+    "faqLabel": "Questions",
+    "faqHeading": "The things people ask before the first call.",
+    "faqNote": "If yours is not here, ask it directly — we would rather answer than have you guess.",
+    "faqButton": "Ask us",
+    "ctaHeading": "Tell us what you're building.",
+    "ctaButton": "Let's talk"
+  },
+  "aboutPage": {
+    "label": "About",
+    "sublabel": "London",
+    "heading": "Inside the Glasshouse.",
+    "lead": "Welcome to the Glasshouse. We create social strategies that invite people inside — building brands by making audiences feel part of the story.",
+    "para1": "We don't just grow audiences, we cultivate communities that thrive in the open. Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.",
+    "para2": "From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity. At the Glasshouse, growth is transparent, human, and impossible to ignore.",
+    "signoff": "Shatter ceilings. Grow without limits.",
+    "peopleLabel": "Who you'll work with",
+    "peopleSublabel": "Small on purpose",
+    "peopleNote": "Three of us, full time. Beyond that we work with a regular bench of freelance editors, photographers and motion designers — briefed by us, never handed off. <a href=\"#/careers\">See who we're looking for →</a>",
+    "valuesLabel": "How we work",
+    "ctaHeading": "There's usually a desk free.",
+    "ctaButton": "See open roles"
+  },
+  "journalPage": {
+    "label": "Journal",
+    "sublabel": "Insight, trends and platform news",
+    "featuredPrefix": "Featured",
+    "readMore": "Read the piece",
+    "readShort": "Read"
+  },
+  "careersPage": {
+    "label": "Careers",
+    "sublabel": "London / hybrid",
+    "heading": "Come inside.",
+    "para1": "We're a small team that ships a lot. Everyone here writes, films, edits or strategises — often all four in a week. You'll work directly with founders and directly with clients, from day one.",
+    "para2": "We hire for taste and curiosity over years of experience. If you can explain why something worked, you're already most of the way there.",
+    "image": "team4",
+    "rolesLabel": "Open roles",
+    "freelanceHeading": "Freelancers &amp; collaborators",
+    "freelanceText": "We keep a working list of editors, photographers, motion designers and community managers. Send a reel or a folder — that's enough.",
+    "openHeading": "Open applications",
+    "openText": "No suitable role listed? Tell us what you'd want to do here and what you'd want to be paid to do it.",
+    "openButton": "Apply"
+  },
+  "contactPage": {
+    "label": "Contact",
+    "sublabel": "We reply within two working days",
+    "heading": "The door's open.",
+    "lede": "Have a brand, a brief, or just a feeling that your socials could be doing more? Tell us about it.",
+    "emailLabel": "Email",
+    "socialLabel": "Social",
+    "socialHandle": "@theglasshouse.agency",
+    "formNote": "Prototype form — connect to your form handler or CRM on build.",
+    "formButton": "Let's talk"
+  },
   "contactEmail": "hello@theglasshouse.agency",
   "meta": {
-    "title": "Glasshouse: a social-first creative agency, London",
+    "title": "Glasshouse — social-first creative agency, London",
     "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story."
   }
 }

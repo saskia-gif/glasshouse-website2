@@ -14,11 +14,22 @@ export const SCHEMA = [
         {key:'line2', label:'Headline line 2', type:'text'},
         {key:'line3', label:'Headline line 3', type:'text'},
         {key:'lede', label:'Intro sentence — desktop', type:'area'},
-        {key:'ledePhone', label:'Intro sentence — mobile', type:'area'}
+        {key:'ledePhone', label:'Intro sentence — mobile', type:'area'},
+        {key:'filmCaption', label:'Caption above the phone', type:'text'},
+        {key:'ctaWork', label:'Button — see the work', type:'text'},
+        {key:'ctaWorkPhone', label:'Button — see the work (mobile)', type:'text'},
+        {key:'ctaContact', label:'Button — get in touch', type:'text'}
       ]},
       {key:'proof', label:'Numbers section', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
         {key:'sublabel', label:'Sub-label', type:'text'}
+      ]},
+      {key:'intro', label:'Homepage introduction', type:'group', fields:[
+        {key:'statement', label:'Opening statement', type:'area'},
+        {key:'para1', label:'Paragraph 1', type:'area'},
+        {key:'para2', label:'Paragraph 2', type:'area'},
+        {key:'closing', label:'Closing line', type:'area'},
+        {key:'signoff', label:'Sign-off', type:'text'}
       ]},
       {key:'work', label:'Selected work section', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
@@ -26,14 +37,92 @@ export const SCHEMA = [
       ]},
       {key:'testimonials', label:'Testimonials', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
-        {key:'quote1', label:'Quote', type:'area'}
-      ]},
-      {key:'cta', label:'Closing invitation', type:'group', fields:[
-        {key:'heading', label:'Heading', type:'text'}
+        {key:'items', label:'Quotes', type:'list', of:'group', summary:'quote', fields:[
+          {key:'quote', label:'Quote', type:'area'},
+          {key:'attrib', label:'Who said it', type:'text'}
+        ]}
       ]},
       {key:'phone', label:'Mobile-only block', type:'group', fields:[
         {key:'workLine', label:'Line above the button', type:'text'},
         {key:'statement', label:'Closing statement', type:'area'}
+      ]},
+      {key:'cta', label:'Closing invitation', type:'group', fields:[
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'button', label:'Button', type:'text'},
+        {key:'mailPrefix', label:'Text before the email', type:'text'}
+      ]},
+      {key:'workPage', label:'Work page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'nextLabel', label:'Lower section label', type:'text'},
+        {key:'nextHeading', label:'Lower section heading', type:'area'},
+        {key:'nextButton', label:'Button', type:'text'}
+      ]},
+      {key:'servicesPage', label:'Services page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'sublabel', label:'Sub-label', type:'text'},
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'lede', label:'Intro sentence', type:'area'},
+        {key:'stepsLabel', label:'How it works — label', type:'text'},
+        {key:'stepsSublabel', label:'How it works — sub-label', type:'text'},
+        {key:'steps', label:'The three steps', type:'list', of:'group', summary:'title', fields:[
+          {key:'n', label:'Number', type:'text', help:'e.g. 01'},
+          {key:'title', label:'Title', type:'text'},
+          {key:'text', label:'Description', type:'area'}
+        ]},
+        {key:'faqLabel', label:'FAQ label', type:'text'},
+        {key:'faqHeading', label:'FAQ heading', type:'text'},
+        {key:'faqNote', label:'FAQ note', type:'area'},
+        {key:'faqButton', label:'FAQ button', type:'text'},
+        {key:'ctaHeading', label:'Closing heading', type:'text'},
+        {key:'ctaButton', label:'Closing button', type:'text'}
+      ]},
+      {key:'aboutPage', label:'About page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'sublabel', label:'Sub-label', type:'text'},
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'lead', label:'Opening paragraph', type:'area'},
+        {key:'para1', label:'Paragraph 1', type:'area'},
+        {key:'para2', label:'Paragraph 2', type:'area'},
+        {key:'signoff', label:'Sign-off', type:'text'},
+        {key:'peopleLabel', label:'Team label', type:'text'},
+        {key:'peopleSublabel', label:'Team sub-label', type:'text'},
+        {key:'peopleNote', label:'Note under the team', type:'rich', help:'Links are allowed here'},
+        {key:'valuesLabel', label:'Values label', type:'text'},
+        {key:'ctaHeading', label:'Closing heading', type:'text'},
+        {key:'ctaButton', label:'Closing button', type:'text'}
+      ]},
+      {key:'journalPage', label:'Journal page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'sublabel', label:'Sub-label', type:'text'},
+        {key:'featuredPrefix', label:'Word before the category', type:'text'},
+        {key:'readMore', label:'Featured link text', type:'text'},
+        {key:'readShort', label:'Card link text', type:'text'}
+      ]},
+      {key:'careersPage', label:'Careers page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'sublabel', label:'Sub-label', type:'text'},
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'para1', label:'Paragraph 1', type:'area'},
+        {key:'para2', label:'Paragraph 2', type:'area'},
+        {key:'image', label:'Photo', type:'image'},
+        {key:'rolesLabel', label:'Open roles label', type:'text'},
+        {key:'freelanceHeading', label:'Freelancers heading', type:'text'},
+        {key:'freelanceText', label:'Freelancers text', type:'area'},
+        {key:'openHeading', label:'Open applications heading', type:'text'},
+        {key:'openText', label:'Open applications text', type:'area'},
+        {key:'openButton', label:'Button', type:'text'}
+      ]},
+      {key:'contactPage', label:'Contact page', type:'group', fields:[
+        {key:'label', label:'Label', type:'text'},
+        {key:'sublabel', label:'Sub-label', type:'text'},
+        {key:'heading', label:'Heading', type:'text'},
+        {key:'lede', label:'Intro sentence', type:'area'},
+        {key:'emailLabel', label:'Email label', type:'text'},
+        {key:'socialLabel', label:'Social label', type:'text'},
+        {key:'socialHandle', label:'Social handle', type:'text'},
+        {key:'formNote', label:'Note under the form', type:'text'},
+        {key:'formButton', label:'Form button', type:'text'}
       ]},
       {key:'contactEmail', label:'Contact email', type:'text'},
       {key:'meta', label:'Search listing', type:'group', fields:[
@@ -64,6 +153,8 @@ export const SCHEMA = [
       {key:'platforms', label:'Platforms', type:'text'},
       {key:'territory', label:'Territory', type:'text'},
       {key:'services', label:'Services', type:'list', of:'text'},
+      {key:'card', label:'Card image', type:'image', help:'Shown on the Work page and homepage'},
+      {key:'gallery', label:'Vertical images', type:'list', of:'image', help:'9:16. First one appears in the phone frame.'},
       {key:'statement', label:'One-line statement', type:'text'},
       {key:'desc', label:'Short description', type:'area'},
       {key:'brief', label:'The brief', type:'rich'},
@@ -99,6 +190,7 @@ export const SCHEMA = [
       {key:'date', label:'Date', type:'text', help:'e.g. 12 June 2026'},
       {key:'author', label:'Author', type:'text'},
       {key:'featured', label:'Feature at the top', type:'bool'},
+      {key:'img', label:'Image', type:'image'},
       {key:'excerpt', label:'Excerpt', type:'area'},
       {key:'body', label:'Article', type:'rich'}
     ]
@@ -155,8 +247,19 @@ export const SCHEMA = [
     ]
   },
   {
+    id:'servicedetail', file:'content/service-detail.json', title:'Service pages',
+    hint:'The detail block under each service — the line, what it covers, and which case study it points at.',
+    shape:'keyed',
+    fields:[
+      {key:'line', label:'Opening line', type:'area'},
+      {key:'caps', label:'What it covers', type:'list', of:'text'},
+      {key:'proof', label:'Case study slug', type:'text', help:'e.g. gigi-clothing'},
+      {key:'img', label:'Image', type:'image'}
+    ]
+  },
+  {
     id:'images', file:'content/images.json', title:'Pictures & video',
-    hint:'Which file each name points at. Upload a new picture to replace one.',
+    hint:'Which file each name points at. Upload a replacement to change one. The homepage film and its still frame are the last two rows.',
     shape:'map'
   }
 ];

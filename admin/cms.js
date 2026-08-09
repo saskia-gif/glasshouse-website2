@@ -71,12 +71,17 @@ async function openCollection(id){
   try {
     const {text, sha} = await getFile(c.file);
     state.data = JSON.parse(text); state.sha = sha;
-    if(c.shape === 'image' || c.fields?.some(f => f.type === 'image')) await ensureImages();
+    if(c.shape === 'image' || c.shape === 'keyed' || hasImageField(c.fields)) await ensureImages();
     render(c);
   } catch(err){
     $('#panel').innerHTML = '';
     $('#panel').append(note('Could not open this: ' + err.message, 'bad'));
   }
+}
+
+function hasImageField(fields){
+  if(!Array.isArray(fields)) return false;
+  return fields.some(f => f.type === 'image' || hasImageField(f.fields));
 }
 
 async function ensureImages(){
@@ -91,8 +96,9 @@ function render(c){
   p.append(el('h2',null,c.title));
   if(c.hint) p.append(el('p','muted',c.hint));
 
-  if(c.shape === 'map')      renderMap(p);
-  else if(c.shape === 'list')renderList(p, c, listOf(state.data));
+  if(c.shape === 'map')       renderMap(p);
+  else if(c.shape === 'keyed')renderKeyed(p, c);
+  else if(c.shape === 'list') renderList(p, c, listOf(state.data));
   else                        renderGroup(p, c.fields, state.data);
 
   markClean();
@@ -162,6 +168,8 @@ function listEditor(f, obj){
       row.append(head);
       if(f.of === 'group'){
         renderGroup(row, f.fields, item);
+      } else if(f.of === 'image'){
+        row.append(imagePicker(arr, i));
       } else {
         const i2 = el('input'); i2.type='text'; i2.value = item ?? '';
         i2.oninput = () => { arr[i] = i2.value; markDirty(); };
@@ -169,7 +177,7 @@ function listEditor(f, obj){
       }
       box.append(row);
     });
-    const add = el('button','add','+ Add');
+    const add = el('button','add', f.of === 'image' ? '+ Add image' : '+ Add');
     add.onclick = () => {
       arr.push(f.of === 'group' ? Object.fromEntries(f.fields.map(x=>[x.key,''])) : '');
       markDirty(); draw();
@@ -217,28 +225,51 @@ function renderList(parent, c, arr){
   parent.append(box);
 }
 
+/* files keyed by slug — service-detail.json */
+function renderKeyed(parent, c){
+  const box = el('div','records');
+  Object.keys(state.data).forEach(key => {
+    const card = el('details','record');
+    card.append(el('summary', null, key.replace(/-/g,' ')));
+    const body = el('div','record-body');
+    renderGroup(body, c.fields, state.data[key]);
+    card.append(body);
+    box.append(card);
+  });
+  parent.append(box);
+}
+
 /* images.json — name to file mapping, plus upload */
 function renderMap(parent){
   const box = el('div','records');
   Object.entries(state.data).forEach(([key, path]) => {
-    if(key.startsWith('_')) return;
+    const isVideo = key === '_video';
+    const isPoster = key === '_poster';
     const row = el('div','map-row');
-    row.append(el('span','map-key', key));
-    const img = el('img','thumb'); img.src = '../' + path; img.loading='lazy'; img.alt='';
+    row.append(el('span','map-key', isVideo ? 'homepage film' : isPoster ? 'film still' : key));
+    const img = el('img','thumb'); img.loading='lazy'; img.alt='';
+    img.src = '../' + (isVideo ? state.data._poster || '' : path);
     row.append(img);
     const inp = el('input'); inp.type='text'; inp.value = path;
     inp.oninput = () => { state.data[key] = inp.value; markDirty(); };
     row.append(inp);
     const up = el('label','mini upload'); up.textContent = 'Replace…';
-    const file = el('input'); file.type='file'; file.accept='image/*'; file.hidden = true;
+    const file = el('input'); file.type='file'; file.hidden = true;
+    file.accept = isVideo ? 'video/mp4,video/*' : 'image/*';
     file.onchange = async () => {
       const f = file.files[0]; if(!f) return;
       up.textContent = 'Uploading…';
       try {
         const buf = await f.arrayBuffer();
-        const dest = 'assets/img/' + f.name.replace(/[^\w.\-]/g,'-');
+        const folder = isVideo ? 'assets/video/' : 'assets/img/';
+        const dest = folder + f.name.replace(/[^\w.\-]/g,'-');
+        if(isVideo && buf.byteLength > 3.5*1024*1024 &&
+           !confirm('That film is ' + Math.round(buf.byteLength/1048576) + 'MB. Anything over about 3MB makes the homepage slow to load. Upload it anyway?')) {
+          up.textContent = 'Replace…'; return;
+        }
         await putBinary(dest, buf, `Upload ${f.name}`);
-        state.data[key] = dest; inp.value = dest; img.src = '../' + dest + '?t=' + Date.now();
+        state.data[key] = dest; inp.value = dest;
+        if(!isVideo) img.src = '../' + dest + '?t=' + Date.now();
         markDirty(); up.textContent = 'Replace…';
       } catch(e){ alert(e.message); up.textContent = 'Replace…'; }
     };
