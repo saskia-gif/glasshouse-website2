@@ -17,7 +17,7 @@ export const SCHEMA = [
         {key:'ledePhone', label:'Intro sentence — mobile', type:'area'},
         {key:'filmCaption', label:'Caption above the phone', type:'text'},
         {key:'ctaWork', label:'Button — see the work', type:'text'},
-        {key:'ctaWorkPhone', label:'Button — see the work (mobile)', type:'text'},
+        {key:'ctaWorkPhone', label:'Button — mobile hero (scrolls down)', type:'text'},
         {key:'ctaContact', label:'Button — get in touch', type:'text'}
       ]},
       {key:'proof', label:'Numbers section', type:'group', fields:[
@@ -44,7 +44,8 @@ export const SCHEMA = [
       ]},
       {key:'phone', label:'Mobile-only block', type:'group', fields:[
         {key:'workLine', label:'Line above the button', type:'text'},
-        {key:'statement', label:'Closing statement', type:'area'}
+        {key:'statement', label:'Closing statement', type:'area'},
+        {key:'contactCta', label:'Get in touch button (mobile)', type:'text'}
       ]},
       {key:'cta', label:'Closing invitation', type:'group', fields:[
         {key:'heading', label:'Heading', type:'text'},
@@ -123,6 +124,11 @@ export const SCHEMA = [
         {key:'socialHandle', label:'Social handle', type:'text'},
         {key:'formNote', label:'Note under the form', type:'text'},
         {key:'formButton', label:'Form button', type:'text'}
+      ]},
+      {key:'social', label:'Social links', type:'group', fields:[
+        {key:'instagram', label:'Instagram URL', type:'text'},
+        {key:'tiktok', label:'TikTok URL', type:'text'},
+        {key:'linkedin', label:'LinkedIn URL', type:'text', help:'Leave blank to hide the link'}
       ]},
       {key:'contactEmail', label:'Contact email', type:'text'},
       {key:'meta', label:'Search listing', type:'group', fields:[

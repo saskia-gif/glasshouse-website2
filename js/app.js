@@ -591,6 +591,14 @@ route();
     const src=imgPath(COPY.careersPage&&COPY.careersPage.image);
     cm.innerHTML=src?pic(src,'r32','The team at work'):ph('r32','Replace — careers image');
   }
+  /* social links, editable in the editor */
+  const so = COPY.social || {};
+  [['soInstagram','instagram'],['soTiktok','tiktok'],['soLinkedin','linkedin']].forEach(([id,key])=>{
+    const a=$('#'+id); if(!a) return;
+    if(so[key]){ a.href=so[key]; a.target='_blank'; a.rel='noopener'; }
+    else if(a.getAttribute('href')==='#/contact'){ a.closest('li')?.remove(); }
+  });
+
   observeReveals();
 })();
 

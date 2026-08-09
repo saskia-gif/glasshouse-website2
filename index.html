@@ -107,7 +107,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
         </p>
         <div class="hero__meta">
           <a class="btn btn--solid only-wide" href="#/work"><span data-copy="hero.ctaWork">See the work</span><span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn--solid only-phone" href="#/work"><span data-copy="hero.ctaWorkPhone">See our work</span><span class="arrow" aria-hidden="true">→</span></a>
+          <button class="btn btn--solid only-phone" id="heroCta" type="button"><span data-copy="hero.ctaWorkPhone">Come inside</span><span class="arrow" aria-hidden="true">↓</span></button>
           <a class="btn" href="#/contact"><span data-copy="hero.ctaContact">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
 
         </div>
@@ -165,6 +165,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="wrap sec">
       <p class="ph-line" data-copy="phone.workLine">Four years of work, in one place.</p>
       <a class="btn btn--solid ph-cta" href="#/work"><span>See our work</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn ph-cta ph-cta--second" href="#/contact"><span data-copy="phone.contactCta">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
     </div>
     <div class="ph-grid" id="phGrid" aria-hidden="true"></div>
     <div class="wrap sec--tight">
@@ -373,7 +374,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="foot__top">
     <div>
       <img class="foot__logo" src="assets/img/logo-lockup.png" alt="Glasshouse agency">
-      <a class="btn btn--solid" href="#/contact"><span>Let's chat</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--solid foot__cta" href="#/contact"><span>Let's chat</span><span class="arrow" aria-hidden="true">→</span></a>
       <a class="foot__mail" href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a>
     </div>
     <div>
@@ -383,7 +384,9 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     </div>
     <div>
       <span class="label">Elsewhere</span>
-      <ul><li><a href="#/contact">Instagram</a></li><li><a href="#/contact">TikTok</a></li><li><a href="#/contact">LinkedIn</a></li>
+      <ul><li><a id="soInstagram" href="https://www.instagram.com/theglasshouseagency/" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a id="soTiktok" href="https://www.tiktok.com/@the.glasshouse.ag" target="_blank" rel="noopener">TikTok</a></li>
+      <li><a id="soLinkedin" href="#/contact">LinkedIn</a></li>
       <li><a href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a></li><li>London, UK</li></ul>
     </div>
   </div>

@@ -8,7 +8,7 @@
     "filmCaption": "In the feed -  client film",
     "ctaWork": "See the work",
     "ctaContact": "Get in touch",
-    "ctaWorkPhone": "See our work"
+    "ctaWorkPhone": "Come inside"
   },
   "proof": {
     "label": "Our work",
@@ -48,11 +48,12 @@
   },
   "phone": {
     "workLine": "Four years of work, in one place.",
-    "statement": "We don't just grow audiences. We build communities."
+    "statement": "We don't just grow audiences. We build communities.",
+    "contactCta": "Get in touch"
   },
   "cta": {
     "heading": "Ready to invite people in?",
-    "button": "Come inside",
+    "button": "Let's chat",
     "mailPrefix": "or email"
   },
   "workPage": {
@@ -144,5 +145,10 @@
   "meta": {
     "title": "Glasshouse: a social-first creative agency, London",
     "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story."
+  },
+  "social": {
+    "instagram": "https://www.instagram.com/theglasshouseagency/",
+    "tiktok": "https://www.tiktok.com/@the.glasshouse.ag",
+    "label": "Follow"
   }
 }
