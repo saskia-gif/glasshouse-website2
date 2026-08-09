@@ -20,12 +20,12 @@
     "para2": "From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.",
     "closing": "Growth is transparent, human, and impossible to ignore.",
     "signoff": "",
-    "image": "",
+    "image": "assets/img/DC903D5D-8AF5-4714-B93E-ABA7E60DAA8D_1_105_c.jpeg",
     "imageAlt": ""
   },
   "work": {
     "label": "Selected work",
-    "sublabel": "Four of them"
+    "sublabel": "Have a Peek"
   },
   "testimonials": {
     "label": "In their words",
@@ -36,14 +36,6 @@
       },
       {
         "quote": "The only agency we've worked with that understood the audience before the algorithm.",
-        "attrib": "Placeholder — replace with client quote"
-      },
-      {
-        "quote": "We went from posting when we remembered to a calendar we actually trust.",
-        "attrib": "Placeholder — replace with client quote"
-      },
-      {
-        "quote": "They tell us what didn't work before we have to ask.",
         "attrib": "Placeholder — replace with client quote"
       }
     ]
