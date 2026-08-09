@@ -514,6 +514,9 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   padding-block:clamp(2.8rem,6vw,5.5rem);border-top:1px solid var(--line)}
 .svc-block:last-of-type{border-bottom:1px solid var(--line)}
 @media(max-width:820px){.svc-block{grid-template-columns:minmax(0,1fr);gap:1.8rem}}
+/* the fold header is a phone affordance — above 700px it is not rendered at
+   all, so the grid sees only the body and the media, exactly as before */
+.svc-fold__sum{display:none}
 .svc-block:nth-child(even) .svc-block__media{order:-1}
 @media(max-width:820px){.svc-block:nth-child(even) .svc-block__media{order:0}}
 .svc-block__body h2{font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.06;margin:.9rem 0 0;max-width:20ch}
@@ -1127,4 +1130,54 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
 }
 @media(max-width:700px) and (prefers-reduced-motion:reduce){
   .pnext span,.pseal{animation:none}
+}
+
+
+/* ============================================================
+   Phone ergonomics
+   Thumb-sized targets, nothing set below 11px, and the services
+   page folded down. All of it inside @media(max-width:700px);
+   the desktop layout is untouched.
+   ============================================================ */
+@media(max-width:700px){
+
+  /* --- hit areas -----------------------------------------------------
+     The padding grows the touch box, the negative margin gives the space
+     back to the layout, so the page looks identical and taps land. */
+  .crumbs a{display:inline-block;padding:1rem 0;margin:-1rem 0}
+  .foot nav a,.foot ul a{display:inline-block;padding:.8rem 0;margin:-.3rem 0}
+  .foot__mail{display:inline-block;padding:.5rem 0}
+  .sill a.label{display:inline-block;padding:1.1rem 0;margin:-1.1rem 0}
+  .caps a{display:block;padding:.78rem 0;margin:-.78rem 0}
+  /* an address in a sentence: inline padding grows the tap box without
+     changing the line box, so the paragraph does not reflow */
+  p a[href^="mailto:"],p a[href^="tel:"]{padding:.6rem 0}
+  .card__cta{display:inline-block;padding-top:1.25rem;padding-bottom:.7rem}
+  .people__note a{display:inline-block;padding:.85rem 0;margin:-.85rem 0}
+  .svc-index button{min-height:44px}
+
+  /* --- nothing below 11px --------------------------------------------- */
+  .crumbs ol{font-size:11px}
+  .card__tag span,.card__tags i,.svc-index__n,.step__n,
+  .facts dt,.cs-facts dt,.collage figcaption,.cs-top figcaption,
+  .field label,.filters button,.card__cta .arrow,
+  .cs-phone__badge,.cs-feed__badge{font-size:11px}
+
+  /* --- the services page folds ----------------------------------------- */
+  .svc-block{display:block;padding-block:0}
+  .svc-fold__sum{display:flex;align-items:baseline;gap:.9rem;width:100%;
+    padding:1.05rem .1rem;text-align:left;background:none;border:0;color:inherit;
+    cursor:pointer;min-height:44px;box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent}
+  .svc-block.is-folded>.svc-block__body,
+  .svc-block.is-folded>.svc-block__media{display:none}
+  .svc-fold__n{font-family:var(--ui);font-size:11px;letter-spacing:.2em;
+    color:var(--muted);min-width:2rem}
+  .svc-fold__t{font-family:var(--display);font-weight:300;font-size:1.14rem;letter-spacing:-.02em}
+  .svc-fold__chev{margin-left:auto;color:var(--muted);font-weight:300;font-size:1.15rem;
+    line-height:1;display:inline-block;transition:transform .28s var(--ease)}
+  .svc-block:not(.is-folded)>.svc-fold__sum .svc-fold__chev{transform:rotate(45deg)}
+  .svc-block__body>.label{display:none}          /* the summary already says it */
+  .svc-block__body h2{margin-top:0;font-size:1.3rem;max-width:24ch}
+  .svc-block__media{margin-top:1.4rem;padding-bottom:1.9rem}
 }

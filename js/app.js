@@ -155,6 +155,11 @@ $q('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
   const c=d.proof&&CASES.find(x=>x.slug===d.proof);
   return `
   <article class="svc-block rv" id="svc-${s.slug}">
+    <button class="svc-fold__sum" type="button" aria-expanded="true">
+      <span class="svc-fold__n">${String(i+1).padStart(2,'0')}</span
+      ><span class="svc-fold__t">${s.title}</span
+      ><b class="svc-fold__chev" aria-hidden="true">+</b>
+    </button>
     <div class="svc-block__body">
       <span class="label">${String(i+1).padStart(2,'0')} — ${s.title}</span>
       <h2 class="display">${d.line}</h2>
@@ -179,11 +184,45 @@ function toProof(){
 }
 [$('#scrollCue'),$('#heroCta')].forEach(b=>b&&b.addEventListener('click',toProof));
 
+/* Seven services is thirty screens on a phone, so there they fold. The DOM is
+   left exactly as the desktop grid expects it — the header is one extra child,
+   hidden above 700px — because wrapping the block in a <details> stops its
+   children being grid items in Chrome (::details-content). */
+const svcPhone = window.matchMedia('(max-width:700px)');
+function setFold(block, open){
+  block.classList.toggle('is-folded', !open);
+  const b = block.querySelector('.svc-fold__sum');
+  if(b) b.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function foldServices(){
+  const blocks = $$('#svcBlocks .svc-block');
+  blocks.forEach(b => setFold(b, !svcPhone.matches));
+}
+foldServices();
+svcPhone.addEventListener ? svcPhone.addEventListener('change', foldServices)
+                          : svcPhone.addListener(foldServices);
+$$('#svcBlocks .svc-fold__sum').forEach(btn => btn.addEventListener('click', ()=>{
+  const block = btn.closest('.svc-block');
+  const willOpen = block.classList.contains('is-folded');
+  if(svcPhone.matches) $$('#svcBlocks .svc-block').forEach(o => { if(o !== block) setFold(o, false); });
+  setFold(block, willOpen);
+  if(willOpen) requestAnimationFrame(()=>{
+    const top = window.scrollY + block.getBoundingClientRect().top - navH() - 8;
+    if(window.scrollY > top) window.scrollTo({top, behavior: reduce ? 'auto' : 'smooth'});
+  });
+}));
+
 /* the index jumps rather than links, so the router is left alone */
 $q('#svcIndex').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b)return;
   const t=document.getElementById(b.dataset.go);
-  if(t)window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-navH()-16,behavior:reduce?'auto':'smooth'});
+  if(!t)return;
+  if(t.classList.contains('is-folded')){        /* jumping to a folded one opens it */
+    $$('#svcBlocks .svc-block').forEach(o => { if(o !== t) setFold(o, false); });
+    setFold(t, true);
+  }
+  requestAnimationFrame(()=>window.scrollTo({
+    top:window.scrollY+t.getBoundingClientRect().top-navH()-16,behavior:reduce?'auto':'smooth'}));
 });
 $q('#faq').innerHTML=FAQ.map((f,i)=>svcHTML({slug:'faq'+i,title:f.q,text:f.text},i,false)).join('');
 document.addEventListener('click',e=>{
