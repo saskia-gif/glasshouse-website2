@@ -29,7 +29,10 @@ export const SCHEMA = [
         {key:'para1', label:'Paragraph 1', type:'area'},
         {key:'para2', label:'Paragraph 2', type:'area'},
         {key:'closing', label:'Closing line', type:'area'},
-        {key:'signoff', label:'Sign-off', type:'text'}
+        {key:'signoff', label:'Sign-off', type:'text'},
+        {key:'image', label:'Picture beside this text', type:'image',
+         help:'Portrait, 4:5. Leave empty to show the art-direction note instead.'},
+        {key:'imageAlt', label:'Picture alt text', type:'text'}
       ]},
       {key:'work', label:'Selected work section', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
@@ -98,6 +101,11 @@ export const SCHEMA = [
         {key:'peopleLabel', label:'Team label', type:'text'},
         {key:'peopleSublabel', label:'Team sub-label', type:'text'},
         {key:'peopleNote', label:'Note under the team', type:'rich', help:'Links are allowed here'},
+        {key:'collage', label:'Picture wall', type:'list', of:'group', summary:'caption',
+         help:'Four frames on the About page. Each caption shows under its picture.', fields:[
+          {key:'img', label:'Picture', type:'image'},
+          {key:'caption', label:'Caption', type:'text'}
+        ]},
         {key:'valuesLabel', label:'Values label', type:'text'},
         {key:'ctaHeading', label:'Closing heading', type:'text'},
         {key:'ctaButton', label:'Closing button', type:'text'}

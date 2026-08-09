@@ -19,7 +19,9 @@
     "para1": "Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.",
     "para2": "From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.",
     "closing": "Growth is transparent, human, and impossible to ignore.",
-    "signoff": ""
+    "signoff": "",
+    "image": "",
+    "imageAlt": ""
   },
   "work": {
     "label": "Selected work",
@@ -136,7 +138,25 @@
     "peopleNote": "Three of us, full time. Beyond that we work with a regular bench of freelance editors, photographers and motion designers — briefed by us, never handed off. <a href=\"#/careers\">See who we're looking for →</a>",
     "valuesLabel": "How we work",
     "ctaHeading": "There's usually a desk free.",
-    "ctaButton": "See open roles"
+    "ctaButton": "See open roles",
+    "collage": [
+      {
+        "img": "assets/img/studio.webp",
+        "caption": "The studio"
+      },
+      {
+        "img": "assets/img/team4.webp",
+        "caption": "In the room"
+      },
+      {
+        "img": "assets/img/team2.webp",
+        "caption": "Filming"
+      },
+      {
+        "img": "assets/img/founder1.webp",
+        "caption": "Founders"
+      }
+    ]
   },
   "journalPage": {
     "label": "Journal",

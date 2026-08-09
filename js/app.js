@@ -82,16 +82,20 @@ function placeFilm(){
 onPhone.addEventListener?onPhone.addEventListener('change',placeFilm):onPhone.addListener(placeFilm);
 
 /* the wall of work — real client stills, moving slowly */
-const WALL=[IMG.gigiA,IMG.caroA,IMG.graceA,IMG.hipA,IMG.simpleA,
-            IMG.gigiB,IMG.caroB,IMG.graceB,IMG.hipB,IMG.simpleB].filter(Boolean);
+const WALL=CASES.flatMap(c=>(c.gallery||[]).slice(0,2)).map(imgPath).filter(Boolean);
 $q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
 
-const PH_GRID=[IMG.gigiA,IMG.caroA,IMG.graceA,IMG.hipA].filter(Boolean);
+const PH_GRID=CASES.map(c=>(c.gallery||[])[0]).map(imgPath).filter(Boolean).slice(0,4);
 if($('#phGrid'))$q('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client content')).join('');
 
-/* art-directed placeholders — what these frames should hold */
-$q('#introMedia').innerHTML=brief('r45','Placeholder — portrait 4:5',
-  'A founder shot through glass, so the reflection sits over her. Daylight, no studio lighting, mid-conversation rather than posed.');
+/* the homepage portrait — a picture once one is chosen, a brief until then */
+(function(){
+  const src=imgPath((COPY.intro||{}).image);
+  $q('#introMedia').innerHTML = src
+    ? pic(src,'r45',(COPY.intro||{}).imageAlt || 'Glasshouse')
+    : brief('r45','Placeholder — portrait 4:5',
+        'A founder shot through glass, so the reflection sits over her. Daylight, no studio lighting, mid-conversation rather than posed.');
+})();
 
 /* ---- home: work rows ---- */
 $q('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
@@ -185,10 +189,17 @@ const person=(p,i)=>`<div class="rv">${pic(imgPath(p.img)||IMG.team1,'r45','Port
 $q('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
 
 /* the window wall — four frames at different heights, like glazing */
-$q('#collage').innerHTML=[
-  [IMG.studio,'c1','The studio'],[IMG.team4,'c2','In the room'],
-  [IMG.team2,'c3','Filming'],[IMG.founder1,'c4','Founders']
-].map(([src,cls,alt])=>`<figure class="${cls}">${pic(src,'',alt)}<figcaption>${alt}</figcaption></figure>`).join('');
+(function(){
+  const set=((COPY.aboutPage||{}).collage||[]).slice(0,4);
+  const frames=set.length?set:[{img:'studio',caption:'The studio'},{img:'team4',caption:'In the room'},
+                               {img:'team2',caption:'Filming'},{img:'founder1',caption:'Founders'}];
+  $q('#collage').innerHTML=frames.map((f,i)=>{
+    const src=imgPath(f.img);
+    const cap=f.caption||'';
+    return `<figure class="c${i+1}">${src?pic(src,'',cap):ph('r45','Replace — collage image')}`
+         + `${cap?`<figcaption>${cap}</figcaption>`:''}</figure>`;
+  }).join('');
+})();
 
 /* three people, shown as equals — no hover mechanic to prop up a short list */
 $q('#people').innerHTML=TEAM.people.map(p=>`
