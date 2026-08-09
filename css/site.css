@@ -639,8 +639,20 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   padding:.3rem .55rem;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
 .cs-feed__slot{opacity:.85}
 
-.next-project{display:block;position:relative;overflow:hidden;background:var(--brown);color:var(--cream);
-  padding:clamp(3rem,8vw,7rem) var(--pad);text-align:center}
+.case-end{background:var(--brown);color:var(--cream)}
+.next-project{display:block;position:relative;overflow:hidden;color:var(--cream);
+  padding:clamp(3rem,8vw,7rem) var(--pad) clamp(2rem,5vw,3.5rem);text-align:center}
+.case-end__cta{text-align:center;padding:0 var(--pad) clamp(3rem,7vw,6rem);
+  display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.case-end__cta .label{color:var(--muted)}
+.case-end__cta::before{content:"";display:block;width:min(320px,60%);height:1px;
+  background:var(--line);margin-bottom:clamp(1.6rem,4vw,2.6rem)}
+.case-end .btn--solid{background:var(--mist);color:var(--ink);border-color:var(--mist)}
+.case-end .btn--solid::before{background:var(--cream)}
+.case-end .btn--solid:hover{color:var(--brown);border-color:var(--cream)}
+@media(max-width:700px){
+  .case-end__cta .btn{width:100%;justify-content:center}
+}
 .next-project .display{transition:transform .8s var(--ease)}
 .next-project:hover .display{transform:translateY(-6px)}
 
@@ -939,4 +951,19 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .foot ul{justify-items:center}
   .foot .label{margin-bottom:.9rem}
   .foot__base{justify-content:center;text-align:center}
+}
+
+
+/* ---------- breadcrumbs ---------- */
+.crumbs{padding:.9rem var(--pad) 0;background:var(--cream)}
+.crumbs[hidden]{display:none}
+.crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;
+  font-size:var(--t-label);text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.crumbs li+li::before{content:"/";margin-right:.5rem;opacity:.5}
+.crumbs a{color:var(--muted)}
+.crumbs a:hover{color:var(--ink)}
+.crumbs [aria-current="page"]{color:var(--ink)}
+@media(max-width:700px){
+  .crumbs{padding-top:.7rem}
+  .crumbs ol{font-size:.62rem;letter-spacing:.12em;gap:.4rem}
 }

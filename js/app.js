@@ -8,6 +8,11 @@ window.contentReady.then(() => {
    APP — routing, rendering, motion
    ============================================================ */
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+/* On a generated page only one route's markup is present, so every render
+   below is a no-op when its container is not on this page. */
+const $q=sel=>{const e=document.querySelector(sel); return e|| new Proxy({},{
+  get:(_,k)=> k==='addEventListener' ? ()=>{} : (k==='innerHTML'||k==='textContent') ? '' : undefined,
+  set:()=>true });};
 const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const onPhone=window.matchMedia('(max-width:700px)');
 let curtainUp=reduce;   /* true once the loading sequence has cleared */
@@ -15,7 +20,15 @@ const counted=new WeakSet();
 let metricIO=null;
 let io=null;  /* scroll-reveal observer — declared here because renderCards() uses it on first paint */
 const brief=(cls,tag,note)=>`<div class="ph brief ${cls}" role="img" aria-label="Placeholder: ${note}"><span class="brief__in"><span class="label">${tag}</span><p>${note}</p></span></div>`;
-const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
+const F=(SEO.folders||{work:'work',services:'services',journal:'journal'});
+const B=window.BASE||'';
+/* every internal link is a real path, so the page exists for a crawler */
+const U=(...parts)=>B+'/'+parts.filter(Boolean).map(x=>String(x).replace(/^\/|\/$/g,'')).join('/')+(parts.length?'/':'');
+const HOME=B+'/';
+const ALT=(SEO.alt||{});
+/* alt text set in the editor wins; otherwise we fall back to something sensible */
+const altFor=(src,fallback='')=>String(ALT[src]||fallback||'').replace(/"/g,'&quot;');
+const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${window.asset(src)}" alt="${altFor(src,alt)}" loading="lazy" decoding="async">`;
 /* Every picture is chosen in the editor. These read the name stored on each
    record (e.g. "gigiA") and turn it into a real file path via images.json. */
 const imgPath=v=>{
@@ -46,7 +59,7 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
 })();
 
 /* ---- hero ---- */
-$('#heroWindows').innerHTML=`
+$q('#heroWindows').innerHTML=`
   <div class="phone-wrap rv">
     <span class="phone-cap">${(COPY.hero&&COPY.hero.filmCaption)||'In the feed — client film'}</span>
     <div class="phone-frame">
@@ -71,18 +84,18 @@ onPhone.addEventListener?onPhone.addEventListener('change',placeFilm):onPhone.ad
 /* the wall of work — real client stills, moving slowly */
 const WALL=[IMG.gigiA,IMG.caroA,IMG.graceA,IMG.hipA,IMG.simpleA,
             IMG.gigiB,IMG.caroB,IMG.graceB,IMG.hipB,IMG.simpleB].filter(Boolean);
-$('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
+$q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
 
 const PH_GRID=[IMG.gigiA,IMG.caroA,IMG.graceA,IMG.hipA].filter(Boolean);
-if($('#phGrid'))$('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client content')).join('');
+if($('#phGrid'))$q('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client content')).join('');
 
 /* art-directed placeholders — what these frames should hold */
-$('#introMedia').innerHTML=brief('r45','Placeholder — portrait 4:5',
+$q('#introMedia').innerHTML=brief('r45','Placeholder — portrait 4:5',
   'A founder shot through glass, so the reflection sits over her. Daylight, no studio lighting, mid-conversation rather than posed.');
 
 /* ---- home: work rows ---- */
-$('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
-  <a class="work-row" href="#/case/${c.slug}">
+$q('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
+  <a class="work-row" href="${U(F.work,c.slug)}">
     <span class="work-row__top">
       <span class="work-row__name display">${c.client}</span>
       <span class="work-row__no">${String(i+1).padStart(2,'0')} / ${c.metrics[0].fig}</span>
@@ -101,7 +114,7 @@ $('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
 
 /* ---- home: metrics ---- */
 const metricHTML=m=>`<div class="metric rv"><span class="metric__rule"></span><span class="metric__fig" data-fig="${m.fig}">${m.fig}</span><span class="metric__lab">${m.lab}</span></div>`;
-$('#homeMetrics').innerHTML=HOME_METRICS.map(metricHTML).join('');
+$q('#homeMetrics').innerHTML=HOME_METRICS.map(metricHTML).join('');
 
 /* ---- services (home preview + full) ---- */
 const svcHTML=(s,i,full)=>`
@@ -114,10 +127,10 @@ const svcHTML=(s,i,full)=>`
     </button>
     <div class="svc__pn" id="pn-${s.slug}${full?'-f':''}"><div class="svc__pn-in"><p>${s.text}</p></div></div>
   </div>`;
-$('#svcIndex').innerHTML=SERVICES.map((s,i)=>
+$q('#svcIndex').innerHTML=SERVICES.map((s,i)=>
   `<button data-go="svc-${s.slug}"><span class="svc-index__n">${String(i+1).padStart(2,'0')}</span>${s.title}</button>`).join('');
 
-$('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
+$q('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
   const d=SERVICE_DETAIL[s.slug]||{caps:[],line:''};
   const c=d.proof&&CASES.find(x=>x.slug===d.proof);
   return `
@@ -127,7 +140,8 @@ $('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
       <h2 class="display">${d.line}</h2>
       <p class="svc-block__note">${s.text}</p>
       <ul class="caps">${d.caps.map(c2=>`<li>${c2}</li>`).join('')}</ul>
-      ${c?`<a class="svc-block__proof" href="#/case/${c.slug}">
+      <p style="margin-top:1.4rem"><a class="card__cta" href="${U(F.services,s.slug)}">More on ${s.title.toLowerCase()} <span class="arrow" aria-hidden="true">→</span></a></p>
+      ${c?`<a class="svc-block__proof" href="${U(F.work,c.slug)}">
             <span class="label">Seen in practice</span>
             <span class="display md">${c.client}</span>
             <span class="svc-block__fig">${c.metrics[0].fig} ${c.metrics[0].lab}</span>
@@ -146,12 +160,12 @@ function toProof(){
 [$('#scrollCue'),$('#heroCta')].forEach(b=>b&&b.addEventListener('click',toProof));
 
 /* the index jumps rather than links, so the router is left alone */
-$('#svcIndex').addEventListener('click',e=>{
+$q('#svcIndex').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b)return;
   const t=document.getElementById(b.dataset.go);
   if(t)window.scrollTo({top:window.scrollY+t.getBoundingClientRect().top-navH()-16,behavior:reduce?'auto':'smooth'});
 });
-$('#faq').innerHTML=FAQ.map((f,i)=>svcHTML({slug:'faq'+i,title:f.q,text:f.text},i,false)).join('');
+$q('#faq').innerHTML=FAQ.map((f,i)=>svcHTML({slug:'faq'+i,title:f.q,text:f.text},i,false)).join('');
 document.addEventListener('click',e=>{
   const hd=e.target.closest('.svc__hd'); if(!hd) return;
   const box=hd.parentElement, group=box.parentElement;
@@ -168,16 +182,16 @@ document.addEventListener('click',e=>{
 const person=(p,i)=>`<div class="rv">${pic(imgPath(p.img)||IMG.team1,'r45','Portrait')}
   <h3>${p.name}</h3><div class="role">${p.role}</div><p>${p.bio}</p></div>`;
 /* at-a-glance facts */
-$('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+$q('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
 
 /* the window wall — four frames at different heights, like glazing */
-$('#collage').innerHTML=[
+$q('#collage').innerHTML=[
   [IMG.studio,'c1','The studio'],[IMG.team4,'c2','In the room'],
   [IMG.team2,'c3','Filming'],[IMG.founder1,'c4','Founders']
 ].map(([src,cls,alt])=>`<figure class="${cls}">${pic(src,'',alt)}<figcaption>${alt}</figcaption></figure>`).join('');
 
 /* three people, shown as equals — no hover mechanic to prop up a short list */
-$('#people').innerHTML=TEAM.people.map(p=>`
+$q('#people').innerHTML=TEAM.people.map(p=>`
   <article class="person rv">
     <div class="person__img">${imgPath(p.img)?pic(imgPath(p.img),'r45',p.name):ph('r45','Replace — portrait')}</div>
     <h3 class="display">${p.name}</h3>
@@ -187,26 +201,41 @@ $('#people').innerHTML=TEAM.people.map(p=>`
     <div class="person__leads"><span class="label">Leads</span> ${p.leads.join(' · ')}</div>
   </article>`).join('');
 
-$('#values').innerHTML=VALUES.map((v,i)=>`
+$q('#values').innerHTML=VALUES.map((v,i)=>`
   <div class="value rv"><span class="label">${String(i+1).padStart(2,'0')}</span>
   <h3 class="display">${v.t}</h3><p>${v.p}</p></div>`).join('');
 
 /* ---- careers ---- */
-$('#vacancies').innerHTML=VACANCIES.length?VACANCIES.map(v=>`
+$q('#vacancies').innerHTML=VACANCIES.length?VACANCIES.map(v=>`
   <div class="vac rv"><div><h3 class="display">${v.role}</h3>
   <p style="color:var(--body-2);margin:.6rem 0 0;max-width:52ch;font-size:.92rem">${v.desc}</p>
   <p class="label">${v.location} — ${v.type}</p></div>
-  <a class="btn" href="#/contact"><span>Apply</span><span class="arrow" aria-hidden="true">→</span></a></div>`).join('')
-  :`<div class="empty"><p class="display lg">No open roles right now.</p><p style="color:var(--body-2);margin-top:.8rem">We still read every open application — tell us what you'd want to do here.</p><p style="margin-top:1.6rem"><a class="btn" href="#/contact"><span>Send one anyway</span><span class="arrow" aria-hidden="true">→</span></a></p></div>`;
+  <a class="btn" href="${U('contact')}"><span>Apply</span><span class="arrow" aria-hidden="true">→</span></a></div>`).join('')
+  :`<div class="empty"><p class="display lg">No open roles right now.</p><p style="color:var(--body-2);margin-top:.8rem">We still read every open application — tell us what you'd want to do here.</p><p style="margin-top:1.6rem"><a class="btn" href="${U('contact')}"><span>Send one anyway</span><span class="arrow" aria-hidden="true">→</span></a></p></div>`;
 
 /* ---- work index ---- */
+const WP=(COPY.workPage||{});
 const allServices=[...new Set(CASES.flatMap(c=>c.services))];
-$('#workCount').textContent=`${CASES.length} case studies`;
-$('#filters').innerHTML=['All',...allServices].map((f,i)=>`<button aria-pressed="${i===0}" data-f="${f}">${f}</button>`).join('');
-function renderCards(filter='All'){
-  const list=CASES.filter(c=>filter==='All'||c.services.includes(filter));
-  $('#workCards').innerHTML=list.map(c=>`
-    <a class="card rv" href="#/case/${c.slug}">
+const ALL_LABEL=WP.allLabel||'All';
+$q('#workCount').textContent=`${CASES.length} ${WP.countSuffix||'case studies'}`;
+
+/* The filter bar. If filters are set in the editor those are used, in that
+   order; otherwise one button per service found on the case studies. Each
+   filter matches a case study when any of its comma-separated terms appears
+   in that study's Services. */
+const FILTERS = (Array.isArray(WP.filters) && WP.filters.length)
+  ? WP.filters.filter(f => f && (f.label || f.match))
+              .map(f => ({label: f.label || f.match, match: (f.match || f.label || '')
+                                 .split(',').map(x => x.trim()).filter(Boolean)}))
+  : allServices.map(sv => ({label: sv, match: [sv]}));
+
+$q('#filters').innerHTML = [{label:ALL_LABEL, match:null}, ...FILTERS]
+  .map((f,i) => `<button aria-pressed="${i===0}" data-i="${i-1}">${f.label}</button>`).join('');
+function renderCards(index){
+  const f = (index==null||index<0) ? null : FILTERS[index];
+  const list = !f ? CASES : CASES.filter(c => f.match.some(m => c.services.includes(m)));
+  $q('#workCards').innerHTML=list.map(c=>`
+    <a class="card rv" href="${U(F.work,c.slug)}">
       <span class="card__frame">
         ${caseImg(c.slug).card?pic(caseImg(c.slug).card,'r43',c.client.replace(/&amp;/g,'and')):ph('r43','Replace — hero 4:3')}
         <span class="card__tag"><b>${c.metrics[0].fig}</b><span>${c.metrics[0].lab}</span></span>
@@ -217,20 +246,20 @@ function renderCards(filter='All'){
       </span>
       <span class="card__desc">${c.desc}</span>
       <span class="card__tags">${c.services.slice(0,3).map(x=>`<i>${x}</i>`).join('')}</span>
-      <span class="card__cta">View case study <span class="arrow" aria-hidden="true">→</span></span>
+      <span class="card__cta">${WP.viewLabel||'View case study'} <span class="arrow" aria-hidden="true">→</span></span>
     </a>`).join('');
   observeReveals();
 }
 renderCards();
-$('#filters').addEventListener('click',e=>{
+$q('#filters').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   $$('#filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));
-  renderCards(b.dataset.f);
+  renderCards(Number(b.dataset.i));
 });
 
 /* ---- journal ---- */
 const feat=JOURNAL.find(a=>a.featured)||JOURNAL[0];
-$('#jrnFeature').innerHTML=`<a class="feature rv" href="#/journal/${feat.slug}">
+$q('#jrnFeature').innerHTML=`<a class="feature rv" href="${U(F.journal,feat.slug)}">
   <span class="jrn__frame">${jrnImg(feat)?pic(jrnImg(feat),'r32',feat.title):ph('r32','Replace — journal image')}</span>
   <span><span class="label">${(COPY.journalPage&&COPY.journalPage.featuredPrefix)||'Featured'} — ${feat.category}</span>
   <h2 class="display lg" style="margin:1rem 0 .8rem">${feat.title}</h2>
@@ -238,10 +267,10 @@ $('#jrnFeature').innerHTML=`<a class="feature rv" href="#/journal/${feat.slug}">
   <span class="label" style="display:block;margin-top:1.4rem">${feat.date}</span>
   <span class="card__cta" style="padding-top:1rem">${(COPY.journalPage&&COPY.journalPage.readMore)||'Read the piece'} <span class="arrow" aria-hidden="true">→</span></span></span></a>`;
 const cats=[...new Set(JOURNAL.map(a=>a.category))];
-$('#jrnFilters').innerHTML=['All',...cats].map((f,i)=>`<button aria-pressed="${i===0}" data-f="${f}">${f}</button>`).join('');
+$q('#jrnFilters').innerHTML=['All',...cats].map((f,i)=>`<button aria-pressed="${i===0}" data-f="${f}">${f}</button>`).join('');
 function renderJournal(filter='All'){
-  $('#jrnGrid').innerHTML=JOURNAL.filter(a=>!a.featured&&(filter==='All'||a.category===filter)).map(a=>`
-    <a class="rv" href="#/journal/${a.slug}">
+  $q('#jrnGrid').innerHTML=JOURNAL.filter(a=>!a.featured&&(filter==='All'||a.category===filter)).map(a=>`
+    <a class="rv" href="${U(F.journal,a.slug)}">
       <span class="jrn__frame">${jrnImg(a)?pic(jrnImg(a),'r32',a.title):ph('r32','Replace — journal image')}</span>
       <span class="jrn__meta"><span class="label">${a.category}</span><span class="label">${a.date}</span></span>
       <h3>${a.title}</h3>
@@ -251,13 +280,14 @@ function renderJournal(filter='All'){
   observeReveals();
 }
 renderJournal();
-$('#jrnFilters').addEventListener('click',e=>{
+$q('#jrnFilters').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   $$('#jrnFilters button').forEach(x=>x.setAttribute('aria-pressed',x===b));
   renderJournal(b.dataset.f);
 });
 
 /* ---- case study template ---- */
+const CE = (COPY.casePage||{});
 function renderCase(slug){
   const c=CASES.find(x=>x.slug===slug)||CASES[0];
   const next=CASES[(CASES.indexOf(c)+1)%CASES.length];
@@ -279,9 +309,9 @@ function renderCase(slug){
       ${video?'<span class="cs-feed__badge">Video</span>':''}
     </span>`;
 
-  $('#caseRoot').innerHTML=`
+  $q('#caseRoot').innerHTML=`
   <div class="wrap sec cs-hero">
-    <div class="sill"><a class="label" href="#/work" style="color:var(--fg)">← All work</a><span class="label">${c.period}</span></div>
+    <div class="sill"><a class="label" href="${U(F.work)}" style="color:var(--fg)">← All work</a><span class="label">${c.period}</span></div>
     <div class="cs-top">
       <div class="rv">
         <h1 class="display xl">${c.client}</h1>
@@ -324,11 +354,17 @@ function renderCase(slug){
     </div>
   </div></section>
 
-  <a class="next-project" href="#/case/${next.slug}">
-    <span class="label" style="color:var(--muted)">Next project</span>
-    <span class="display xl" style="display:block;margin-top:1rem">${next.client}</span>
-    <span class="label" style="display:block;margin-top:1.2rem;color:var(--muted)">${next.statement}</span>
-  </a>`;
+  <div class="case-end">
+    <a class="next-project" href="${U(F.work,next.slug)}">
+      <span class="label" style="color:var(--muted)">${CE.nextLabel||'Next project'}</span>
+      <span class="display xl" style="display:block;margin-top:1rem">${next.client}</span>
+      <span class="label" style="display:block;margin-top:1.2rem;color:var(--muted)">${next.statement}</span>
+    </a>
+    <div class="case-end__cta">
+      <span class="label">${CE.ctaLine||'Or start one of your own'}</span>
+      <a class="btn btn--solid" href="${U('contact')}"><span>${CE.ctaButton||'Get in touch'}</span><span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>`;
   return c;
 }
 
@@ -341,9 +377,9 @@ function renderArticle(slug){
     if(p.startsWith('H:'))return `<h3>${p.slice(2)}</h3>`;
     return `<p>${p}</p>`;
   }).join('');
-  $('#articleRoot').innerHTML=`
+  $q('#articleRoot').innerHTML=`
   <div class="wrap sec">
-    <div class="sill"><a class="label" href="#/journal" style="color:var(--ink)">← Journal</a><span class="label">${a.category}</span></div>
+    <div class="sill"><a class="label" href="${U(F.journal)}" style="color:var(--ink)">← Journal</a><span class="label">${a.category}</span></div>
     <h1 class="display xl" style="max-width:18ch">${a.title}</h1>
     <p class="label" style="margin-top:1.6rem">${a.author} — ${a.date}</p>
     <div style="margin-top:clamp(2rem,4vw,3rem)" class="rv-pane">${jrnImg(a)?pic(jrnImg(a),'r169',a.title):ph('r169','Replace — article image')}</div>
@@ -353,7 +389,7 @@ function renderArticle(slug){
   </div>
   <section class="room room-sage"><div class="wrap sec">
     <div class="sill"><span class="label">Related reading</span></div>
-    <div class="jrn">${rel.map(r=>`<a href="#/journal/${r.slug}">
+    <div class="jrn">${rel.map(r=>`<a href="${U(F.journal,r.slug)}">
       <span class="jrn__frame">${jrnImg(r)?pic(jrnImg(r),'r32',r.title):ph('r32','Replace — journal image')}</span>
       <span class="jrn__meta"><span class="label">${r.category}</span><span class="label">${r.date}</span></span>
       <h3>${r.title}</h3><p>${r.excerpt}</p>
@@ -517,28 +553,190 @@ const META={
   careers:['Careers — come inside','Roles, freelance collaboration and open applications at Glasshouse, a social media agency in London.'],
   contact:['Contact — the door\u2019s open','Tell us about your brand, your brief, or the feeling that your socials could be doing more.']
 };
-function setMeta(t,d){document.title=t;const m=document.querySelector('meta[name=description]');if(m)m.setAttribute('content',d);}
+/* ============================================================
+   ROUTING — real paths, so every page is its own URL
+   ------------------------------------------------------------
+   /                       home
+   /work/                  work index
+   /work/<slug>/           case study
+   /services/              services index
+   /services/<slug>/       one service
+   /journal/               journal index
+   /journal/<slug>/        article
+   /about/ /careers/ /contact/
+   The build step writes a real HTML file for each of these, so a crawler
+   (and anyone landing directly) gets a complete page before JS runs.
+   ============================================================ */
+const SITE=(SEO.site||{});
+const PAGES=(SEO.pages||[]);
+const pageByKey=k=>PAGES.find(p=>p.key===k)||{};
+const strip=t=>String(t==null?'':t).replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
+/* search engines cut descriptions around 155 characters */
+const clamp155=t=>{t=strip(t); if(t.length<=155) return t;
+  const cut=t.slice(0,155); return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:\u2014-]$/,'')+'\u2026';};
+const applyTitle=t=>{
+  const tpl=SITE.titleTemplate||'%s';
+  return (tpl.includes('%s') && !t.endsWith('Glasshouse')) ? tpl.replace('%s',t) : t;
+};
+
+function head(name, attr, key, value){
+  let el=document.head.querySelector(`${name}[${attr}="${key}"]`);
+  if(value==null){ if(el) el.remove(); return; }
+  if(!el){ el=document.createElement(name); el.setAttribute(attr,key); document.head.appendChild(el); }
+  el.setAttribute(name==='link'?'href':'content', value);
+}
+
+function setSEO(o){
+  document.title = o.title;
+  head('meta','name','description', o.description||'');
+  head('meta','name','robots', o.robots||'index, follow');
+  head('link','rel','canonical', o.canonical);
+  head('meta','property','og:title', o.title);
+  head('meta','property','og:description', o.description||'');
+  head('meta','property','og:url', o.canonical);
+  head('meta','name','twitter:card','summary_large_image');
+  head('link','rel','prev', o.prev||null);
+  head('link','rel','next', o.next||null);
+}
+
+const absolute=path=>{
+  const d=(SITE.domain||'').replace(/\/$/,'');
+  return d ? d + path : path;
+};
+
+/* breadcrumbs: built from the route, editable labels come from seo.json */
+function crumbs(list){
+  const bar=$('#crumbs');
+  if(!bar) return;
+  if(!list || list.length<2){ bar.innerHTML=''; bar.hidden=true; return; }
+  bar.hidden=false;
+  bar.innerHTML=`<ol>${list.map((c,i)=>
+    i===list.length-1
+      ? `<li aria-current="page">${c.name}</li>`
+      : `<li><a href="${c.path}">${c.name}</a></li>`).join('')}</ol>`;
+  const ld=list.map((c,i)=>({"@type":"ListItem",position:i+1,name:strip(c.name),item:absolute(c.path)}));
+  jsonld('breadcrumbs', (SEO.schema||{}).breadcrumbs===false ? null :
+    {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:ld});
+}
+
+/* one <script type="application/ld+json"> per purpose, replaced on each route */
+function jsonld(id, obj){
+  let el=document.getElementById('ld-'+id);
+  if(!obj){ if(el) el.remove(); return; }
+  if(!el){ el=document.createElement('script'); el.type='application/ld+json'; el.id='ld-'+id; document.head.appendChild(el); }
+  el.textContent=JSON.stringify(obj);
+}
+
+function parsePath(){
+  let p=location.pathname;
+  if(B && p.startsWith(B)) p=p.slice(B.length);
+  p=p.replace(/^\/|\/$/g,'');
+  if(!p) return {name:'home',seg:'',slug:''};
+  const [seg,slug]=p.split('/');
+  if(seg===F.work)     return {name: slug?'case':'work', seg, slug};
+  if(seg===F.services) return {name: slug?'service':'services', seg, slug};
+  if(seg===F.journal)  return {name: slug?'article':'journal', seg, slug};
+  if(['about','careers','contact'].includes(seg)) return {name:seg, seg, slug:''};
+  return {name:'home',seg:'',slug:''};
+}
 
 function route(){
-  const h=(location.hash||'#/').replace(/^#\/?/,'');
-  const [seg,slug]=h.split('/');
-  let name = seg===''?'home':seg;
-  if(seg==='case'){name='case';const c=renderCase(slug);setMeta(`${c.client.replace(/&amp;/g,'&')} — case study | Glasshouse`,c.desc.replace(/&amp;/g,'&'));}
-  else if(seg==='journal'&&slug){name='article';const a=renderArticle(slug);setMeta(`${a.title} | Glasshouse Journal`,a.excerpt);}
-  else if(META[name])setMeta(META[name][0],META[name][1]);
+  const {name:raw, slug}=parsePath();
+  let name=raw, seo={}, trail=[{name:(pageByKey('home').breadcrumb)||'Home', path:HOME}];
+  const path=location.pathname.replace(B,'')||'/';
+
+  const fromPage=key=>{
+    const pg=pageByKey(key);
+    return {title:applyTitle(pg.title||document.title), description:pg.description||SITE.defaultDescription,
+            robots:pg.robots||'index, follow', canonical:pg.canonical||absolute(B+ (pg.path||path)),
+            prev:pg.prev, next:pg.next};
+  };
+
+  if(name==='case'){
+    const c=renderCase(slug);
+    if(!c){ name='work'; }
+    else {
+      seo={title:applyTitle(c.seoTitle||`${strip(c.client)} — case study`),
+           description:c.seoDescription||clamp155(c.desc), robots:c.robots||'index, follow',
+           canonical:c.canonical||absolute(U(F.work,c.slug)), prev:c.prev, next:c.next};
+      trail.push({name:pageByKey('work').breadcrumb||'Work', path:U(F.work)},{name:strip(c.client), path:U(F.work,c.slug)});
+      caseSchema(c);
+    }
+  }
+  else if(name==='article'){
+    const a=renderArticle(slug);
+    seo={title:applyTitle(a.seoTitle||a.title), description:a.seoDescription||clamp155(a.excerpt),
+         robots:a.robots||'index, follow', canonical:a.canonical||absolute(U(F.journal,a.slug)),
+         prev:a.prev, next:a.next};
+    trail.push({name:pageByKey('journal').breadcrumb||'Journal', path:U(F.journal)},{name:strip(a.title), path:U(F.journal,a.slug)});
+    articleSchema(a);
+  }
+  else if(name==='service'){
+    const sv=renderService(slug);
+    if(!sv){ name='services'; }
+    else {
+      seo={title:applyTitle(sv.seoTitle||sv.title), description:sv.seoDescription||clamp155(sv.text),
+           robots:sv.robots||'index, follow', canonical:sv.canonical||absolute(U(F.services,sv.slug)),
+           prev:sv.prev, next:sv.next};
+      trail.push({name:pageByKey('services').breadcrumb||'Services', path:U(F.services)},{name:strip(sv.title), path:U(F.services,sv.slug)});
+      serviceSchema(sv);
+    }
+  }
+  if(!seo.title){
+    seo=fromPage(name);
+    const pg=pageByKey(name);
+    if(name!=='home') trail.push({name:pg.breadcrumb||pg.name||name, path:B+(pg.path||'/')});
+    jsonld('page', null);
+  }
+  setSEO(seo);
+  crumbs(trail);
+  faqSchema(name);
+
   if(!$(`.route[data-route="${name}"]`))name='home';
   $$('.route').forEach(r=>r.classList.toggle('active',r.dataset.route===name));
+  const here=location.pathname.replace(/\/$/,'');
   $$('.nav-links a').forEach(a=>{
-    const target=a.getAttribute('href').replace('#/','')||'home';
-    (target===name||(name==='case'&&target==='work')||(name==='article'&&target==='journal'))
-      ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current');
+    const t=a.getAttribute('href').replace(/\/$/,'');
+    const on = t===here
+      || (name==='case'    && t===U(F.work).replace(/\/$/,''))
+      || (name==='article' && t===U(F.journal).replace(/\/$/,''))
+      || (name==='service' && t===U(F.services).replace(/\/$/,''));
+    on ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current');
   });
   closeMenu();
   window.scrollTo({top:0,behavior:'auto'});
   document.body.classList.remove('is-dark');
   requestAnimationFrame(()=>{observeReveals();updateInside();watchMetrics();activateRows();placeFilm();if(curtainUp)flushMetrics();});
 }
-window.addEventListener('hashchange',route);
+
+/* old #/ links keep working */
+(function legacy(){
+  const h=location.hash;
+  if(!/^#\//.test(h)) return;
+  const parts=h.replace(/^#\/?/,'').split('/');
+  const map={'':HOME,work:U(F.work),services:U(F.services),journal:U(F.journal),
+             about:U('about'),careers:U('careers'),contact:U('contact')};
+  let to = parts[0]==='case' ? U(F.work,parts[1])
+        : parts[0]==='journal'&&parts[1] ? U(F.journal,parts[1])
+        : map[parts[0]] || HOME;
+  history.replaceState(null,'',to);
+})();
+
+/* On a generated page each file holds only its own route, so links load
+   normally. In the un-built source they switch in place, as before. */
+const STATIC = document.documentElement.dataset.static === '1';
+if(!STATIC) document.addEventListener('click',e=>{
+  const a=e.target.closest('a');
+  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button!==0) return;
+  const href=a.getAttribute('href')||'';
+  if(a.target==='_blank'||/^(https?:|mailto:|tel:|#)/.test(href)) return;
+  if(a.origin && a.origin!==location.origin) return;
+  e.preventDefault();
+  if(a.pathname===location.pathname) return;
+  history.pushState(null,'',a.pathname);
+  route();
+});
+if(!STATIC) window.addEventListener('popstate',route);
 
 /* ---- mobile menu ---- */
 const menu=$('#menu'), toggle=$('#navToggle');
@@ -553,7 +751,7 @@ toggle.addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 
 /* ---- contact form (prototype) ---- */
-$('#contactForm').addEventListener('submit',e=>{
+$q('#contactForm').addEventListener('submit',e=>{
   e.preventDefault();
   const f=e.target, msg=$('#formMsg');
   const missing=['name','email','message'].filter(n=>!f[n].value.trim());
@@ -563,7 +761,6 @@ $('#contactForm').addEventListener('submit',e=>{
 });
 
 /* ---- go ---- */
-route();
 /* ============================================================
    Blocks that used to be hardcoded in index.html.
    They now render from content/copy.json so the editor owns them.
@@ -596,10 +793,136 @@ route();
   [['soInstagram','instagram'],['soTiktok','tiktok'],['soLinkedin','linkedin']].forEach(([id,key])=>{
     const a=$('#'+id); if(!a) return;
     if(so[key]){ a.href=so[key]; a.target='_blank'; a.rel='noopener'; }
-    else if(a.getAttribute('href')==='#/contact'){ a.closest('li')?.remove(); }
+    else if(/\/contact\/?$|^#\/contact$/.test(a.getAttribute('href')||'')){ a.closest('li')?.remove(); }
   });
 
   observeReveals();
 })();
+
+/* ============================================================
+   ONE SERVICE, ON ITS OWN PAGE  (/services/<slug>/)
+   ============================================================ */
+function renderService(slug){
+  const sv=SERVICES.find(x=>x.slug===slug);
+  if(!sv) return null;
+  const d=SERVICE_DETAIL[sv.slug]||{caps:[],line:''};
+  const c=d.proof&&CASES.find(x=>x.slug===d.proof);
+  const others=SERVICES.filter(x=>x.slug!==sv.slug);
+  $q('#serviceRoot').innerHTML=`
+  <div class="wrap sec">
+    <div class="sill"><span class="label">${COPY.servicesPage&&COPY.servicesPage.label||'Services'}</span><span class="label">${sv.title}</span></div>
+    <h1 class="display xl rv" style="max-width:16ch">${d.line||sv.title}</h1>
+    <div class="svc-top"><p class="lede rv d2">${sv.text}</p></div>
+  </div>
+  <div class="wrap sec--tight" style="padding-top:0">
+    <div class="grid">
+      <div style="grid-column:span 6" class="rv">
+        <h2 class="label">What it covers</h2>
+        <ul class="caps">${(d.caps||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+      <div style="grid-column:span 5/-1" class="rv d2">
+        ${imgPath(d.img)?pic(imgPath(d.img),'r45',sv.title):ph('r45','Replace — service image 4:5')}
+      </div>
+    </div>
+  </div>
+  ${c?`<section class="room room-sage"><div class="wrap sec">
+    <div class="sill"><span class="label">Seen in practice</span></div>
+    <a class="svc-block__proof" href="${U(F.work,c.slug)}">
+      <span class="display md">${c.client}</span>
+      <span class="svc-block__fig">${c.metrics[0].fig} ${c.metrics[0].lab}</span>
+    </a>
+  </div></section>`:''}
+  <div class="wrap sec">
+    <div class="sill"><span class="label">Other services</span></div>
+    <ul class="caps">${others.map(o=>`<li><a href="${U(F.services,o.slug)}">${o.title}</a></li>`).join('')}</ul>
+  </div>
+  <section class="room room-brown"><div class="wrap cta">
+    <h2 class="display xl rv">${COPY.servicesPage&&COPY.servicesPage.ctaHeading||'Tell us what you’re building.'}</h2>
+    <a class="btn btn--solid" href="${U('contact')}"><span>${COPY.servicesPage&&COPY.servicesPage.ctaButton||'Let’s talk'}</span><span class="arrow" aria-hidden="true">→</span></a>
+  </div></section>`;
+  return sv;
+}
+
+/* ============================================================
+   STRUCTURED DATA
+   Each block is switched on or off in the editor under SEO.
+   ============================================================ */
+const SCH=(SEO.schema||{});
+const ORG=(SEO.organisation||{});
+
+function orgNode(){
+  const o={"@context":"https://schema.org","@type":ORG.type||"ProfessionalService",
+    name:ORG.name||'Glasshouse', url:absolute(HOME)};
+  if(ORG.legalName) o.legalName=ORG.legalName;
+  if(ORG.description) o.description=ORG.description;
+  if(ORG.email) o.email=ORG.email;
+  if(ORG.telephone) o.telephone=ORG.telephone;
+  if(ORG.priceRange) o.priceRange=ORG.priceRange;
+  if(ORG.foundingDate) o.foundingDate=ORG.foundingDate;
+  const addr={};
+  if(ORG.street) addr.streetAddress=ORG.street;
+  if(ORG.city) addr.addressLocality=ORG.city;
+  if(ORG.region) addr.addressRegion=ORG.region;
+  if(ORG.postcode) addr.postalCode=ORG.postcode;
+  if(ORG.country) addr.addressCountry=ORG.country;
+  if(Object.keys(addr).length){ addr["@type"]="PostalAddress"; o.address=addr; }
+  const same=Object.values(COPY.social||{}).filter(v=>/^https?:/.test(v));
+  if(same.length) o.sameAs=same;
+  const img=imgPath((COPY.careersPage||{}).image)||'';
+  if(img) o.image=absolute(B+'/'+img.replace(/^\//,''));
+  return o;
+}
+jsonld('org', SCH.organisation===false ? null : orgNode());
+
+function serviceSchema(sv){
+  if(SCH.services===false){ jsonld('page',null); return; }
+  const d=SERVICE_DETAIL[sv.slug]||{};
+  const node={"@context":"https://schema.org","@type":"Service",
+    name:strip(sv.title), description:strip(d.line||sv.text),
+    serviceType:strip(sv.title), url:absolute(U(F.services,sv.slug)),
+    provider:{"@type":ORG.type||"ProfessionalService", name:ORG.name||'Glasshouse', url:absolute(HOME)},
+    areaServed:ORG.city||'London'};
+  if((d.caps||[]).length) node.hasOfferCatalog={"@type":"OfferCatalog",name:strip(sv.title),
+    itemListElement:d.caps.map(c=>({"@type":"Offer",itemOffered:{"@type":"Service",name:strip(c)}}))};
+  if(SCH.product){
+    node["@type"]=["Service","Product"];
+    node.offers={"@type":"Offer",priceCurrency:SCH.productCurrency||'GBP',
+                 availability:"https://schema.org/InStock",url:absolute(U(F.services,sv.slug))};
+  }
+  jsonld('page', node);
+}
+
+function caseSchema(c){
+  if(SCH.caseStudies===false){ jsonld('page',null); return; }
+  const img=caseImg(c.slug).card;
+  jsonld('page',{"@context":"https://schema.org","@type":"CreativeWork",
+    name:strip(c.client)+' — case study', headline:strip(c.statement||c.client),
+    description:strip(c.desc), url:absolute(U(F.work,c.slug)),
+    about:{"@type":"Organization",name:strip(c.client)},
+    image: img?absolute(B+'/'+img.replace(/^\//,'')):undefined,
+    creator:{"@type":ORG.type||"ProfessionalService",name:ORG.name||'Glasshouse',url:absolute(HOME)},
+    keywords:(c.services||[]).map(strip).join(', ')});
+}
+
+function articleSchema(a){
+  if(SCH.articles===false){ jsonld('page',null); return; }
+  const img=jrnImg(a);
+  jsonld('page',{"@context":"https://schema.org","@type":"Article",
+    headline:strip(a.title), description:strip(a.excerpt),
+    url:absolute(U(F.journal,a.slug)), datePublished:a.date,
+    articleSection:strip(a.category),
+    image: img?absolute(B+'/'+img.replace(/^\//,'')):undefined,
+    author:{"@type":"Organization",name:strip(a.author||ORG.name||'Glasshouse')},
+    publisher:{"@type":"Organization",name:ORG.name||'Glasshouse'}});
+}
+
+function faqSchema(name){
+  const on = SCH.faq!==false && name==='services' && Array.isArray(FAQ) && FAQ.length;
+  jsonld('faq', on ? {"@context":"https://schema.org","@type":"FAQPage",
+    mainEntity:FAQ.map(f=>({"@type":"Question",name:strip(f.q),
+      acceptedAnswer:{"@type":"Answer",text:strip(f.text)}}))} : null);
+}
+
+route();
 
 });

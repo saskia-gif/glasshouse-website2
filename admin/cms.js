@@ -71,7 +71,8 @@ async function openCollection(id){
   try {
     const {text, sha} = await getFile(c.file);
     state.data = JSON.parse(text); state.sha = sha;
-    if(c.shape === 'map' || c.shape === 'image' || c.shape === 'keyed' || hasImageField(c.fields)) await ensureImages();
+    if(c.shape === 'map' || c.shape === 'image' || c.shape === 'keyed' || hasImageField(c.fields)
+        || (c.fields||[]).some(f=>f.type==='altmap')) await ensureImages();
     if(c.shape === 'map') await loadUsage();
     render(c);
   } catch(err){
@@ -114,6 +115,7 @@ function render(c){
   if(c.hint) p.append(el('p','muted',c.hint));
 
   if(c.shape === 'map')       renderMap(p);
+  else if(c.fields && c.fields.length===1 && c.fields[0].type==='altmap') renderAltMap(p, c.fields[0]);
   else if(c.shape === 'keyed')renderKeyed(p, c);
   else if(c.shape === 'list') renderList(p, c, listOf(state.data));
   else                        renderGroup(p, c.fields, state.data);
@@ -150,6 +152,15 @@ function field(f, obj){
   }
   if(f.type === 'image'){
     wrap.append(imagePicker(obj, f.key));
+    return wrap;
+  }
+  if(f.type === 'select'){
+    const sel = el('select');
+    (f.options||[]).forEach(o => sel.append(new Option(o, o)));
+    if(val && !(f.options||[]).includes(val)) sel.append(new Option(val, val));
+    sel.value = val || (f.options||[])[0] || '';
+    sel.onchange = () => { obj[f.key] = sel.value; markDirty(); };
+    wrap.append(sel);
     return wrap;
   }
   if(f.type === 'list'){
@@ -239,6 +250,31 @@ function renderList(parent, c, arr){
     box.append(add);
   };
   draw();
+  parent.append(box);
+}
+
+/* alt text, one row per picture in the library */
+function renderAltMap(parent, f){
+  if(!state.data[f.key]) state.data[f.key] = {};
+  const map = state.data[f.key];
+  const box = el('div','records');
+  const pics = state.media.filter(m => !isVideoPath(m.path));
+  if(!pics.length) box.append(note('No pictures found yet.',''));
+  pics.forEach(m => {
+    const row = el('div','map-row');
+    const img = el('img','thumb'); img.src = '../' + m.path; img.loading='lazy'; img.alt='';
+    row.append(img);
+    row.append(el('span','map-key', m.path.split('/').pop()));
+    const inp = el('input'); inp.type='text';
+    inp.placeholder = 'Describe this picture';
+    inp.value = map[m.path] || '';
+    inp.oninput = () => {
+      if(inp.value.trim()) map[m.path] = inp.value.trim(); else delete map[m.path];
+      markDirty();
+    };
+    row.append(inp);
+    box.append(row);
+  });
   parent.append(box);
 }
 

@@ -55,6 +55,15 @@ export const SCHEMA = [
       {key:'workPage', label:'Work page', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
         {key:'heading', label:'Heading', type:'text'},
+        {key:'allLabel', label:'First filter button', type:'text'},
+        {key:'filters', label:'Filter buttons', type:'list', of:'group', summary:'label',
+         help:'Add, remove and reorder the buttons on the Work page. Leave the whole list empty to build it automatically from the case studies.', fields:[
+          {key:'label', label:'Button text', type:'text'},
+          {key:'match', label:'Shows case studies with this service', type:'text',
+           help:'Must match the Services text on your case studies. Separate several with commas.'}
+        ]},
+        {key:'countSuffix', label:'Words after the count', type:'text', help:'e.g. \u201ccase studies\u201d'},
+        {key:'viewLabel', label:'Link text on each card', type:'text'},
         {key:'nextLabel', label:'Lower section label', type:'text'},
         {key:'nextHeading', label:'Lower section heading', type:'area'},
         {key:'nextButton', label:'Button', type:'text'}
@@ -92,6 +101,11 @@ export const SCHEMA = [
         {key:'valuesLabel', label:'Values label', type:'text'},
         {key:'ctaHeading', label:'Closing heading', type:'text'},
         {key:'ctaButton', label:'Closing button', type:'text'}
+      ]},
+      {key:'casePage', label:'Case study pages', type:'group', fields:[
+        {key:'nextLabel', label:'Label above the next project', type:'text'},
+        {key:'ctaLine', label:'Line above the button', type:'text'},
+        {key:'ctaButton', label:'Button', type:'text'}
       ]},
       {key:'journalPage', label:'Journal page', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
@@ -171,6 +185,12 @@ export const SCHEMA = [
         {key:'fig', label:'Figure', type:'text'},
         {key:'lab', label:'What it measures', type:'text'}
       ]},
+      {key:'seoTitle', label:'SEO — title tag', type:'text', help:'Blank uses the name above'},
+      {key:'seoDescription', label:'SEO — meta description', type:'area', help:'Blank uses the short description'},
+      {key:'robots', label:'SEO — robots', type:'select', options:['index, follow','noindex, follow','index, nofollow','noindex, nofollow']},
+      {key:'canonical', label:'SEO — canonical URL', type:'text', help:'Blank points at itself'},
+      {key:'prev', label:'SEO — rel=prev', type:'text'},
+      {key:'next', label:'SEO — rel=next', type:'text'},
       {key:'quote', label:'Client quote', type:'area'},
       {key:'quoteBy', label:'Quote attribution', type:'text'}
     ]
@@ -182,7 +202,13 @@ export const SCHEMA = [
     fields:[
       {key:'title', label:'Service', type:'text'},
       {key:'text', label:'Description', type:'area'},
-      {key:'slug', label:'URL slug', type:'text'}
+      {key:'slug', label:'URL slug', type:'text', help:'Becomes /services/<slug>/'},
+      {key:'seoTitle', label:'SEO — title tag', type:'text', help:'Blank uses the name above'},
+      {key:'seoDescription', label:'SEO — meta description', type:'area', help:'Blank uses the short description'},
+      {key:'robots', label:'SEO — robots', type:'select', options:['index, follow','noindex, follow','index, nofollow','noindex, nofollow']},
+      {key:'canonical', label:'SEO — canonical URL', type:'text', help:'Blank points at itself'},
+      {key:'prev', label:'SEO — rel=prev', type:'text'},
+      {key:'next', label:'SEO — rel=next', type:'text'}
     ]
   },
   {
@@ -198,6 +224,12 @@ export const SCHEMA = [
       {key:'featured', label:'Feature at the top', type:'bool'},
       {key:'img', label:'Image', type:'image'},
       {key:'excerpt', label:'Excerpt', type:'area'},
+      {key:'seoTitle', label:'SEO — title tag', type:'text', help:'Blank uses the name above'},
+      {key:'seoDescription', label:'SEO — meta description', type:'area', help:'Blank uses the short description'},
+      {key:'robots', label:'SEO — robots', type:'select', options:['index, follow','noindex, follow','index, nofollow','noindex, nofollow']},
+      {key:'canonical', label:'SEO — canonical URL', type:'text', help:'Blank points at itself'},
+      {key:'prev', label:'SEO — rel=prev', type:'text'},
+      {key:'next', label:'SEO — rel=next', type:'text'},
       {key:'body', label:'Article', type:'rich'}
     ]
   },
@@ -261,6 +293,99 @@ export const SCHEMA = [
       {key:'caps', label:'What it covers', type:'list', of:'text'},
       {key:'proof', label:'Case study slug', type:'text', help:'e.g. gigi-clothing'},
       {key:'img', label:'Image', type:'image'}
+    ]
+  },
+  {
+    id:'seopages', file:'content/seo.json', title:'SEO — pages',
+    hint:'Title, description and indexing for each main page. Case studies, services and journal posts carry their own SEO on their own records.',
+    shape:'object',
+    fields:[
+      {key:'pages', label:'Pages', type:'list', of:'group', summary:'name', fields:[
+        {key:'name', label:'Page', type:'text'},
+        {key:'path', label:'URL path', type:'text', help:'e.g. /services/ — keep the slashes'},
+        {key:'title', label:'Title tag', type:'text', help:'Aim for 50–60 characters'},
+        {key:'description', label:'Meta description', type:'area', help:'Aim for 140–155 characters'},
+        {key:'robots', label:'Robots', type:'select', options:['index, follow','noindex, follow','index, nofollow','noindex, nofollow']},
+        {key:'canonical', label:'Canonical URL', type:'text', help:'Leave blank to point at itself, which is almost always right'},
+        {key:'breadcrumb', label:'Breadcrumb label', type:'text'},
+        {key:'prev', label:'rel=prev URL', type:'text'},
+        {key:'next', label:'rel=next URL', type:'text'}
+      ]}
+    ]
+  },
+  {
+    id:'seosite', file:'content/seo.json', title:'SEO — site & schema',
+    hint:'Domain, folder names, business details and which structured data to output.',
+    shape:'object',
+    fields:[
+      {key:'site', label:'Site', type:'group', fields:[
+        {key:'domain', label:'Domain', type:'text', help:'e.g. https://theglasshouse.agency — no trailing slash'},
+        {key:'basePath', label:'Sub-folder', type:'text', help:'Blank for a domain root; /glasshouse-website2 on github.io'},
+        {key:'titleTemplate', label:'Title template', type:'text', help:'%s is the page title'},
+        {key:'defaultDescription', label:'Fallback description', type:'area'},
+        {key:'shareImage', label:'Share image', type:'image'}
+      ]},
+      {key:'folders', label:'Folder names', type:'group',
+       help:'Changes the URL of a whole section. Set up redirects before changing one.', fields:[
+        {key:'work', label:'Case studies live under', type:'text'},
+        {key:'services', label:'Services live under', type:'text'},
+        {key:'journal', label:'Journal lives under', type:'text'}
+      ]},
+      {key:'organisation', label:'Business details', type:'group',
+       help:'Used for the organisation structured data on every page.', fields:[
+        {key:'type', label:'Type', type:'select', options:['ProfessionalService','LocalBusiness','Organization','MarketingAgency']},
+        {key:'name', label:'Name', type:'text'},
+        {key:'legalName', label:'Registered name', type:'text'},
+        {key:'description', label:'Description', type:'area'},
+        {key:'email', label:'Email', type:'text'},
+        {key:'telephone', label:'Telephone', type:'text'},
+        {key:'street', label:'Street', type:'text'},
+        {key:'city', label:'City', type:'text'},
+        {key:'region', label:'Region', type:'text'},
+        {key:'postcode', label:'Postcode', type:'text'},
+        {key:'country', label:'Country code', type:'text', help:'e.g. GB'},
+        {key:'priceRange', label:'Price range', type:'text', help:'e.g. \u00a3\u00a3'},
+        {key:'foundingDate', label:'Founded', type:'text', help:'e.g. 2021'}
+      ]},
+      {key:'schema', label:'Structured data', type:'group', fields:[
+        {key:'organisation', label:'Business schema on every page', type:'bool'},
+        {key:'breadcrumbs', label:'Breadcrumb schema', type:'bool'},
+        {key:'services', label:'Service schema on service pages', type:'bool'},
+        {key:'caseStudies', label:'CreativeWork schema on case studies', type:'bool'},
+        {key:'articles', label:'Article schema on journal posts', type:'bool'},
+        {key:'faq', label:'FAQ schema on the services page', type:'bool'},
+        {key:'product', label:'Also mark services as Product', type:'bool',
+         help:'Off by default. You sell services, and Product markup on a non-product can be flagged as misleading.'},
+        {key:'productCurrency', label:'Product currency', type:'text'}
+      ]}
+    ]
+  },
+  {
+    id:'seoredirects', file:'content/seo.json', title:'SEO — redirects',
+    hint:'Point an old address at a new one. On GitHub Pages these are instant client-side redirects with a canonical, not true 301s \u2014 moving to Cloudflare Pages or Netlify would make them real 301s with no other change.',
+    shape:'object',
+    fields:[
+      {key:'redirects', label:'Redirects', type:'list', of:'group', summary:'from', fields:[
+        {key:'from', label:'Old path', type:'text', help:'e.g. /old-services/'},
+        {key:'to', label:'Goes to', type:'text', help:'e.g. /services/ or a full https:// address'},
+        {key:'note', label:'Why', type:'text'}
+      ]}
+    ]
+  },
+  {
+    id:'seoalt', file:'content/seo.json', title:'SEO — image alt text',
+    hint:'What each picture shows, for screen readers and image search. Written once per file and used everywhere that picture appears.',
+    shape:'object',
+    fields:[
+      {key:'alt', label:'Alt text by file', type:'altmap'}
+    ]
+  },
+  {
+    id:'seorobots', file:'content/seo.json', title:'SEO — robots.txt',
+    hint:'Served at /robots.txt. {{SITEMAP}} is replaced with the real sitemap address when the site builds.',
+    shape:'object',
+    fields:[
+      {key:'robotsTxt', label:'robots.txt', type:'rich'}
     ]
   },
   {

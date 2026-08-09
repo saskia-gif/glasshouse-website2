@@ -1,0 +1,129 @@
+{
+  "site": {
+    "domain": "https://saskia-gif.github.io",
+    "basePath": "/glasshouse-website2",
+    "titleTemplate": "%s | Glasshouse",
+    "defaultDescription": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story.",
+    "shareImage": "assets/img/logo-lockup.png",
+    "twitterHandle": ""
+  },
+  "folders": {
+    "work": "work",
+    "services": "services",
+    "journal": "journal"
+  },
+  "organisation": {
+    "type": "ProfessionalService",
+    "name": "Glasshouse",
+    "legalName": "",
+    "description": "Social-first creative agency in London specialising in social media management, strategy, content creation and influencer campaigns.",
+    "email": "hello@theglasshouse.agency",
+    "telephone": "",
+    "street": "",
+    "city": "London",
+    "region": "",
+    "postcode": "",
+    "country": "GB",
+    "priceRange": "",
+    "foundingDate": ""
+  },
+  "schema": {
+    "organisation": true,
+    "breadcrumbs": true,
+    "services": true,
+    "articles": true,
+    "caseStudies": true,
+    "faq": true,
+    "product": false,
+    "productCurrency": "GBP"
+  },
+  "pages": [
+    {
+      "key": "home",
+      "path": "/",
+      "name": "Home",
+      "title": "Glasshouse — social media agency, London",
+      "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Home"
+    },
+    {
+      "key": "work",
+      "path": "/work/",
+      "name": "Work",
+      "title": "Our work — social media case studies",
+      "description": "Seven case studies from a London social media agency: strategy, content, community and creator campaigns, with the numbers attached.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Work"
+    },
+    {
+      "key": "services",
+      "path": "/services/",
+      "name": "Services",
+      "title": "Social media services — London",
+      "description": "Social media management, strategy, content creation, creative campaigns, community management, influencer campaigns and paid social.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Services"
+    },
+    {
+      "key": "about",
+      "path": "/about/",
+      "name": "About",
+      "title": "About Glasshouse — a social-first agency in London",
+      "description": "A small London studio building communities rather than follower counts. Who you work with, how we work, and what we believe.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "About"
+    },
+    {
+      "key": "journal",
+      "path": "/journal/",
+      "name": "Journal",
+      "title": "Journal — social media insight",
+      "description": "Social media insights, trend reports, platform updates and campaign analysis from the Glasshouse team.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Journal"
+    },
+    {
+      "key": "careers",
+      "path": "/careers/",
+      "name": "Careers",
+      "title": "Careers at Glasshouse — social media jobs in London",
+      "description": "Open roles and freelance collaborations at a small, fast-moving social media agency in London.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Careers"
+    },
+    {
+      "key": "contact",
+      "path": "/contact/",
+      "name": "Contact",
+      "title": "Contact Glasshouse — social media agency, London",
+      "description": "Tell us about your brand, your brief, or the feeling that your socials could be doing more. We reply within two working days.",
+      "robots": "index, follow",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "breadcrumb": "Contact"
+    }
+  ],
+  "redirects": [],
+  "robotsTxt": "User-agent: *\nAllow: /\n\nSitemap: {{SITEMAP}}\n",
+  "alt": {}
+}

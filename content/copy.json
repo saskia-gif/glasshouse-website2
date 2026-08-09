@@ -61,7 +61,36 @@
     "heading": "Brands people wanted to be part of.",
     "nextLabel": "Yours next",
     "nextHeading": "Every one of these started with someone describing a feeling their socials weren't giving them.",
-    "nextButton": "Start a project"
+    "nextButton": "Start a project",
+    "allLabel": "All",
+    "countSuffix": "case studies",
+    "viewLabel": "View case study",
+    "filters": [
+      {
+        "label": "Social strategy",
+        "match": "Social strategy"
+      },
+      {
+        "label": "Content creation",
+        "match": "Content creation"
+      },
+      {
+        "label": "Social media management",
+        "match": "Social media management"
+      },
+      {
+        "label": "Creative campaigns",
+        "match": "Creative campaigns"
+      },
+      {
+        "label": "Influencer & creator campaigns",
+        "match": "Influencer &amp; creator campaigns"
+      },
+      {
+        "label": "Community management",
+        "match": "Community management"
+      }
+    ]
   },
   "servicesPage": {
     "label": "Services",
@@ -150,5 +179,10 @@
     "instagram": "https://www.instagram.com/theglasshouseagency/",
     "tiktok": "https://www.tiktok.com/@the.glasshouse.ag",
     "label": "Follow"
+  },
+  "casePage": {
+    "nextLabel": "Next project",
+    "ctaLine": "Or start one of your own",
+    "ctaButton": "Get in touch"
   }
 }

@@ -3,6 +3,12 @@
    Everything editable lives in /content as JSON. This file fetches
    it, then hands control to app.js. Nothing here needs editing.
    ============================================================ */
+/* Where the site lives. The build step rewrites this for the generated pages;
+   it stays '' when you preview locally. */
+window.BASE = (document.documentElement.dataset.base || '').replace(/\/$/,'');
+const asset = p => (!p || /^(https?:)?\/\//.test(p) || p.startsWith(window.BASE + '/')) ? p : window.BASE + '/' + p.replace(/^\//,'');
+window.asset = asset;
+
 const CONTENT_FILES = {
   SERVICES:       'services',
   SERVICE_DETAIL: 'service-detail',
@@ -15,13 +21,14 @@ const CONTENT_FILES = {
   VACANCIES:      'vacancies',
   HOME_METRICS:   'home-metrics',
   COPY:           'copy',
-  IMAGES:         'images'
+  IMAGES:         'images',
+  SEO:            'seo'
 };
 
 async function loadContent(){
   const entries = await Promise.all(
     Object.entries(CONTENT_FILES).map(async ([key, file]) => {
-      const res = await fetch(`content/${file}.json`, {cache:'no-cache'});
+      const res = await fetch(asset(`content/${file}.json`), {cache:'no-cache'});
       if(!res.ok) throw new Error(`content/${file}.json failed (${res.status})`);
       return [key, await res.json()];
     })
@@ -44,6 +51,7 @@ async function loadContent(){
     data[key]   = window[key];
   }
   window.COPY = data.COPY;
+  window.SEO  = data.SEO || {};
   return data;
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-base="">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +14,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ProfessionalService","name":"Glasshouse","description":"Social-first creative agency in London specialising in social media management, strategy, content creation and influencer campaigns.","areaServed":"London, United Kingdom","url":"https://theglasshouse.agency/","sameAs":["https://www.instagram.com/","https://www.tiktok.com/"]}
-</script>
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
@@ -51,32 +48,33 @@ window.addEventListener('error',function(){document.documentElement.classList.re
 
 <!-- NAV ----------------------------------------------------->
 <header class="nav">
-  <a class="brand" href="#/" aria-label="Glasshouse agency, home">
+  <a class="brand" href="/" aria-label="Glasshouse agency, home">
     <img src="assets/img/logo-wordmark.png" alt="Glasshouse">
   </a>
   <nav class="nav-links" aria-label="Primary">
-    <a href="#/">Home</a><a href="#/work">Work</a><a href="#/services">Services</a><a href="#/about">About</a>
-    <a href="#/journal">Journal</a><a href="#/careers">Careers</a>
+    <a href="/">Home</a><a href="/work/">Work</a><a href="/services/">Services</a><a href="/about/">About</a>
+    <a href="/journal/">Journal</a><a href="/careers/">Careers</a>
   </nav>
-  <a class="nav-cta" href="#/contact">Get in touch <span class="arrow" aria-hidden="true">→</span></a>
+  <a class="nav-cta" href="/contact/">Get in touch <span class="arrow" aria-hidden="true">→</span></a>
   <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="menu">Menu</button>
 </header>
 
 <div class="menu" id="menu">
   <div class="menu__door l"></div><div class="menu__door r"></div>
   <nav class="menu__inner" aria-label="Mobile">
-    <a href="#/">Home <small>01</small></a>
-    <a href="#/work">Work <small>02</small></a>
-    <a href="#/services">Services <small>03</small></a>
-    <a href="#/about">About <small>04</small></a>
-    <a href="#/journal">Journal <small>05</small></a>
-    <a href="#/careers">Careers <small>06</small></a>
-    <a href="#/contact">Contact <small>07</small></a>
+    <a href="/">Home <small>01</small></a>
+    <a href="/work/">Work <small>02</small></a>
+    <a href="/services/">Services <small>03</small></a>
+    <a href="/about/">About <small>04</small></a>
+    <a href="/journal/">Journal <small>05</small></a>
+    <a href="/careers/">Careers <small>06</small></a>
+    <a href="/contact/">Contact <small>07</small></a>
     <div class="menu__foot">London<br><a href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a></div>
   </nav>
 </div>
 
 <main id="main">
+<nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
 
 <!-- ============ HOME ============ -->
 <section class="route" data-route="home">
@@ -106,9 +104,9 @@ window.addEventListener('error',function(){document.documentElement.classList.re
           <span class="txt-phone" data-copy="hero.ledePhone">We create social strategies by making audiences feel part of the story.</span>
         </p>
         <div class="hero__meta">
-          <a class="btn btn--solid only-wide" href="#/work"><span data-copy="hero.ctaWork">See the work</span><span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--solid only-wide" href="/work/"><span data-copy="hero.ctaWork">See the work</span><span class="arrow" aria-hidden="true">→</span></a>
           <button class="btn btn--solid only-phone" id="heroCta" type="button"><span data-copy="hero.ctaWorkPhone">Come inside</span><span class="arrow" aria-hidden="true">↓</span></button>
-          <a class="btn" href="#/contact"><span data-copy="hero.ctaContact">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn" href="/contact/"><span data-copy="hero.ctaContact">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
 
         </div>
       </div>
@@ -121,7 +119,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <!-- PROOF — straight under the banner -->
   <section class="room room-sage" id="proof">
     <div class="wrap proof">
-      <div class="sill"><span class="label" data-copy="proof.label">Proof</span><span class="label" data-copy="proof.sublabel">Across client accounts</span></div>
+      <div class="sill"><h2 class="label" data-copy="proof.label">Proof</h2><span class="label" data-copy="proof.sublabel">Across client accounts</span></div>
       <div class="metrics" id="homeMetrics"></div>
     </div>
   </section>
@@ -131,7 +129,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap sec">
     <div class="grid">
       <div style="grid-column:span 6" class="rv">
-        <p class="display lg" style="margin-bottom:1.6rem" data-copy="intro.statement">We don't just grow audiences. We cultivate communities that thrive in the open.</p>
+        <h2 class="display lg" style="margin-bottom:1.6rem" data-copy="intro.statement">We don't just grow audiences. We cultivate communities that thrive in the open.</h2>
         <div class="measure" style="color:var(--body-2)">
           <p data-copy="intro.para1">Our campaigns are built with clarity and creativity, turning moments into movements and stories into spaces people belong to.</p>
           <p data-copy="intro.para2">From rising entrepreneurs to global lifestyle brands, we help our clients break barriers, shine brighter, and expand their reach without losing authenticity.</p>
@@ -146,7 +144,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <section class="room room-sage wide-only">
   <!-- SELECTED WORK -->
     <div class="wrap sec">
-      <div class="sill"><span class="label" data-copy="work.label">Selected work</span><span class="label" data-copy="work.sublabel">Four of them</span></div>
+      <div class="sill"><h2 class="label" data-copy="work.label">Selected work</h2><span class="label" data-copy="work.sublabel">Four of them</span></div>
       <div id="workRows"></div>
     </div>
   </section>
@@ -154,7 +152,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <section class="room room-cream">
   <!-- TESTIMONIALS -->
   <div class="wrap sec--tight wide-only">
-    <div class="sill"><span class="label" data-copy="testimonials.label">In their words</span></div>
+    <div class="sill"><h2 class="label" data-copy="testimonials.label">In their words</h2></div>
     <div class="quotes" id="quotes"></div>
   </div>
 
@@ -164,8 +162,8 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <section class="room room-cream phone-only-block">
     <div class="wrap sec">
       <p class="ph-line" data-copy="phone.workLine">Four years of work, in one place.</p>
-      <a class="btn btn--solid ph-cta" href="#/work"><span>See our work</span><span class="arrow" aria-hidden="true">→</span></a>
-      <a class="btn ph-cta ph-cta--second" href="#/contact"><span data-copy="phone.contactCta">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--solid ph-cta" href="/work/"><span>See our work</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn ph-cta ph-cta--second" href="/contact/"><span data-copy="phone.contactCta">Get in touch</span><span class="arrow" aria-hidden="true">→</span></a>
     </div>
     <div class="ph-grid" id="phGrid" aria-hidden="true"></div>
     <div class="wrap sec--tight">
@@ -177,7 +175,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <section class="room room-brown">
     <div class="wrap cta">
       <h2 class="display xl rv" data-copy="cta.heading">Ready to invite people in?</h2>
-      <a class="btn btn--solid" href="#/contact"><span data-copy="cta.button">Come inside</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--solid" href="/contact/"><span data-copy="cta.button">Come inside</span><span class="arrow" aria-hidden="true">→</span></a>
       <p class="cta__mail rv"><span data-copy="cta.mailPrefix">or email</span> <a href="mailto:hello@theglasshouse.agency" data-copy="contactEmail">hello@theglasshouse.agency</a></p>
     </div>
     <div class="wall" aria-hidden="true"><div class="wall__track" id="wall"></div></div>
@@ -197,7 +195,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
     <div class="sill"><span class="label" data-copy="workPage.nextLabel">Yours next</span></div>
     <div class="grid" style="align-items:end">
       <h2 class="display lg rv" style="grid-column:span 7;max-width:18ch" data-copy="workPage.nextHeading">Every one of these started with someone describing a feeling their socials weren't giving them.</h2>
-      <p style="grid-column:span 4/-1" class="rv d2"><a class="btn btn--solid" href="#/contact"><span data-copy="workPage.nextButton">Start a project</span><span class="arrow" aria-hidden="true">→</span></a></p>
+      <p style="grid-column:span 4/-1" class="rv d2"><a class="btn btn--solid" href="/contact/"><span data-copy="workPage.nextButton">Start a project</span><span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
   </div></section>
 </section>
@@ -219,7 +217,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap" id="svcBlocks"></div>
 
   <section class="room room-sage"><div class="wrap sec">
-    <div class="sill"><span class="label" data-copy="servicesPage.stepsLabel">How it works</span><span class="label" data-copy="servicesPage.stepsSublabel">Every engagement, same three moves</span></div>
+    <div class="sill"><h2 class="label" data-copy="servicesPage.stepsLabel">How it works</h2><span class="label" data-copy="servicesPage.stepsSublabel">Every engagement, same three moves</span></div>
     <div class="steps" id="steps"></div>
   </div></section>
 
@@ -228,16 +226,19 @@ window.addEventListener('error',function(){document.documentElement.classList.re
       <div class="sill"><span class="label" data-copy="servicesPage.faqLabel">Questions</span></div>
       <p class="display lg" style="max-width:14ch" data-copy="servicesPage.faqHeading">The things people ask before the first call.</p>
       <p style="color:var(--body-2);margin-top:1.2rem;max-width:32ch" data-copy="servicesPage.faqNote">If yours is not here, ask it directly — we would rather answer than have you guess.</p>
-      <p style="margin-top:1.6rem"><a class="btn" href="#/contact"><span data-copy="servicesPage.faqButton">Ask us</span><span class="arrow" aria-hidden="true">→</span></a></p>
+      <p style="margin-top:1.6rem"><a class="btn" href="/contact/"><span data-copy="servicesPage.faqButton">Ask us</span><span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
     <div id="faq"></div>
   </div>
 
   <section class="room room-brown"><div class="wrap cta">
     <h2 class="display xl rv" data-copy="servicesPage.ctaHeading">Tell us what you're building.</h2>
-    <a class="btn btn--solid" href="#/contact"><span data-copy="servicesPage.ctaButton">Let's talk</span><span class="arrow" aria-hidden="true">→</span></a>
+    <a class="btn btn--solid" href="/contact/"><span data-copy="servicesPage.ctaButton">Let's talk</span><span class="arrow" aria-hidden="true">→</span></a>
   </div></section>
 </section>
+
+<!-- ============ ONE SERVICE ============ -->
+<section class="route room room-cream" data-route="service"><div id="serviceRoot"></div></section>
 
 <!-- ============ ABOUT ============ -->
 <section class="route room room-cream" data-route="about">
@@ -260,26 +261,26 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="wrap"><div class="collage rv" id="collage"></div></div>
 
   <section class="room room-sage"><div class="wrap sec">
-    <div class="sill"><span class="label" data-copy="aboutPage.peopleLabel">Who you'll work with</span><span class="label" data-copy="aboutPage.peopleSublabel">Small on purpose</span></div>
+    <div class="sill"><h2 class="label" data-copy="aboutPage.peopleLabel">Who you'll work with</h2><span class="label" data-copy="aboutPage.peopleSublabel">Small on purpose</span></div>
     <div class="people" id="people"></div>
     <p class="people__note rv" data-copy="aboutPage.peopleNote"></p>
   </div></section>
 
   <div class="wrap sec">
-    <div class="sill"><span class="label" data-copy="aboutPage.valuesLabel">How we work</span></div>
+    <div class="sill"><h2 class="label" data-copy="aboutPage.valuesLabel">How we work</h2></div>
     <div class="values" id="values"></div>
   </div>
 
   <section class="room room-brown"><div class="wrap cta">
     <h2 class="display xl rv" style="max-width:18ch" data-copy="aboutPage.ctaHeading">There's usually a desk free.</h2>
-    <a class="btn btn--solid" href="#/careers"><span data-copy="aboutPage.ctaButton">See open roles</span><span class="arrow" aria-hidden="true">→</span></a>
+    <a class="btn btn--solid" href="/careers/"><span data-copy="aboutPage.ctaButton">See open roles</span><span class="arrow" aria-hidden="true">→</span></a>
   </div></section>
 </section>
 
 <!-- ============ JOURNAL ============ -->
 <section class="route room room-cream" data-route="journal">
   <div class="wrap page-head">
-    <div class="sill"><span class="label" data-copy="journalPage.label">Journal</span><span class="label" data-copy="journalPage.sublabel">Insight, trends and platform news</span></div>
+    <div class="sill"><h1 class="label" data-copy="journalPage.label">Journal</h1><span class="label" data-copy="journalPage.sublabel">Insight, trends and platform news</span></div>
   </div>
   <section class="room room-sage"><div class="wrap sec--tight" style="padding-top:clamp(2rem,4vw,3.5rem)">
     <div id="jrnFeature"></div>
@@ -309,7 +310,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   </div>
   <section class="room room-sage">
   <div class="wrap sec--tight">
-    <div class="sill"><span class="label" data-copy="careersPage.rolesLabel">Open roles</span></div>
+    <div class="sill"><h2 class="label" data-copy="careersPage.rolesLabel">Open roles</h2></div>
     <div id="vacancies"></div>
     <div class="grid" style="margin-top:clamp(2.5rem,5vw,4rem)">
       <div style="grid-column:span 6">
@@ -319,7 +320,7 @@ window.addEventListener('error',function(){document.documentElement.classList.re
       <div style="grid-column:span 5/-1">
         <h3 class="display lg" data-copy="careersPage.openHeading">Open applications</h3>
         <p style="color:var(--body-2);margin-top:.8rem;max-width:44ch" data-copy="careersPage.openText">No suitable role listed? Tell us what you'd want to do here and what you'd want to be paid to do it.</p>
-        <p style="margin-top:1.4rem"><a class="btn" href="#/contact"><span data-copy="careersPage.openButton">Apply</span><span class="arrow" aria-hidden="true">→</span></a></p>
+        <p style="margin-top:1.4rem"><a class="btn" href="/contact/"><span data-copy="careersPage.openButton">Apply</span><span class="arrow" aria-hidden="true">→</span></a></p>
       </div>
     </div>
   </div>
@@ -374,19 +375,19 @@ window.addEventListener('error',function(){document.documentElement.classList.re
   <div class="foot__top">
     <div>
       <img class="foot__logo" src="assets/img/logo-lockup.png" alt="Glasshouse agency">
-      <a class="btn btn--solid foot__cta" href="#/contact"><span>Let's chat</span><span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--solid foot__cta" href="/contact/"><span>Let's chat</span><span class="arrow" aria-hidden="true">→</span></a>
       <a class="foot__mail" href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a>
     </div>
     <div>
       <span class="label">Pages</span>
-      <ul><li><a href="#/work">Work</a></li><li><a href="#/services">Services</a></li><li><a href="#/about">About</a></li>
-      <li><a href="#/journal">Journal</a></li><li><a href="#/careers">Careers</a></li><li><a href="#/contact">Contact</a></li></ul>
+      <ul><li><a href="/work/">Work</a></li><li><a href="/services/">Services</a></li><li><a href="/about/">About</a></li>
+      <li><a href="/journal/">Journal</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul>
     </div>
     <div>
       <span class="label">Elsewhere</span>
       <ul><li><a id="soInstagram" href="https://www.instagram.com/theglasshouseagency/" target="_blank" rel="noopener">Instagram</a></li>
       <li><a id="soTiktok" href="https://www.tiktok.com/@the.glasshouse.ag" target="_blank" rel="noopener">TikTok</a></li>
-      <li><a id="soLinkedin" href="#/contact">LinkedIn</a></li>
+      <li><a id="soLinkedin" href="/contact/">LinkedIn</a></li>
       <li><a href="mailto:hello@theglasshouse.agency">hello@theglasshouse.agency</a></li><li>London, UK</li></ul>
     </div>
   </div>
