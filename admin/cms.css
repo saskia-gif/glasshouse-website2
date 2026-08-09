@@ -75,3 +75,20 @@ button:hover:not(:disabled){background:var(--ink)}
 .note{padding:.7rem .9rem;font-size:.88rem;margin:0 0 1rem}
 .note.bad{background:#fbeaea;color:#8a2f2f}
 @media(max-width:760px){ .body{grid-template-columns:1fr} .side{border-right:0;border-bottom:1px solid var(--line)} .panel{padding:1.2rem} }
+
+/* ---- media library and image pickers ---- */
+.sub{font:600 .78rem/1 var(--ui);letter-spacing:.08em;text-transform:uppercase;
+     color:var(--muted);margin:0 0 .9rem}
+.lib-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.4rem}
+.lib-head .sub{margin:0}
+.picker{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.picker select{flex:1 1 14rem;min-width:0}
+.picker-preview{display:flex;align-items:center;gap:.6rem;min-height:3.2rem}
+.picker-thumb{width:3rem;height:3rem;object-fit:cover;border-radius:6px;
+              border:1px solid var(--line);background:#e9e5de;display:block}
+.picker-name{font:400 .74rem/1.2 var(--ui);color:var(--muted);word-break:break-all}
+.picker-empty{font:400 .74rem/1.2 var(--ui);color:var(--muted);font-style:italic}
+.map-row .thumb{width:3rem;height:3rem;object-fit:cover;border-radius:6px;
+                border:1px solid var(--line);background:#e9e5de;flex:0 0 auto}
+.map-key.used{color:var(--muted)}
+.map-key.unused{color:#a8894a}

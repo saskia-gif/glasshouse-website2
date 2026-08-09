@@ -74,9 +74,41 @@ export async function putBinary(path, arrayBuffer, message){
   return path;
 }
 
-export async function listImages(){
+/* every picture and film in the repository, so the pickers can offer them */
+async function listFolder(folder){
   const {branch} = cfg.get();
-  const r = await fetch(`${base()}/contents/assets/img?ref=${branch}`, {headers: headers()});
+  const r = await fetch(`${base()}/contents/${folder}?ref=${branch}`, {headers: headers()});
   if(!r.ok) return [];
-  return (await r.json()).filter(f => f.type === 'file').map(f => f.path);
+  return (await r.json()).filter(f => f.type === 'file' && !f.name.startsWith('.'))
+                         .map(f => ({path:f.path, name:f.name, size:f.size, sha:f.sha}));
+}
+
+export async function listImages(){
+  return (await listFolder('assets/img')).map(f => f.path);
+}
+
+export async function listMedia(){
+  const [img, vid] = await Promise.all([listFolder('assets/img'), listFolder('assets/video')]);
+  return [...img, ...vid].sort((a,b) => a.path.localeCompare(b.path));
+}
+
+/* read a file's bytes — used when renaming, which is a copy then a remove */
+export async function getBinary(path){
+  const {branch} = cfg.get();
+  const r = await fetch(`${base()}/contents/${path}?ref=${branch}`, {headers: headers()});
+  if(!r.ok) throw new Error(`Could not read ${path} (${r.status})`);
+  const j = await r.json();
+  const bin = atob(j.content.replace(/\n/g,''));
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return {buffer: bytes.buffer, sha: j.sha};
+}
+
+export async function removeFile(path, sha, message){
+  const {branch} = cfg.get();
+  const r = await fetch(`${base()}/contents/${path}`, {
+    method:'DELETE', headers:{...headers(),'Content-Type':'application/json'},
+    body: JSON.stringify({message, sha, branch})
+  });
+  if(!r.ok) throw new Error(`Could not remove ${path} (${r.status})`);
 }

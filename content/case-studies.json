@@ -44,11 +44,11 @@
       ],
       "quote": "Multiple videos reached 15M, 7M and 6M views each, with average watch times of 6–9 seconds — above the TikTok benchmark.",
       "quoteBy": "Account summary — replace with client testimonial",
-      "card": "gigi",
+      "card": "assets/img/gigi.webp",
       "gallery": [
-        "gigiA",
-        "gigiB",
-        "gigiC"
+        "assets/img/gigiA.webp",
+        "assets/img/gigiB.webp",
+        "assets/img/gigiC.webp"
       ]
     },
     {
@@ -91,11 +91,11 @@
       ],
       "quote": "Today Caroline has a clear, consistent presence that reflects her voice and resonates with readers worldwide.",
       "quoteBy": "Account summary — replace with client testimonial",
-      "card": "caro",
+      "card": "assets/img/caro.webp",
       "gallery": [
-        "caroA",
-        "caroB",
-        "caroC"
+        "assets/img/caroA.webp",
+        "assets/img/caroB.webp",
+        "assets/img/caroC.webp"
       ]
     },
     {
@@ -138,11 +138,11 @@
       ],
       "quote": "Grace &amp; Form’s Instagram has evolved into a global hub for ballet-inspired fitness — not just building community, but serving as an engine for app growth.",
       "quoteBy": "Account summary — replace with client testimonial",
-      "card": "grace",
+      "card": "assets/img/grace.webp",
       "gallery": [
-        "graceA",
-        "graceB",
-        "graceC"
+        "assets/img/graceA.webp",
+        "assets/img/graceB.webp",
+        "assets/img/graceC.webp"
       ]
     },
     {
@@ -185,11 +185,11 @@
       ],
       "quote": "Delivered content that drives brand partnerships and sponsorships with leading names in health, wellness and luxury travel.",
       "quoteBy": "Account summary — replace with client testimonial",
-      "card": "hip",
+      "card": "assets/img/hip.webp",
       "gallery": [
-        "hipA",
-        "hipB",
-        "hipC"
+        "assets/img/hipA.webp",
+        "assets/img/hipB.webp",
+        "assets/img/hipC.webp"
       ]
     },
     {
@@ -227,11 +227,11 @@
       ],
       "quote": "The rebrand positioned Stéphanie as a trusted authority in midlife wellness and opened doors to high-profile collaborations — CNM, The Sloane Club and Hip &amp; Healthy.",
       "quoteBy": "Account summary — replace with client testimonial",
-      "card": "simple",
+      "card": "assets/img/simple.webp",
       "gallery": [
-        "simpleA",
-        "simpleB",
-        "simpleC"
+        "assets/img/simpleA.webp",
+        "assets/img/simpleB.webp",
+        "assets/img/simpleC.webp"
       ]
     },
     {
@@ -269,7 +269,7 @@
       ],
       "quote": "",
       "quoteBy": "",
-      "card": "wolfe",
+      "card": "assets/img/wolfe.webp",
       "gallery": []
     },
     {
@@ -307,10 +307,10 @@
       ],
       "quote": "",
       "quoteBy": "",
-      "card": "taboo",
+      "card": "assets/img/taboo.webp",
       "gallery": [
-        "tabooA",
-        "tabooB"
+        "assets/img/tabooA.webp",
+        "assets/img/tabooB.webp"
       ]
     }
   ]

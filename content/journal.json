@@ -15,7 +15,7 @@
         "H:Start with the room, not the audience",
         "Placeholder body copy. Each article supports headings, pull quotes, images, video embeds and rich text."
       ],
-      "img": "j1"
+      "img": "assets/img/j1.webp"
     },
     {
       "slug": "tiktok-search-2026",
@@ -28,7 +28,7 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "j2"
+      "img": "assets/img/j2.webp"
     },
     {
       "slug": "community-over-audience",
@@ -41,7 +41,7 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "j3"
+      "img": "assets/img/j3.webp"
     },
     {
       "slug": "creator-briefs",
@@ -54,7 +54,7 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "j4"
+      "img": "assets/img/j4.webp"
     },
     {
       "slug": "short-form-retention",
@@ -67,7 +67,7 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "j5"
+      "img": "assets/img/j5.webp"
     },
     {
       "slug": "agency-news-studio",
@@ -80,7 +80,7 @@
       "body": [
         "Placeholder article. Replace with final copy before launch."
       ],
-      "img": "j6"
+      "img": "assets/img/j6.webp"
     }
   ]
 }

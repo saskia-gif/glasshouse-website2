@@ -18,7 +18,10 @@ const brief=(cls,tag,note)=>`<div class="ph brief ${cls}" role="img" aria-label=
 const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
 /* Every picture is chosen in the editor. These read the name stored on each
    record (e.g. "gigiA") and turn it into a real file path via images.json. */
-const imgPath=name=>(name&&IMG[name])||'';
+const imgPath=v=>{
+  if(!v) return '';
+  return v.includes('/') ? v : (IMG[v]||'');   /* a path, or an old nickname */
+};
 const caseImg=slug=>{const c=CASES.find(x=>x.slug===slug)||{};
   return {card:imgPath(c.card), v:(c.gallery||[]).map(imgPath).filter(Boolean)};};
 const jrnImg=a=>imgPath(a&&a.img);
@@ -130,7 +133,7 @@ $('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
             <span class="svc-block__fig">${c.metrics[0].fig} ${c.metrics[0].lab}</span>
           </a>`:''}
     </div>
-    <div class="svc-block__media">${d.img&&IMG[d.img]?pic(IMG[d.img],'r45',s.title):ph('r45','Replace — service image 4:5')}</div>
+    <div class="svc-block__media">${imgPath(d.img)?pic(imgPath(d.img),'r45',s.title):ph('r45','Replace — service image 4:5')}</div>
   </article>`;
 }).join('');
 
@@ -162,7 +165,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ---- about ---- */
-const person=(p,i)=>`<div class="rv">${pic(IMG[p.img]||IMG.team1,'r45','Portrait')}
+const person=(p,i)=>`<div class="rv">${pic(imgPath(p.img)||IMG.team1,'r45','Portrait')}
   <h3>${p.name}</h3><div class="role">${p.role}</div><p>${p.bio}</p></div>`;
 /* at-a-glance facts */
 $('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
@@ -176,7 +179,7 @@ $('#collage').innerHTML=[
 /* three people, shown as equals — no hover mechanic to prop up a short list */
 $('#people').innerHTML=TEAM.people.map(p=>`
   <article class="person rv">
-    <div class="person__img">${pic(IMG[p.img],'r45',p.name)}</div>
+    <div class="person__img">${imgPath(p.img)?pic(imgPath(p.img),'r45',p.name):ph('r45','Replace — portrait')}</div>
     <h3 class="display">${p.name}</h3>
     <span class="label">${p.role}</span>
     <p>${p.bio}</p>

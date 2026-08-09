@@ -258,8 +258,8 @@ export const SCHEMA = [
     ]
   },
   {
-    id:'images', file:'content/images.json', title:'Pictures & video',
-    hint:'Which file each name points at. Upload a replacement to change one. The homepage film and its still frame are the last two rows.',
+    id:'images', file:'content/images.json', title:'Pictures & film',
+    hint:'Upload everything here, then pick it on whichever page you want it. Renaming a file updates every page that uses it.',
     shape:'map'
   }
 ];
