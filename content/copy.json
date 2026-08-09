@@ -29,8 +29,8 @@
     "label": "In their words",
     "items": [
       {
-        "quote": "They built a personal brand audiences don't just follow — they connect with.",
-        "attrib": "Placeholder — replace with client quote"
+        "quote": "\"Their strategy and creative direction helped scale the channels quickly, generating millions of views, strong engagement, and a clear, premium identity.\"",
+        "attrib": ""
       },
       {
         "quote": "The only agency we've worked with that understood the audience before the algorithm.",
@@ -142,7 +142,7 @@
   },
   "contactEmail": "hello@theglasshouse.agency",
   "meta": {
-    "title": "Glasshouse — social-first creative agency, London",
+    "title": "Glasshouse: a social-first creative agency, London",
     "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story."
   }
 }
