@@ -40,7 +40,7 @@
   "pages": [
     {
       "key": "home",
-      "path": "/",
+      "path": "/home",
       "name": "Home",
       "title": "Glasshouse — social media agency, London",
       "description": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story.",
