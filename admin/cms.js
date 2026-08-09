@@ -316,7 +316,7 @@ function renderMap(parent){
 
   const inUse = collectUsage();
   state.media.forEach(m => {
-    const row = el('div','map-row');
+    const row = el('div','media-row');
     const thumb = isVideoPath(m.path) ? (() => {
       const v = document.createElement('video');
       v.src = '../' + m.path; v.muted = true; v.loop = true; v.autoplay = true;
@@ -324,20 +324,24 @@ function renderMap(parent){
     })() : (() => { const i = el('img','thumb'); i.src = '../' + m.path; i.loading='lazy'; i.alt=''; return i; })();
     row.append(thumb);
 
-    const name = el('input'); name.type = 'text'; name.value = m.path.split('/').pop();
-    row.append(name);
+    const main = el('div','media-main');
 
-    const size = el('span','map-key', Math.round((m.size||0)/1024) + 'KB');
-    row.append(size);
+    const line1 = el('div','media-line');
+    const name = el('input','media-name'); name.type = 'text'; name.value = m.path.split('/').pop();
+    name.spellcheck = false;
+    line1.append(name);
 
     const used = inUse[m.path] || 0;
-    const tag = el('span', used ? 'map-key used' : 'map-key unused',
-                   used ? `used ${used}×` : 'not used yet');
-    row.append(tag);
+    const facts = el('span','media-facts');
+    facts.append(el('span','map-key', Math.round((m.size||0)/1024) + 'KB'));
+    facts.append(el('span', used ? 'map-key used' : 'map-key unused',
+                    used ? `used ${used}×` : 'not used yet'));
+    line1.append(facts);
+    main.append(line1);
 
     if(!isVideoPath(m.path)){
       if(!state.data._alt) state.data._alt = {};
-      const alt = el('input'); alt.type='text'; alt.className='alt';
+      const alt = el('input','alt'); alt.type='text';
       alt.placeholder = 'Alt text — what the picture shows';
       alt.value = state.data._alt[m.path] || '';
       alt.oninput = () => {
@@ -345,8 +349,38 @@ function renderMap(parent){
         else delete state.data._alt[m.path];
         markDirty();
       };
-      row.append(alt);
+      main.append(alt);
     }
+    row.append(main);
+
+    const tools = el('div','media-tools');
+
+    /* swap the picture, keep the name and everything pointing at it */
+    const rep = el('label','mini upload'); rep.textContent = 'Replace';
+    const repFile = el('input'); repFile.type = 'file'; repFile.hidden = true;
+    repFile.accept = isVideoPath(m.path) ? 'video/*' : 'image/*';
+    repFile.onchange = async () => {
+      const f = repFile.files[0]; if(!f) return;
+      const incomingVideo = /^video\//.test(f.type) || isVideoPath(f.name);
+      if(incomingVideo !== isVideoPath(m.path)){
+        alertBox(`"${m.path.split('/').pop()}" is ${isVideoPath(m.path) ? 'a film' : 'a picture'}, so replace it with the same kind of file.`);
+        repFile.value = ''; return;
+      }
+      rep.textContent = 'Replacing…';
+      try {
+        const buf = await f.arrayBuffer();
+        if(incomingVideo && buf.byteLength > 3.5*1024*1024 &&
+           !confirm(`That film is ${Math.round(buf.byteLength/1048576)}MB. Films over about 3MB make the page slow. Use it anyway?`)){
+          rep.textContent = 'Replace'; repFile.value = ''; return;
+        }
+        await putBinary(m.path, buf, `Replace ${m.path.split('/').pop()}`);
+        state.media = await listMedia();
+        state.images = state.media.map(x => x.path);
+        render(SCHEMA.find(x => x.id === state.id));
+      } catch(e){ alertBox(e.message); rep.textContent = 'Replace'; }
+    };
+    rep.append(repFile);
+    tools.append(rep);
 
     const ren = el('button','mini','Rename');
     ren.onclick = async () => {
@@ -371,13 +405,35 @@ function renderMap(parent){
         render(SCHEMA.find(x => x.id === state.id));
       } catch(e){ alert(e.message); ren.textContent = 'Rename'; }
     };
-    row.append(ren);
+    tools.append(ren);
+
+    const del = el('button','mini danger','Delete');
+    del.onclick = async () => {
+      const fileName = m.path.split('/').pop();
+      const warning = used
+        ? `"${fileName}" is used on ${used} place${used > 1 ? 's' : ''}.\n\n`
+          + `Deleting it will leave ${used > 1 ? 'those spots' : 'that spot'} empty until you choose another picture.\n\nDelete it anyway?`
+        : `Delete "${fileName}"?\n\nIt is not used anywhere. This cannot be undone.`;
+      if(!confirm(warning)) return;
+      del.textContent = 'Deleting…';
+      try {
+        await removeFile(m.path, m.sha, `Delete ${fileName}`);
+        if(state.data._alt) delete state.data._alt[m.path];
+        state.media = await listMedia();
+        state.images = state.media.map(x => x.path);
+        markDirty();
+        render(SCHEMA.find(x => x.id === state.id));
+      } catch(e){ alertBox(e.message); del.textContent = 'Delete'; }
+    };
+    tools.append(del);
+    row.append(tools);
     lib.append(row);
   });
   parent.append(lib);
 }
 
 const safeName = n => n.replace(/[^\w.\-]/g,'-');
+const alertBox = msg => alert(msg);
 
 /* which files are referenced, and how often — shown next to each row */
 function collectUsage(){ return state.usage || {}; }
@@ -496,6 +552,25 @@ const previewEl   = () => document.getElementById('preview');
 const frame       = () => document.getElementById('preview-frame');
 let previewTimer  = null;
 let previewOn     = localStorage.getItem('gh-preview-off') !== '1';
+let previewWidth  = 1440;   /* the width the site is rendered at, not the pane width */
+
+/* The site lays itself out from the window it is in, so a narrow frame would
+   always show the phone design. Instead we render at a true device width and
+   scale the whole frame down to fit the panel. */
+function fitPreview(){
+  const stage = document.querySelector('.preview__stage');
+  const scaler = document.querySelector('.preview__scaler');
+  const f = frame();
+  if(!stage || !scaler || !f) return;
+  const availW = Math.max(120, stage.clientWidth - 20);
+  const availH = Math.max(120, stage.clientHeight - 20);
+  const scale = Math.min(1, availW / previewWidth);
+  f.style.width  = previewWidth + 'px';
+  f.style.height = Math.round(availH / scale) + 'px';
+  f.style.transform = 'scale(' + scale + ')';
+  scaler.style.width  = Math.round(previewWidth * scale) + 'px';
+  scaler.style.height = availH + 'px';
+}
 
 /* the base path the site is served from, worked out from this page's URL */
 const SITE_BASE = location.pathname.replace(/\/admin\/?$/, '') || '';
@@ -572,6 +647,7 @@ function previewFollowSection(id){
 
 function setPreviewOn(on){
   previewOn = on;
+  if(on) requestAnimationFrame(fitPreview);
   localStorage.setItem('gh-preview-off', on ? '0' : '1');
   document.querySelector('.body')?.classList.toggle('no-preview', !on);
   const b = document.getElementById('toggle-preview');
@@ -596,11 +672,13 @@ function initPreview(){
   document.querySelectorAll('.preview__sizes .mini').forEach(b => {
     b.addEventListener('click', () => {
       document.querySelectorAll('.preview__sizes .mini').forEach(x => x.classList.toggle('on', x === b));
-      const w = b.dataset.w;
-      frame().style.width = w === '0' ? '100%' : w + 'px';
+      previewWidth = Number(b.dataset.w) || 1440;
+      fitPreview();
     });
   });
+  window.addEventListener('resize', fitPreview);
   setPreviewOn(previewOn);
+  fitPreview();
 }
 
 /* clear the preview data when the editor is closed, so the public site

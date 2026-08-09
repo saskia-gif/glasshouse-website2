@@ -69,11 +69,11 @@
         <select id="preview-page" aria-label="Page to preview"></select>
         <button id="preview-refresh" class="mini" title="Reload the preview">Refresh</button>
         <span class="preview__sizes">
-          <button class="mini on" data-w="0">Desktop</button>
+          <button class="mini on" data-w="1440">Desktop</button>
           <button class="mini" data-w="390">Phone</button>
         </span>
       </div>
-      <div class="preview__stage"><iframe id="preview-frame" title="Preview"></iframe></div>
+      <div class="preview__stage"><div class="preview__scaler"><iframe id="preview-frame" title="Preview"></iframe></div></div>
       <p class="preview__note muted">Showing your unsaved changes. Press Save to publish them.</p>
     </aside>
   </div>
