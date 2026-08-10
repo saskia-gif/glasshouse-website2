@@ -67,6 +67,35 @@ const ph=(cls,label,tone='')=>`<div class="ph ${cls}" data-ph="${label}"${tone?`
   document.addEventListener('keydown',finish,{once:true});
 })();
 
+/* ============================================================
+   Films that actually start
+   The attributes are right — autoplay, muted, loop, playsinline — but iOS
+   does not always honour them. Low Power Mode and Low Data Mode both veto
+   autoplay outright, and a <video> written in with innerHTML sometimes has to
+   be asked directly. So: ask, ask again once it has data, ask when the tab
+   comes back, and ask on the first touch, which always counts as consent.
+   If every one of those is refused the poster frame stands in, which is why
+   both films carry one.
+   ============================================================ */
+function keepPlaying(v){
+  if(!v || v.dataset.nudged) return;
+  v.dataset.nudged = 1;
+  v.muted = true; v.defaultMuted = true;      /* the property, not only the attribute */
+  v.playsInline = true;
+  v.setAttribute('playsinline','');
+  v.setAttribute('webkit-playsinline','');    /* older iOS */
+  v.setAttribute('preload','auto');
+  const go = ()=>{ const p = v.play(); if(p && p.catch) p.catch(()=>{}); };
+  go();
+  ['loadeddata','canplay'].forEach(e => v.addEventListener(e, go, {once:true}));
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) go(); });
+  ['touchstart','click'].forEach(ev =>
+    document.addEventListener(ev, function once(){
+      document.removeEventListener(ev, once); go();
+    }, {passive:true, once:true}));
+}
+const nudgeFilms = ()=> $$('video').forEach(keepPlaying);
+
 /* ---- hero ---- */
 $q('#heroWindows').innerHTML=`
   <div class="phone-wrap rv">
@@ -76,10 +105,12 @@ $q('#heroWindows').innerHTML=`
       <div class="phone">
       <span class="phone__island"></span>
       <video src="${VIDEO}" poster="${POSTER}" autoplay muted loop playsinline
-             aria-label="Glasshouse client film"></video>
+             webkit-playsinline preload="auto" aria-label="Glasshouse client film"></video>
       </div>
     </div>
   </div>`;
+
+nudgeFilms();
 
 /* on a phone the film belongs under the proof, not stacked below the headline */
 function placeFilm(){
@@ -942,18 +973,21 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   const remember = ()=>{ try{ sessionStorage.setItem(KEY,'1'); }catch(e){} };
 
   if(alt) alt.href = U('contact');
+  if(K.label) trigger.setAttribute('aria-label', K.label);
 
-  /* Asking on the contact page would be asking twice. And on the phone
-     homepage the reel puts an arrow button in the same corner — and ends on a
-     full screen of invitation anyway — so it stays out of the way there. */
+  /* Asking on the contact page would be asking twice. */
   const mute = ()=>{
     const c = document.querySelector('.route[data-route="contact"]');
-    if(c && c.classList.contains('active')) return true;
-    return document.body.classList.contains('has-reel');
+    return !!c && c.classList.contains('active');
   };
+  /* The reel's arrow owns the bottom centre of the phone homepage, so there
+     the knock steps across to the left rather than sitting on top of it. */
+  const place = ()=> box.classList.toggle('knock--left',
+                     document.body.classList.contains('has-reel'));
 
   function show(){
     if(settled || mute()){ box.hidden = true; box.classList.remove('is-in'); return; }
+    place();
     box.hidden = false;
     requestAnimationFrame(()=> box.classList.add('is-in'));
   }
@@ -964,6 +998,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   function watch(){
     if(armed || settled) return;
     if(mute()) return;
+    place();
     if(window.scrollY > window.innerHeight * 0.6){ armed = true; show(); }
   }
   window.addEventListener('scroll', watch, {passive:true});
@@ -1028,8 +1063,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   /* the router swaps routes without a reload */
   window.addEventListener('popstate', ()=> setTimeout(watch, 80));
   document.addEventListener('click', ()=> setTimeout(()=>{ if(mute()) hide(); else watch(); }, 80));
-  onPhone.addEventListener ? onPhone.addEventListener('change', ()=>{ if(mute()) hide(); else watch(); })
-                           : onPhone.addListener(()=>{ if(mute()) hide(); else watch(); });
+  const reflow = ()=>{ if(mute()) hide(); else { place(); watch(); } };
+  onPhone.addEventListener ? onPhone.addEventListener('change', reflow) : onPhone.addListener(reflow);
+  window.addEventListener('resize', reflow);
 })();
 
 /* ---- go ---- */
@@ -1235,7 +1271,8 @@ route();
   <section class="ppanel ppanel--door" data-tone="dark">
     <div class="pfilm">
       <video src="${window.asset(VIDEO)}" poster="${window.asset(POSTER)}"
-             autoplay muted loop playsinline aria-hidden="true"></video>
+             autoplay muted loop playsinline webkit-playsinline preload="auto"
+             aria-hidden="true"></video>
     </div>
     <div class="ppanel__in">
       <h2 class="pdoor__h">${['line1','line2','line3'].map(k=>`<em>${hero[k]||''}</em>`).join('')}</h2>
@@ -1342,6 +1379,8 @@ route();
     window.addEventListener('resize', cardBar);
     requestAnimationFrame(cardBar);
   }
+
+  nudgeFilms();
 
   const panels = $$('.ppanel', reel);
   const labels = [M.arrowDoor, M.arrowClaim, M.arrowProof, M.arrowWork,

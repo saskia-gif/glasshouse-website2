@@ -1016,6 +1016,10 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .pdoor__lede{margin-top:1.1rem;max-width:22ch;color:rgba(242,237,229,.88);font-size:1.02rem}
 
   /* 2 the claim */
+  /* the seal bleeds off the right edge on purpose, but unclipped it widened the
+     phone's layout viewport to 487px against a 390px screen — which pushed
+     anything positioned from the right off the side of the phone */
+  .ppanel--claim{overflow:hidden}
   .pclaim{font-family:var(--display);font-weight:300;font-size:clamp(1.95rem,9vw,2.7rem);
     line-height:1.02;letter-spacing:-.03em;max-width:15ch;margin-top:1rem}
   .pclaim em{font-style:normal;font-family:var(--ui);font-weight:600;font-size:.62em;
@@ -1266,14 +1270,18 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   display:grid;place-items:center;font-family:var(--display);font-weight:400;
   font-size:15px;letter-spacing:-.03em;line-height:1}
 
-.knock__trigger{display:inline-flex;align-items:center;gap:.7rem;padding:.5rem;
-  min-height:48px;background:var(--cream);border:1px solid var(--line);cursor:pointer;
-  color:var(--ink);box-shadow:0 10px 34px rgba(36,30,24,.14);
-  transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
-.knock__trigger:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(36,30,24,.2)}
-.knock__label-t{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
-  font-weight:500;padding-right:.85rem}
+.knock__gh--lg{width:52px;height:52px}
+.knock__gh svg{display:block}
+.knock__trigger{display:inline-flex;padding:0;background:none;border:0;cursor:pointer;
+  color:var(--ink);transition:transform .35s var(--ease)}
+.knock__trigger .knock__gh{box-shadow:0 10px 30px rgba(36,30,24,.24)}
+.knock__trigger:hover{transform:translateY(-2px)}
+.knock__trigger:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .knock.is-open .knock__trigger{display:none}
+
+/* on the phone homepage the reel puts its arrow in the bottom centre and this
+   would land on top of it, so there — and only there — it moves to the left */
+.knock.knock--left{right:auto;left:1rem;align-items:flex-start}
 
 .knock__panel{width:330px;max-width:calc(100vw - 2rem);background:var(--cream);
   border:1px solid var(--line);box-shadow:0 22px 60px rgba(36,30,24,.22);text-align:left}
