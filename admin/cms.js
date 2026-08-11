@@ -172,7 +172,10 @@ function previewFollowPage(pg){
 async function openCollection(id){
   const c = SCHEMA.find(x => x.id === id);
   previewFollowSection(id);
-  state = { id, data:null, sha:null, dirty:false, images: state.images, media: state.media, usage: state.usage };
+  /* files/dirtyFiles must exist here too — markClean() and markDirty() reach
+     for them on every section, not just the per-page ones */
+  state = { id, data:null, sha:null, dirty:false, images: state.images, media: state.media,
+            usage: state.usage, files:{}, dirtyFiles:new Set() };
   $$('.nav-item').forEach(b => b.classList.toggle('on', b.dataset.id === id));
   $('#panel').innerHTML = '<p class="muted">Loading…</p>';
   $('#save').disabled = true;
