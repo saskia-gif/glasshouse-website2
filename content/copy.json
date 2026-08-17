@@ -54,35 +54,31 @@
     "label": "Work",
     "heading": "Brands people wanted to be part of.",
     "nextLabel": "Yours next",
-    "nextHeading": "Every one of these started with someone describing a feeling their socials weren't giving them.",
+    "nextHeading": "Every one of these started with someone describing a feeling, a goal, a community, their socials weren't giving them.",
     "nextButton": "Start a project",
     "allLabel": "All",
     "countSuffix": "case studies",
     "viewLabel": "View case study",
     "filters": [
       {
-        "label": "Social strategy",
-        "match": "Social strategy"
+        "label": "Wellness",
+        "match": "Wellness"
       },
       {
-        "label": "Content creation",
-        "match": "Content creation"
+        "label": "Fashion",
+        "match": "Fashion"
       },
       {
-        "label": "Social media management",
-        "match": "Social media management"
+        "label": "Personal Brands",
+        "match": "Personal Brands"
       },
       {
-        "label": "Creative campaigns",
-        "match": "Creative campaigns"
+        "label": "Entertainment",
+        "match": "Entertainment"
       },
       {
-        "label": "Influencer & creator campaigns",
-        "match": "Influencer &amp; creator campaigns"
-      },
-      {
-        "label": "Community management",
-        "match": "Community management"
+        "label": "Hospitality",
+        "match": "Hospitality"
       }
     ]
   },
