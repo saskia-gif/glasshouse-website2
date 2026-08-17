@@ -29,6 +29,13 @@ const ALT=(window.ALTTEXT||{});
 /* alt text set in the editor wins; otherwise we fall back to something sensible */
 const altFor=(src,fallback='')=>String(ALT[src]||fallback||'').replace(/"/g,'&quot;');
 const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${window.asset(src)}" alt="${altFor(src,alt)}" loading="lazy" decoding="async">`;
+/* A slot in the work pages takes either. `clip` is silent and looped, and does
+   not start until the tile is on screen — see playClips() below. */
+const isClip=p=>/\.(mp4|webm|m4v|mov|ogv)$/i.test(p||'');
+const clip=(src,cls,alt='')=>`<video class="pic clip ${cls}" src="${window.asset(src)}"
+   muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture
+   aria-label="${altFor(src,alt)}"></video>`;
+const shot=(src,cls,alt='')=>isClip(src)?clip(src,cls,alt):pic(src,cls,alt);
 /* Every picture is chosen in the editor. These read the name stored on each
    record (e.g. "gigiA") and turn it into a real file path via images.json. */
 const imgPath=v=>{
@@ -95,6 +102,29 @@ function keepPlaying(v){
     }, {passive:true, once:true}));
 }
 const nudgeFilms = ()=> $$('video').forEach(keepPlaying);
+
+/* Clips in the work pages run only while they are on screen, so a page never
+   pulls four films at once. Off screen they rewind and stop, which also frees
+   the decoder — phones only have a handful. */
+let clipIO;
+function playClips(){
+  const clips = $$('.clip');
+  if(!clips.length) return;
+  if(reduce){                       /* no motion wanted: hold the first frame */
+    clips.forEach(v => { v.removeAttribute('loop'); v.preload = 'metadata'; });
+    return;
+  }
+  clipIO = clipIO || new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if(e.isIntersecting){
+      v.muted = true; v.playsInline = true;
+      const p = v.play(); if(p && p.catch) p.catch(()=>{});
+    } else if(!v.paused){
+      v.pause();
+    }
+  }), {threshold:.4});
+  clips.forEach(v => { if(!v.dataset.watched){ v.dataset.watched = 1; clipIO.observe(v); } });
+}
 
 /* ---- hero ---- */
 $q('#heroWindows').innerHTML=`
@@ -390,20 +420,24 @@ function renderCase(slug){
   const next=CASES[(CASES.indexOf(c)+1)%CASES.length];
   const m=caseImg(c.slug);
   const chapter=(t,b)=>`<div class="cs-chapter rv"><h2 class="label">${t}</h2><p class="chapter-copy">${b}</p></div>`;
-  /* a still in a device frame, marked for the video that replaces it */
+  const who=c.client.replace(/&amp;/g,'and');
+  /* the device frame: a film if it has been given one, otherwise a still, and
+     the "replace me" note only while it is still a still */
   const inPhone=(src,cap)=>`
     <figure class="cs-phone rv">
       <span class="phone phone--static">
         <span class="phone__island"></span>
-        ${src?pic(src,'',c.client.replace(/&amp;/g,'and')):ph('r916','9:16')}
-        <span class="cs-phone__badge">Replace — vertical video</span>
+        ${src?shot(src,'',who):ph('r916','9:16')}
+        ${src&&isClip(src)?'':'<span class="cs-phone__badge">Replace — vertical video</span>'}
       </span>
       ${cap?`<figcaption>${cap}</figcaption>`:''}
     </figure>`;
-  const feedItem=(i,video)=>`
-    <span class="cs-feed__item">
-      ${m.v[i]?pic(m.v[i],'r916',c.client.replace(/&amp;/g,'and')):ph('r916','9:16 vertical')}
-      ${video?'<span class="cs-feed__badge">Video</span>':''}
+  /* four slots, each of them a film or a photograph — whichever is chosen in
+     the editor. The badge is no longer decorative: it means this one plays. */
+  const feedItem=i=>`
+    <span class="cs-feed__item${m.v[i]?'':' cs-feed__slot'}">
+      ${m.v[i]?shot(m.v[i],'r916',who):ph('r916','9:16 vertical')}
+      ${isClip(m.v[i])?'<span class="cs-feed__badge">Video</span>':''}
     </span>`;
 
   $q('#caseRoot').innerHTML=`
@@ -446,8 +480,7 @@ function renderCase(slug){
   <div class="wrap sec--tight" style="padding-top:0">
     <div class="sill"><span class="label">The content</span><span class="label">${c.platforms}</span></div>
     <div class="cs-feed rv">
-      ${feedItem(0,true)}${feedItem(1,false)}${feedItem(2,true)}
-      <span class="cs-feed__item cs-feed__slot">${ph('r916','Replace — vertical video')}</span>
+      ${feedItem(0)}${feedItem(1)}${feedItem(2)}${feedItem(3)}
     </div>
   </div></section>
 
@@ -462,6 +495,7 @@ function renderCase(slug){
       <a class="btn btn--solid" href="${U('contact')}"><span>${CE.ctaButton||'Get in touch'}</span><span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </div>`;
+  playClips();
   return c;
 }
 

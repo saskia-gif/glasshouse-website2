@@ -193,7 +193,8 @@ async function openCollection(id){
 
 function hasImageField(fields){
   if(!Array.isArray(fields)) return false;
-  return fields.some(f => f.type === 'image' || hasImageField(f.fields));
+  return fields.some(f => f.type === 'image' || f.of === 'image' || f.of === 'media'
+                          || hasImageField(f.fields));
 }
 
 async function ensureImages(){
@@ -218,6 +219,32 @@ const isVideoPath = p => /\.(mp4|webm|mov|m4v)$/i.test(p||'');
 
 const safeName = n => n.replace(/[^\w.\-]/g,'-');
 const alertBox = msg => alert(msg);
+
+/* An iPhone records HEVC (H.265) inside a .mov unless you tell it not to.
+   Safari plays that; Chrome and Firefox do not, so it looks fine to you and is
+   a blank rectangle to a large share of everyone else. The codec is named in
+   the file's header, so we can say so before it ever reaches the site. */
+async function filmProblem(file, buf){
+  const isVid = /^video\//.test(file.type) || isVideoPath(file.name);
+  if(!isVid) return null;
+  let head;
+  try {
+    head = new Uint8Array(buf ? buf.slice(0, 262144) : await file.slice(0, 262144).arrayBuffer());
+  } catch(e){ return null; }
+  let txt = '';
+  for(let i = 0; i < head.length; i++) txt += String.fromCharCode(head[i]);
+  if(/hvc1|hev1|dvh1|dvhe/.test(txt))
+    return `"${file.name}" is HEVC (H.265) — what an iPhone records by default.\n\n`
+         + `Safari can play it. Chrome and Firefox cannot, so most visitors would see nothing at all.\n\n`
+         + `Two ways round it:\n`
+         + `  · Export it as H.264 / MP4 first, or\n`
+         + `  · iPhone → Settings → Camera → Formats → Most Compatible, then re-record.\n\n`
+         + `Nothing has been uploaded.`;
+  if(/\.mov$/i.test(file.name) && !/avc1/.test(txt))
+    return `"${file.name}" is a QuickTime .mov and its codec is not one browsers agree on.\n\n`
+         + `Export it as MP4 to be safe. Nothing has been uploaded.`;
+  return null;
+}
 
 /* ---------- rendering ---------- */
 function note(text, kind){ const n = el('p','note '+(kind||''),text); return n; }
@@ -411,8 +438,8 @@ function listEditor(f, obj){
       row.append(head);
       if(f.of === 'group'){
         renderGroup(row, f.fields, item);
-      } else if(f.of === 'image'){
-        row.append(imagePicker(arr, i));
+      } else if(f.of === 'image' || f.of === 'media'){
+        row.append(imagePicker(arr, i, {kind: f.of === 'media' ? 'media' : 'image'}));
       } else {
         const i2 = el('input'); i2.type='text'; i2.value = item ?? '';
         i2.oninput = () => { arr[i] = i2.value; markDirty(owner); };
@@ -420,7 +447,8 @@ function listEditor(f, obj){
       }
       box.append(row);
     });
-    const add = el('button','add', f.of === 'image' ? '+ Add image' : '+ Add');
+    const add = el('button','add',
+      f.of === 'media' ? '+ Add picture or film' : f.of === 'image' ? '+ Add image' : '+ Add');
     add.onclick = () => {
       arr.push(f.of === 'group' ? Object.fromEntries(f.fields.map(x=>[x.key,''])) : '');
       markDirty(owner); draw();
@@ -512,6 +540,8 @@ function renderMap(parent){
       for(const f of files){
         const buf = await f.arrayBuffer();
         const video = /^video\//.test(f.type) || isVideoPath(f.name);
+        const bad = await filmProblem(f, buf);
+        if(bad){ alertBox(bad); continue; }
         if(video && buf.byteLength > 3.5*1024*1024 &&
            !confirm(f.name + ' is ' + Math.round(buf.byteLength/1048576) + 'MB. Films over about 3MB make the page slow. Upload anyway?')) continue;
         const dest = (video ? 'assets/video/' : 'assets/img/') + safeName(f.name);
@@ -679,7 +709,8 @@ function imagePicker(obj, key, opts){
     const v = obj[key];
     const src = v && v.includes('/') ? '../' + v : '';
     preview.innerHTML = '';
-    if(!src){ preview.append(el('span','picker-empty','no picture chosen')); return; }
+    if(!src){ preview.append(el('span','picker-empty',
+      kind === 'media' ? 'nothing chosen' : 'no picture chosen')); return; }
     if(isVideoPath(src)){
       const vid = document.createElement('video');
       vid.src = src; vid.muted = true; vid.loop = true; vid.autoplay = true;
@@ -693,7 +724,9 @@ function imagePicker(obj, key, opts){
   };
 
   const options = state.media
-    .filter(m => kind === 'video' ? isVideoPath(m.path) : !isVideoPath(m.path))
+    .filter(m => kind === 'media' ? true
+               : kind === 'video' ? isVideoPath(m.path)
+               : !isVideoPath(m.path))
     .map(m => m.path);
   sel.append(new Option('— none —',''));
   options.forEach(pth => sel.append(new Option(pth.split('/').pop(), pth)));
@@ -708,15 +741,17 @@ function imagePicker(obj, key, opts){
   /* upload straight from here, rather than going to the library first */
   const up = el('label','mini upload'); up.textContent = 'Upload';
   const file = el('input'); file.type = 'file'; file.hidden = true;
-  file.accept = kind === 'video' ? 'video/*' : 'image/*';
+  file.accept = kind === 'video' ? 'video/*' : kind === 'media' ? 'image/*,video/*' : 'image/*';
   file.onchange = async () => {
     const f = file.files[0]; if(!f) return;
     const isVid = /^video\//.test(f.type) || isVideoPath(f.name);
     if(kind === 'video' && !isVid){ alertBox('That slot takes a film. Choose an .mp4.'); file.value=''; return; }
-    if(kind !== 'video' && isVid){ alertBox('That slot takes a picture, not a film.'); file.value=''; return; }
+    if(kind === 'image' && isVid){ alertBox('That slot takes a picture, not a film.'); file.value=''; return; }
     up.textContent = 'Uploading…';
     try {
       const buf = await f.arrayBuffer();
+      const bad = await filmProblem(f, buf);
+      if(bad){ alertBox(bad); up.textContent = 'Upload'; file.value=''; return; }
       if(isVid && buf.byteLength > 3.5*1024*1024 &&
          !confirm('That film is ' + Math.round(buf.byteLength/1048576) + 'MB. Films over about 3MB make the page slow. Use it anyway?')){
         up.textContent = 'Upload'; file.value=''; return;
