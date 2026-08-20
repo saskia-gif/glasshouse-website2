@@ -59,28 +59,7 @@
     "allLabel": "All",
     "countSuffix": "case studies",
     "viewLabel": "View case study",
-    "filters": [
-      {
-        "label": "Wellness",
-        "match": "Wellness"
-      },
-      {
-        "label": "Fashion",
-        "match": "Fashion"
-      },
-      {
-        "label": "Personal Brands",
-        "match": "Personal Brands"
-      },
-      {
-        "label": "Entertainment",
-        "match": "Entertainment"
-      },
-      {
-        "label": "Hospitality",
-        "match": "Hospitality"
-      }
-    ]
+    "filters": []
   },
   "servicesPage": {
     "label": "Services",
