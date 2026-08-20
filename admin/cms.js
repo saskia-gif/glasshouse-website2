@@ -220,6 +220,15 @@ const isVideoPath = p => /\.(mp4|webm|mov|m4v)$/i.test(p||'');
 const safeName = n => n.replace(/[^\w.\-]/g,'-');
 const alertBox = msg => alert(msg);
 
+/* Previews are loaded from the published site, and the site takes a couple of
+   minutes to rebuild after a save. So anything uploaded in this sitting is
+   held here and shown straight from memory — otherwise you get a broken
+   thumbnail for something that uploaded perfectly well. */
+const justUploaded = new Map();          /* assets/… path -> blob URL */
+const rememberUpload = (path, blob) => {
+  try { justUploaded.set(path, URL.createObjectURL(blob)); } catch(e){}
+};
+
 /* ============================================================
    Making a file web-ready, here, before it is uploaded.
 
@@ -670,6 +679,7 @@ function renderMap(parent){
         addWrap.textContent = `Uploading ${ready.name}…`;
         const dest = (video ? 'assets/video/' : 'assets/img/') + ready.name;
         await putBinary(dest, await ready.blob.arrayBuffer(), `Upload ${ready.name}`);
+        rememberUpload(dest, ready.blob);
       }
       state.media = await listMedia();
       state.images = state.media.map(m => m.path);
@@ -757,6 +767,18 @@ function renderMap(parent){
       const next = safeName(name.value.trim());
       const oldName = m.path.split('/').pop();
       if(!next || next === oldName){ name.value = oldName; return; }
+      /* Renaming copies the bytes. Changing the ending therefore does not
+         change what is inside — you get an .mp4 that is still HEVC, which
+         Safari plays and nothing else does. Keep the ending as it was and
+         re-upload instead; the upload converts. */
+      const endOf = n2 => (n2.match(/\.[^.]+$/) || [''])[0].toLowerCase();
+      if(endOf(next) !== endOf(oldName)){
+        alertBox(`Keep the "${endOf(oldName)}" on the end.\n\n`
+          + `Renaming only changes the label — it copies the same file underneath. `
+          + `An .mov renamed to .mp4 is still an .mov inside, and only Safari will play it.\n\n`
+          + `To change the format, upload the original again: the editor converts it on the way in.`);
+        name.value = oldName; return;
+      }
       if(!confirm(`Rename "${oldName}" to "${next}"?\n\nEvery page using it will be updated.`)) { name.value = oldName; return; }
       ren.textContent = 'Renaming…';
       try {
@@ -833,20 +855,31 @@ function imagePicker(obj, key, opts){
 
   const paint = () => {
     const v = obj[key];
-    const src = v && v.includes('/') ? '../' + v : '';
+    const fresh = justUploaded.get(v);
+    const src = fresh || (v && v.includes('/') ? '../' + v : '');
     preview.innerHTML = '';
     if(!src){ preview.append(el('span','picker-empty',
       kind === 'media' ? 'nothing chosen' : 'no picture chosen')); return; }
-    if(isVideoPath(src)){
+    /* the site has not rebuilt yet — say so rather than showing a broken icon */
+    const pending = () => {
+      preview.innerHTML = '';
+      const w = el('span','picker-empty', 'Uploaded — the preview appears once the site finishes rebuilding, about two minutes.');
+      preview.append(w, el('span','picker-name', String(v).split('/').pop()));
+    };
+    if(isVideoPath(v)){
       const vid = document.createElement('video');
       vid.src = src; vid.muted = true; vid.loop = true; vid.autoplay = true;
       vid.playsInline = true; vid.className = 'picker-thumb';
+      vid.onerror = pending;
       preview.append(vid);
     } else {
-      const im = el('img','picker-thumb'); im.src = src; im.alt = ''; im.loading = 'lazy';
+      /* not lazy: a deferred thumbnail never loads and so never errors, and
+         then the "still rebuilding" note would never appear */
+      const im = el('img','picker-thumb'); im.alt = '';
+      im.onerror = pending; im.src = src;
       preview.append(im);
     }
-    preview.append(el('span','picker-name', v.split('/').pop()));
+    preview.append(el('span','picker-name', String(v).split('/').pop()));
   };
 
   const options = state.media
@@ -887,6 +920,7 @@ function imagePicker(obj, key, opts){
         up.textContent = 'Upload'; file.value=''; return;
       }
       await putBinary(dest, buf, `Upload ${ready.name}`);
+      rememberUpload(dest, ready.blob);
       state.media = await listMedia();
       state.images = state.media.map(m => m.path);
       /* offer the new file here without losing what is on screen */
