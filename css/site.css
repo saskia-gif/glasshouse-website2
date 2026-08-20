@@ -703,6 +703,7 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
 @media(max-width:900px){.people{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.people{grid-template-columns:minmax(0,1fr);gap:2.5rem}}
 .person{display:flex;flex-direction:column}
+.person__words{display:flex;flex-direction:column;flex:1}
 .person__img{overflow:hidden;margin-bottom:1.1rem}
 .person__img .pic{transition:transform 1.2s var(--ease)}
 .person:hover .person__img .pic{transform:scale(1.03)}
@@ -711,6 +712,24 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
 .person__note{font-style:italic}
 .person__leads{margin-top:auto;padding-top:1.1rem;font-size:.85rem;
   display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+.person p+p{margin-top:.75rem}
+.person__note{margin-top:1.1rem!important}
+
+/* With only one or two of you, three columns leave a third of the panel bare.
+   Two across instead, each with the portrait beside the words, which also
+   gives a long biography a sensible measure to be read at. */
+@media(min-width:781px){
+  .people--few{grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:clamp(2rem,4vw,4rem)}
+  .people--few .person{display:grid;
+    grid-template-columns:clamp(150px,15vw,215px) minmax(0,1fr);
+    column-gap:clamp(1.1rem,2vw,1.9rem);align-items:start}
+  .people--few .person__img{grid-column:1;grid-row:1 / span 10;margin-bottom:0;
+    position:sticky;top:calc(var(--navh) + 1.5rem)}
+  .people--few .person__words{grid-column:2}
+  .people--few .person h3{margin-top:-.25rem}
+  .people--few .person p{max-width:46ch}
+}
 .people__note{margin-top:clamp(2rem,4vw,3rem);padding-top:1.2rem;border-top:1px solid var(--line);
   max-width:64ch;font-size:.95rem;line-height:1.6;color:var(--body-2)}
 .people__note a{border-bottom:1px solid var(--brown);color:var(--brown)}

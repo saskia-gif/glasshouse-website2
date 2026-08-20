@@ -87,10 +87,36 @@ def absolutise(html):
     return re.sub(r'url\((["\']?)(?!https?:|//|data:|/)', rf'url(\1{BASE}/', html)
 
 
+"""
+Cache-stamping
+--------------
+GitHub Pages tells a browser it may keep css/site.css and js/app.js for a
+while, and the file name never changes, so a returning visitor can go on
+running yesterday's site long after a deploy. That is why a change can be
+live and invisible at the same time.
+
+Every reference now carries ?v= a hash of the file's own contents. Change the
+file and the address changes with it, so browsers fetch it; leave it alone and
+they keep the cached copy, which is the point of caching.
+"""
+import hashlib
+SITE_ASSETS = ("css/site.css", "js/content.js", "js/app.js")
+def _hash(rel):
+    f = ROOT / rel
+    return hashlib.sha1(f.read_bytes()).hexdigest()[:8] if f.is_file() else None
+STAMPS = {a: _hash(a) for a in SITE_ASSETS if _hash(a)}
+
+def stamp(html):
+    for rel, v in STAMPS.items():
+        for form in (f"{BASE}/{rel}", rel):
+            html = html.replace(f'"{form}"', f'"{form}?v={v}"')
+    return html
+
+
 def finish(html):
     if "data-static" not in html:
         html = re.sub(r"<html([^>]*)>", lambda m: f"<html{m.group(1)} data-static=\"1\">", html, count=1)
-    return "<!DOCTYPE html>\n" + absolutise(html)
+    return "<!DOCTYPE html>\n" + stamp(absolutise(html))
 
 
 def write(rel, body):
@@ -115,6 +141,17 @@ def copy_static():
         # stamp the editor's own files with a content hash, so a browser can
         # never serve you yesterday's editor
         import hashlib
+        # cms.js imports these as modules; stamp them inside it first, so the
+        # hash of cms.js below covers the rewritten text
+        cms = OUT / "admin" / "cms.js"
+        if cms.is_file():
+            src = cms.read_text(encoding="utf-8")
+            for mod in ("schema.js", "pages.js", "github.js"):
+                mf = OUT / "admin" / mod
+                if mf.is_file():
+                    mv = hashlib.sha1(mf.read_bytes()).hexdigest()[:8]
+                    src = src.replace(f"'./{mod}'", f"'./{mod}?v={mv}'")
+            cms.write_text(src, encoding="utf-8")
         for name in ("cms.css", "cms.js"):
             f = OUT / "admin" / name
             if f.is_file():

@@ -342,16 +342,29 @@ $q('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}
   }).join('');
 })();
 
-/* three people, shown as equals — no hover mechanic to prop up a short list */
-$q('#people').innerHTML=TEAM.people.map(p=>`
+/* People, shown as equals — no hover mechanic to prop up a short list.
+   A bio is written with blank lines between paragraphs, so it is set as
+   paragraphs rather than run together into one slab. Anything not filled in
+   — a note, a list of accounts — is left out rather than printed empty. */
+const paras = t => String(t || '').trim().split(/\n\s*\n/)
+  .map(x => x.trim().replace(/\n+/g, ' ')).filter(Boolean)
+  .map(x => `<p>${x}</p>`).join('');
+
+const people = TEAM.people || [];
+$q('#people').innerHTML = people.map(p => `
   <article class="person rv">
     <div class="person__img">${imgPath(p.img)?pic(imgPath(p.img),'r45',p.name):ph('r45','Replace — portrait')}</div>
-    <h3 class="display">${p.name}</h3>
-    <span class="label">${p.role}</span>
-    <p>${p.bio}</p>
-    <p class="person__note">${p.note}</p>
-    <div class="person__leads"><span class="label">Leads</span> ${p.leads.join(' · ')}</div>
+    <div class="person__words">
+      <h3 class="display">${p.name}</h3>
+      <span class="label">${p.role || ''}</span>
+      ${paras(p.bio)}
+      ${p.note ? `<p class="person__note">${p.note}</p>` : ''}
+      ${(p.leads||[]).length
+        ? `<div class="person__leads"><span class="label">Leads</span> ${p.leads.join(' · ')}</div>` : ''}
+    </div>
   </article>`).join('');
+/* one or two people in a three-across grid leaves a third of the room empty */
+if($('#people')) $('#people').classList.toggle('people--few', people.length <= 2);
 
 $q('#values').innerHTML=VALUES.map((v,i)=>`
   <div class="value rv"><span class="label">${String(i+1).padStart(2,'0')}</span>
