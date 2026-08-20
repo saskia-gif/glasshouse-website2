@@ -426,25 +426,45 @@ $q('#vacancies').innerHTML=VACANCIES.length?VACANCIES.map(v=>`
 
 /* ---- work index ---- */
 const WP=(COPY.workPage||{});
-const allServices=[...new Set(CASES.flatMap(c=>c.services))];
 const ALL_LABEL=WP.allLabel||'All';
 $q('#workCount').textContent=`${CASES.length} ${WP.countSuffix||'case studies'}`;
 
-/* The filter bar. If filters are set in the editor those are used, in that
-   order; otherwise one button per service found on the case studies. Each
-   filter matches a case study when any of its comma-separated terms appears
-   in that study's Services. */
-const FILTERS = (Array.isArray(WP.filters) && WP.filters.length)
-  ? WP.filters.filter(f => f && (f.label || f.match))
-              .map(f => ({label: f.label || f.match, match: (f.match || f.label || '')
-                                 .split(',').map(x => x.trim()).filter(Boolean)}))
-  : allServices.map(sv => ({label: sv, match: [sv]}));
+/* Services are typed by hand on each case study, so the same one turns up as
+   "Social media management" on one and "Social Media Management" on another.
+   Left alone that built two buttons for one thing. Compare without case, and
+   keep the first spelling that appears. */
+const norm = t => String(t||'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim().toLowerCase();
+const allServices = (() => {
+  const seen = new Map();
+  CASES.flatMap(c => c.services || []).forEach(sv => {
+    const k = norm(sv); if(k && !seen.has(k)) seen.set(k, sv);
+  });
+  return [...seen.values()];
+})();
 
-$q('#filters').innerHTML = [{label:ALL_LABEL, match:null}, ...FILTERS]
-  .map((f,i) => `<button aria-pressed="${i===0}" data-i="${i-1}">${f.label}</button>`).join('');
+/* The filter bar. Turn it off in the editor and there are no buttons at all —
+   every case study simply shows. Left on: the filters set in the editor, in
+   that order, or one button per service found on the case studies. A filter
+   matches when any of its comma-separated terms appears in that study's
+   Services. */
+const SHOW_FILTERS = WP.showFilters !== false;
+const FILTERS = !SHOW_FILTERS ? []
+  : (Array.isArray(WP.filters) && WP.filters.length)
+    ? WP.filters.filter(f => f && (f.label || f.match))
+                .map(f => ({label: f.label || f.match, match: (f.match || f.label || '')
+                                   .split(',').map(x => norm(x)).filter(Boolean)}))
+    : allServices.map(sv => ({label: sv, match: [norm(sv)]}));
+
+if(SHOW_FILTERS && FILTERS.length){
+  $q('#filters').innerHTML = [{label:ALL_LABEL, match:null}, ...FILTERS]
+    .map((f,i) => `<button aria-pressed="${i===0}" data-i="${i-1}">${f.label}</button>`).join('');
+} else if($('#filters')){
+  $('#filters').innerHTML = '';
+  $('#filters').hidden = true;      /* no lone "All" button with nothing to do */
+}
 function renderCards(index){
   const f = (index==null||index<0) ? null : FILTERS[index];
-  const list = !f ? CASES : CASES.filter(c => f.match.some(m => c.services.includes(m)));
+  const list = !f ? CASES : CASES.filter(c => (c.services||[]).some(sv => f.match.includes(norm(sv))));
   $q('#workCards').innerHTML=list.map(c=>`
     <a class="card rv" href="${U(F.work,c.slug)}">
       <span class="card__frame">

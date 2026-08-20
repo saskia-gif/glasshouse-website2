@@ -82,6 +82,8 @@ export const SCHEMA = [
       {key:'workPage', label:'Work page', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
         {key:'heading', label:'Heading', type:'text'},
+        {key:'showFilters', label:'Show the filter buttons', type:'bool',
+         help:'Turn this off and the Work page has no buttons at all \u2014 every case study simply shows.'},
         {key:'allLabel', label:'First filter button', type:'text'},
         {key:'filters', label:'Filter buttons', type:'list', of:'group', summary:'label',
          help:'Add, remove and reorder the buttons on the Work page. Leave the whole list empty to build it automatically from the case studies.', fields:[
