@@ -220,14 +220,60 @@ const isVideoPath = p => /\.(mp4|webm|mov|m4v)$/i.test(p||'');
 const safeName = n => n.replace(/[^\w.\-]/g,'-');
 const alertBox = msg => alert(msg);
 
-/* Previews are loaded from the published site, and the site takes a couple of
-   minutes to rebuild after a save. So anything uploaded in this sitting is
-   held here and shown straight from memory — otherwise you get a broken
-   thumbnail for something that uploaded perfectly well. */
-const justUploaded = new Map();          /* assets/… path -> blob URL */
+/* ============================================================
+   Seeing your own uploads straight away.
+
+   Everything visual in here — the library, the pickers, the preview panel —
+   is drawn from the PUBLISHED site, and the site runs a couple of minutes
+   behind whatever you just saved. So a file that uploaded perfectly reads as
+   missing until a rebuild catches up, which looks exactly like a fault.
+
+   Three places to get a file from, tried in order:
+     1. memory, if it was uploaded in this sitting — instant, no network
+     2. the published site — correct for anything more than a few minutes old
+     3. GitHub itself, when the published site does not have it yet
+
+   Step 3 is what closes the gap, over the same connection the editor already
+   uses for everything else.
+   ============================================================ */
+const seen = new Map();                  /* assets/… path -> object URL */
 const rememberUpload = (path, blob) => {
-  try { justUploaded.set(path, URL.createObjectURL(blob)); } catch(e){}
+  try {
+    const old = seen.get(path); if(old) URL.revokeObjectURL(old);
+    seen.set(path, URL.createObjectURL(blob));
+    previewMedia();                      /* let the preview panel have it too */
+  } catch(e){}
 };
+
+async function fromGitHub(path){
+  if(seen.has(path)) return seen.get(path);
+  try {
+    const {buffer} = await getBinary(path);
+    const url = URL.createObjectURL(new Blob([buffer]));
+    seen.set(path, url);
+    previewMedia();
+    return url;
+  } catch(e){ return null; }
+}
+
+/* point an <img> or <video> at a file, falling back as it needs to */
+function showMedia(node, path, onGone){
+  const ready = seen.get(path);
+  if(ready){ node.src = ready; return; }
+  node.onerror = async () => {
+    node.onerror = null;
+    const url = await fromGitHub(path);
+    if(url) node.src = url;
+    else if(onGone) onGone();
+  };
+  node.src = '../' + path;
+}
+
+/* the preview panel is a different document, so hand it the same object URLs */
+function previewMedia(){
+  try { sessionStorage.setItem('gh-preview-media',
+          JSON.stringify(Object.fromEntries(seen))); } catch(e){}
+}
 
 /* ============================================================
    Making a file web-ready, here, before it is uploaded.
@@ -699,9 +745,11 @@ function renderMap(parent){
     const row = el('div','media-row');
     const thumb = isVideoPath(m.path) ? (() => {
       const v = document.createElement('video');
-      v.src = '../' + m.path; v.muted = true; v.loop = true; v.autoplay = true;
-      v.playsInline = true; v.className = 'thumb'; return v;
-    })() : (() => { const i = el('img','thumb'); i.src = '../' + m.path; i.loading='lazy'; i.alt=''; return i; })();
+      v.muted = true; v.loop = true; v.autoplay = true;
+      v.playsInline = true; v.className = 'thumb';
+      showMedia(v, m.path); return v;
+    })() : (() => { const i = el('img','thumb'); i.alt='';
+      showMedia(i, m.path); return i; })();
     row.append(thumb);
 
     const main = el('div','media-main');
@@ -855,29 +903,24 @@ function imagePicker(obj, key, opts){
 
   const paint = () => {
     const v = obj[key];
-    const fresh = justUploaded.get(v);
-    const src = fresh || (v && v.includes('/') ? '../' + v : '');
     preview.innerHTML = '';
-    if(!src){ preview.append(el('span','picker-empty',
+    if(!(v && v.includes('/'))){ preview.append(el('span','picker-empty',
       kind === 'media' ? 'nothing chosen' : 'no picture chosen')); return; }
-    /* the site has not rebuilt yet — say so rather than showing a broken icon */
     const pending = () => {
       preview.innerHTML = '';
-      const w = el('span','picker-empty', 'Uploaded — the preview appears once the site finishes rebuilding, about two minutes.');
-      preview.append(w, el('span','picker-name', String(v).split('/').pop()));
+      preview.append(el('span','picker-empty', 'This file is not on the site or in the repository.'),
+                     el('span','picker-name', String(v).split('/').pop()));
     };
     if(isVideoPath(v)){
       const vid = document.createElement('video');
-      vid.src = src; vid.muted = true; vid.loop = true; vid.autoplay = true;
+      vid.muted = true; vid.loop = true; vid.autoplay = true;
       vid.playsInline = true; vid.className = 'picker-thumb';
-      vid.onerror = pending;
       preview.append(vid);
+      showMedia(vid, v, pending);
     } else {
-      /* not lazy: a deferred thumbnail never loads and so never errors, and
-         then the "still rebuilding" note would never appear */
       const im = el('img','picker-thumb'); im.alt = '';
-      im.onerror = pending; im.src = src;
       preview.append(im);
+      showMedia(im, v, pending);
     }
     preview.append(el('span','picker-name', String(v).split('/').pop()));
   };
@@ -948,14 +991,53 @@ function markDirty(file){
   if(file) state.dirtyFiles.add(file);
   else if(state.id && !state.page) state.dirtyFiles.add(sectionFile(state.id));
   state.dirty = true; $('#save').disabled = false;
+  publishWatch++;                          /* stop reporting on the last save */
   $('#status').textContent = 'Unsaved changes'; schedulePreview();
 }
 function markClean(){ state.dirty = false; state.dirtyFiles.clear();
-  $('#save').disabled = true; $('#status').textContent = ''; schedulePreview(); }
+  $('#save').disabled = true; schedulePreview(); }
 const sectionFile = id => (SCHEMA.find(x => x.id === id) || {}).file;
+
+/* ============================================================
+   Saying when it is actually live.
+
+   "Saved" only means it reached GitHub. The site then rebuilds, which takes a
+   couple of minutes, and longer if you save again while it is working. Rather
+   than guess, we ask the published site for the very file that was just
+   written and wait until it matches. Then it really is live.
+   ============================================================ */
+let publishWatch = 0;
+async function watchPublish(written){
+  const mine = ++publishWatch;
+  const began = Date.now();
+  const status = $('#status');
+  const step = async () => {
+    if(mine !== publishWatch) return;             /* a newer save took over */
+    let live = true;
+    for(const [path, text] of written){
+      try {
+        const r = await fetch('../' + path + '?t=' + Date.now(), {cache:'no-store'});
+        if(!r.ok || (await r.text()) !== text){ live = false; break; }
+      } catch(e){ live = false; break; }
+    }
+    if(mine !== publishWatch) return;
+    if(live){ status.textContent = 'Published — live now.'; return; }
+    const mins = Math.round((Date.now() - began) / 60000);
+    if(Date.now() - began > 10 * 60 * 1000){
+      status.textContent = 'Saved, but the site has not published after ' + mins
+        + ' minutes. Check the Actions tab on GitHub.';
+      return;
+    }
+    status.textContent = 'Saved. Publishing' + (mins >= 2 ? ' — ' + mins + ' min so far' : '…');
+    setTimeout(step, 5000);
+  };
+  status.textContent = 'Saved. Publishing…';
+  setTimeout(step, 4000);
+}
 
 $('#save').addEventListener('click', async () => {
   const btn = $('#save'); btn.disabled = true; btn.textContent = 'Saving…';
+  const written = [];
   try {
     if(state.page){
       /* a page can span several files — write only the ones that changed */
@@ -966,15 +1048,17 @@ $('#save').addEventListener('click', async () => {
         const text = JSON.stringify(holder.data, null, 2) + '\n';
         JSON.parse(text);                   // never commit something broken
         holder.sha = await putFile(file, text, holder.sha, `Edit ${label} via editor`);
+        written.push([file, text]);
       }
     } else {
       const c = SCHEMA.find(x => x.id === state.id);
       const text = JSON.stringify(state.data, null, 2) + '\n';
       JSON.parse(text);
       state.sha = await putFile(c.file, text, state.sha, `Edit ${c.title} via editor`);
+      written.push([c.file, text]);
     }
     markClean();
-    $('#status').textContent = 'Saved. The site updates in about a minute.';
+    watchPublish(written);
   } catch(err){
     alert('Not saved: ' + err.message);
     $('#status').textContent = 'Not saved';

@@ -6,7 +6,20 @@
 /* Where the site lives. The build step rewrites this for the generated pages;
    it stays '' when you preview locally. */
 window.BASE = (document.documentElement.dataset.base || '').replace(/\/$/,'');
-const asset = p => (!p || /^(https?:)?\/\//.test(p) || p.startsWith(window.BASE + '/')) ? p : window.BASE + '/' + p.replace(/^\//,'');
+/* While the editor is previewing, it hands over anything it has in hand that
+   the published site does not have yet — so a picture or film you uploaded
+   thirty seconds ago shows in the preview instead of a gap. Live visitors
+   never have this: the key only exists inside the editor's own tab. */
+const fresh = (() => {
+  try { return JSON.parse(sessionStorage.getItem('gh-preview-media') || '{}'); }
+  catch(e){ return {}; }
+})();
+const asset = p => {
+  if(!p) return p;
+  if(fresh[p]) return fresh[p];
+  return (/^(https?:)?\/\//.test(p) || p.startsWith(window.BASE + '/'))
+    ? p : window.BASE + '/' + p.replace(/^\//,'');
+};
 window.asset = asset;
 
 const CONTENT_FILES = {
