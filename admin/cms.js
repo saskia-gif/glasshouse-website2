@@ -220,6 +220,123 @@ const isVideoPath = p => /\.(mp4|webm|mov|m4v)$/i.test(p||'');
 const safeName = n => n.replace(/[^\w.\-]/g,'-');
 const alertBox = msg => alert(msg);
 
+/* ============================================================
+   Making a file web-ready, here, before it is uploaded.
+
+   The problem this solves: an iPhone records HEVC video inside a .mov and
+   HEIC photographs, at 4K. Safari can read all of that — Chrome and Firefox
+   cannot read any of it, and a 90MB file has no business in a website anyway.
+
+   Your Mac can already decode those files, or Safari could not show them to
+   you. So we let the browser do the decoding, redraw the result at a sensible
+   size, and record that back out as MP4 or WebP. The original never leaves
+   your machine; only the small, universal version is uploaded.
+
+   Film is re-recorded as it plays, so a ten second clip takes about ten
+   seconds. There is no way round that in a browser, and it is still faster
+   than any other route.
+   ============================================================ */
+const WEB_W = 720;              /* 9:16 comes out 720x1280 */
+const WEB_IMG_EDGE = 1600;
+const PASSTHROUGH_BYTES = 3.5 * 1024 * 1024;
+
+const swapExt = (name, ext) => safeName(name.replace(/\.[^.]+$/, '')) + ext;
+
+function recorderMime(){
+  if(typeof MediaRecorder === 'undefined') return null;
+  const ok = t => { try { return MediaRecorder.isTypeSupported(t); } catch(e){ return false; } };
+  /* Only ever ask for MP4 with H.264 spelled out. Chrome says yes to a bare
+     "video/mp4" and then puts VP9 inside it, which Safari cannot play — an
+     .mp4 that is a lie. Better an honest .webm. */
+  const avc = ['video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1.4D401E',
+               'video/mp4;codecs=h264'].find(ok);
+  if(avc) return avc;
+  return ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(ok) || null;
+}
+
+async function preparePicture(file){
+  const url = URL.createObjectURL(file);
+  try {
+    const im = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error(
+        `Your browser cannot open "${file.name}". If it is a HEIC, open it in Preview and File → Export as JPEG.`));
+      i.src = url;
+    });
+    let {naturalWidth:w, naturalHeight:h} = im;
+    const sc = Math.min(1, WEB_IMG_EDGE / Math.max(w, h));
+    w = Math.round(w * sc); h = Math.round(h * sc);
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    cv.getContext('2d').drawImage(im, 0, 0, w, h);
+    let blob = await new Promise(r => cv.toBlob(r, 'image/webp', 0.82));
+    let ext = '.webp';
+    if(!blob || blob.type !== 'image/webp'){          /* older Safari cannot write webp */
+      blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.85));
+      ext = '.jpg';
+    }
+    if(!blob) throw new Error(`Could not re-save "${file.name}".`);
+    return {blob, name: swapExt(file.name, ext),
+            note: `${Math.round(file.size/1024)}KB → ${Math.round(blob.size/1024)}KB`};
+  } finally { URL.revokeObjectURL(url); }
+}
+
+async function prepareFilm(file, say){
+  /* already small and already the one codec everyone can read? leave it alone */
+  if(/\.mp4$/i.test(file.name) && file.size <= PASSTHROUGH_BYTES && !(await filmProblem(file)))
+    return {blob: file, name: safeName(file.name), note: 'already web-ready'};
+
+  const mime = recorderMime();
+  if(!mime) throw new Error('This browser cannot convert film. Open the editor in Safari and try again.');
+
+  const url = URL.createObjectURL(file);
+  try {
+    const v = document.createElement('video');
+    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+    await new Promise((res, rej) => {
+      v.onloadedmetadata = res;
+      v.onerror = () => rej(new Error(
+        `Your browser cannot play "${file.name}", so it cannot be converted here. `
+        + `Open it in QuickTime and File → Export As → 720p, then try again.`));
+    });
+    if(!v.videoWidth) throw new Error(`"${file.name}" has no picture this browser can read.`);
+
+    const sc = Math.min(1, WEB_W / Math.min(v.videoWidth, v.videoHeight));
+    const w = Math.round(v.videoWidth * sc / 2) * 2;
+    const h = Math.round(v.videoHeight * sc / 2) * 2;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d');
+
+    const stream = cv.captureStream(24);
+    const rec = new MediaRecorder(stream, {mimeType: mime, videoBitsPerSecond: 1200000});
+    const chunks = [];
+    rec.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    const done = new Promise(r => { rec.onstop = r; });
+
+    rec.start(250);
+    await v.play();
+    let raf;
+    const draw = () => { ctx.drawImage(v, 0, 0, w, h);
+      if(say && v.duration) say(Math.min(99, Math.round(v.currentTime / v.duration * 100)));
+      raf = requestAnimationFrame(draw); };
+    draw();
+    await new Promise(r => { v.onended = r; });
+    cancelAnimationFrame(raf);
+    rec.stop();
+    await done;
+
+    const ext = mime.startsWith('video/mp4') ? '.mp4' : '.webm';
+    const blob = new Blob(chunks, {type: mime.split(';')[0]});
+    if(!blob.size) throw new Error(`Nothing came out when converting "${file.name}".`);
+    return {blob, name: swapExt(file.name, ext),
+            note: `${Math.round(file.size/1048576*10)/10}MB → ${Math.round(blob.size/1048576*10)/10}MB`};
+  } finally { URL.revokeObjectURL(url); }
+}
+
+const prepare = (file, say) =>
+  (/^video\//.test(file.type) || isVideoPath(file.name)) ? prepareFilm(file, say) : preparePicture(file);
+
+
 /* An iPhone records HEVC (H.265) inside a .mov unless you tell it not to.
    Safari plays that; Chrome and Firefox do not, so it looks fine to you and is
    a blank rectangle to a large share of everyone else. The codec is named in
@@ -461,12 +578,18 @@ function listEditor(f, obj){
 
 /* top-level list (case studies, journal, …) */
 function renderList(parent, c, arr){
+  /* Which file these records belong to, captured while the panel is being
+     drawn — by the time a button is clicked, renderFile has been cleared.
+     Every other list editor in here does this; this one did not, so Add new,
+     Move up, Move down and Delete all threw the moment you pressed them. */
+  const owner = renderFile;
   const box = el('div','records');
   const draw = () => {
     box.innerHTML = '';
     arr.forEach((item, i) => {
       const card = el('details','record');
-      const sum = el('summary', null, String(item[c.summary] ?? item[0] ?? `Item ${i+1}`) || `Item ${i+1}`);
+      const label = String(item[c.summary] ?? item[0] ?? '').trim();
+      const sum = el('summary', null, label || `New — give it a name`);
       card.append(sum);
       const body = el('div','record-body');
       if(Array.isArray(item)){
@@ -538,14 +661,15 @@ function renderMap(parent){
     addWrap.textContent = 'Uploading…';
     try {
       for(const f of files){
-        const buf = await f.arrayBuffer();
         const video = /^video\//.test(f.type) || isVideoPath(f.name);
-        const bad = await filmProblem(f, buf);
-        if(bad){ alertBox(bad); continue; }
-        if(video && buf.byteLength > 3.5*1024*1024 &&
-           !confirm(f.name + ' is ' + Math.round(buf.byteLength/1048576) + 'MB. Films over about 3MB make the page slow. Upload anyway?')) continue;
-        const dest = (video ? 'assets/video/' : 'assets/img/') + safeName(f.name);
-        await putBinary(dest, buf, `Upload ${f.name}`);
+        let ready;
+        try {
+          addWrap.textContent = `Preparing ${f.name}…`;
+          ready = await prepare(f, pc => { addWrap.textContent = `Converting ${f.name}… ${pc}%`; });
+        } catch(err){ alertBox(err.message); continue; }
+        addWrap.textContent = `Uploading ${ready.name}…`;
+        const dest = (video ? 'assets/video/' : 'assets/img/') + ready.name;
+        await putBinary(dest, await ready.blob.arrayBuffer(), `Upload ${ready.name}`);
       }
       state.media = await listMedia();
       state.images = state.media.map(m => m.path);
@@ -700,7 +824,9 @@ async function repointEverywhere(from, to){
 
 function imagePicker(obj, key, opts){
   const owner = renderFile;
-  const kind = (opts && opts.kind) || 'image';
+  /* Every slot takes either now, so the picker offers everything unless the
+     slot is explicitly film-only. */
+  const kind = (opts && opts.kind) || 'media';
   const box = el('div','picker');
   const preview = el('div','picker-preview');
   const sel = el('select');
@@ -724,9 +850,9 @@ function imagePicker(obj, key, opts){
   };
 
   const options = state.media
-    .filter(m => kind === 'media' ? true
-               : kind === 'video' ? isVideoPath(m.path)
-               : !isVideoPath(m.path))
+    .filter(m => kind === 'video' ? isVideoPath(m.path)
+               : kind === 'image' ? !isVideoPath(m.path)
+               : true)
     .map(m => m.path);
   sel.append(new Option('— none —',''));
   options.forEach(pth => sel.append(new Option(pth.split('/').pop(), pth)));
@@ -741,27 +867,26 @@ function imagePicker(obj, key, opts){
   /* upload straight from here, rather than going to the library first */
   const up = el('label','mini upload'); up.textContent = 'Upload';
   const file = el('input'); file.type = 'file'; file.hidden = true;
-  file.accept = kind === 'video' ? 'video/*' : kind === 'media' ? 'image/*,video/*' : 'image/*';
+  file.accept = kind === 'video' ? 'video/*' : 'image/*,video/*';
   file.onchange = async () => {
     const f = file.files[0]; if(!f) return;
     const isVid = /^video\//.test(f.type) || isVideoPath(f.name);
     if(kind === 'video' && !isVid){ alertBox('That slot takes a film. Choose an .mp4.'); file.value=''; return; }
-    if(kind === 'image' && isVid){ alertBox('That slot takes a picture, not a film.'); file.value=''; return; }
     up.textContent = 'Uploading…';
     try {
-      const buf = await f.arrayBuffer();
-      const bad = await filmProblem(f, buf);
-      if(bad){ alertBox(bad); up.textContent = 'Upload'; file.value=''; return; }
-      if(isVid && buf.byteLength > 3.5*1024*1024 &&
-         !confirm('That film is ' + Math.round(buf.byteLength/1048576) + 'MB. Films over about 3MB make the page slow. Use it anyway?')){
-        up.textContent = 'Upload'; file.value=''; return;
-      }
-      const dest = (isVid ? 'assets/video/' : 'assets/img/') + safeName(f.name);
+      let ready;
+      try {
+        up.textContent = 'Preparing…';
+        ready = await prepare(f, pc => { up.textContent = `Converting ${pc}%`; });
+      } catch(err){ alertBox(err.message); up.textContent = 'Upload'; file.value=''; return; }
+      up.textContent = 'Uploading…';
+      const buf = await ready.blob.arrayBuffer();
+      const dest = (isVid ? 'assets/video/' : 'assets/img/') + ready.name;
       const existed = state.media.some(m => m.path === dest);
-      if(existed && !confirm('There is already a file called "' + safeName(f.name) + '". Replace it everywhere it is used?')){
+      if(existed && !confirm('There is already a file called "' + ready.name + '". Replace it everywhere it is used?')){
         up.textContent = 'Upload'; file.value=''; return;
       }
-      await putBinary(dest, buf, `Upload ${f.name}`);
+      await putBinary(dest, buf, `Upload ${ready.name}`);
       state.media = await listMedia();
       state.images = state.media.map(m => m.path);
       /* offer the new file here without losing what is on screen */

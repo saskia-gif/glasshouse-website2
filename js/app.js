@@ -28,14 +28,19 @@ const HOME=B+'/';
 const ALT=(window.ALTTEXT||{});
 /* alt text set in the editor wins; otherwise we fall back to something sensible */
 const altFor=(src,fallback='')=>String(ALT[src]||fallback||'').replace(/"/g,'&quot;');
-const pic=(src,cls,alt='')=>`<img class="pic ${cls}" src="${window.asset(src)}" alt="${altFor(src,alt)}" loading="lazy" decoding="async">`;
+const still=(src,cls,alt='')=>`<img class="pic ${cls}" src="${window.asset(src)}" alt="${altFor(src,alt)}" loading="lazy" decoding="async">`;
 /* A slot in the work pages takes either. `clip` is silent and looped, and does
    not start until the tile is on screen — see playClips() below. */
 const isClip=p=>/\.(mp4|webm|m4v|mov|ogv)$/i.test(p||'');
 const clip=(src,cls,alt='')=>`<video class="pic clip ${cls}" src="${window.asset(src)}"
    muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture
    aria-label="${altFor(src,alt)}"></video>`;
-const shot=(src,cls,alt='')=>isClip(src)?clip(src,cls,alt):pic(src,cls,alt);
+/* Anywhere the site draws a picture it will draw a film instead if that is
+   what it has been given. One definition, so every slot on every page — hero
+   cards, galleries, the moving band, article pictures, team, services — takes
+   either without any of them needing to know about it. */
+const pic=(src,cls,alt='')=>isClip(src)?clip(src,cls,alt):still(src,cls,alt);
+const shot=pic;
 /* Every picture is chosen in the editor. These read the name stored on each
    record (e.g. "gigiA") and turn it into a real file path via images.json. */
 const imgPath=v=>{
@@ -847,7 +852,7 @@ function route(){
   closeMenu();
   window.scrollTo({top:0,behavior:'auto'});
   document.body.classList.remove('is-dark');
-  requestAnimationFrame(()=>{observeReveals();updateInside();watchMetrics();activateRows();placeFilm();if(curtainUp)flushMetrics();});
+  requestAnimationFrame(()=>{observeReveals();updateInside();watchMetrics();activateRows();placeFilm();playClips();if(curtainUp)flushMetrics();});
 }
 
 /* old #/ links keep working */
