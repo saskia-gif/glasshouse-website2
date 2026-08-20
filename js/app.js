@@ -165,14 +165,24 @@ onPhone.addEventListener?onPhone.addEventListener('change',placeFilm):onPhone.ad
 /* the wall of work — real client stills, moving slowly */
 /* The moving band and the mobile grid. Choose pictures in the editor, or leave
    the list empty and they build themselves from the case studies. */
+/* The band near the foot of the homepage, and the four-up grid on a phone,
+   build themselves from the case studies when nothing has been chosen for
+   them. Those galleries now hold film as well as stills, and a strip of
+   eighteen looping videos above the footer is neither the intention nor
+   kind to anyone's phone — so when it picks for itself it picks stills only.
+   Choose films in “The moving band” deliberately and they are honoured. */
+const stillsOf = c => (c.gallery||[]).map(imgPath).filter(Boolean).filter(src => !isClip(src));
+const cardOf   = c => imgPath(c.card);
+
 const chosenWall=((COPY.homeWall||{}).images||[]).map(imgPath).filter(Boolean);
-const WALL=chosenWall.length
-  ? chosenWall
-  : CASES.flatMap(c=>(c.gallery||[]).slice(0,2)).map(imgPath).filter(Boolean);
-$q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
+const autoWall = CASES.flatMap(c => stillsOf(c).slice(0,2));
+const WALL = chosenWall.length ? chosenWall
+  : (autoWall.length ? autoWall : CASES.map(cardOf).filter(Boolean));
+if(WALL.length) $q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
 
 const chosenGrid=((COPY.homeWall||{}).phoneImages||[]).map(imgPath).filter(Boolean);
-const PH_GRID=(chosenGrid.length?chosenGrid:CASES.map(c=>(c.gallery||[])[0]).map(imgPath).filter(Boolean)).slice(0,4);
+const autoGrid = CASES.map(c => stillsOf(c)[0] || cardOf(c)).filter(Boolean);
+const PH_GRID=(chosenGrid.length?chosenGrid:autoGrid).slice(0,4);
 if($('#phGrid'))$q('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client content')).join('');
 
 /* the homepage portrait — a picture once one is chosen, a brief until then */
