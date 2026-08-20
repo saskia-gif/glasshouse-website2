@@ -175,9 +175,14 @@ const stillsOf = c => (c.gallery||[]).map(imgPath).filter(Boolean).filter(src =>
 const cardOf   = c => imgPath(c.card);
 
 const chosenWall=((COPY.homeWall||{}).images||[]).map(imgPath).filter(Boolean);
-const autoWall = CASES.flatMap(c => stillsOf(c).slice(0,2));
-const WALL = chosenWall.length ? chosenWall
-  : (autoWall.length ? autoWall : CASES.map(cardOf).filter(Boolean));
+/* Galleries are mostly film now, so stills alone can leave the strip half
+   empty. Top it up with each case study's card picture until there is enough
+   to fill the width, no duplicates. */
+const autoWall = [...new Set([
+  ...CASES.flatMap(c => stillsOf(c).slice(0,2)),
+  ...CASES.map(cardOf)
+])].filter(Boolean);
+const WALL = (chosenWall.length ? chosenWall : autoWall).slice(0,12);
 if(WALL.length) $q('#wall').innerHTML=[...WALL,...WALL].map(src=>pic(src,'r916','Client content')).join('');
 
 const chosenGrid=((COPY.homeWall||{}).phoneImages||[]).map(imgPath).filter(Boolean);
