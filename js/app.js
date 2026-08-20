@@ -41,6 +41,18 @@ const clip=(src,cls,alt='')=>`<video class="pic clip ${cls}" src="${window.asset
    either without any of them needing to know about it. */
 const pic=(src,cls,alt='')=>isClip(src)?clip(src,cls,alt):still(src,cls,alt);
 const shot=pic;
+
+/* ---- the logo, on every page ----
+   The top bar, the loading screen and the footer all read from the same two
+   slots in the editor (Whole site, Pictures & film, "Your logo"), so changing
+   one changes it everywhere rather than needing the file swapped by hand. */
+(function brandMarks(){
+  const L = window.LOGO || {};
+  const set = (sel, path) => { if(!path) return;
+    document.querySelectorAll(sel).forEach(img => { img.src = window.asset(path); }); };
+  set('.loader__mark, .brand img', L.nav);
+  set('.foot__logo', L.footer);
+})();
 /* Every picture is chosen in the editor. These read the name stored on each
    record (e.g. "gigiA") and turn it into a real file path via images.json. */
 const imgPath=v=>{

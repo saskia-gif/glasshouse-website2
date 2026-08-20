@@ -65,6 +65,7 @@ async function loadContent(){
   window.VIDEO  = data.IMAGES._video;
   window.POSTER = data.IMAGES._poster;
   window.ALTTEXT = data.IMAGES._alt || {};
+  window.LOGO = {nav: data.IMAGES._logoNav || '', footer: data.IMAGES._logoFooter || ''};
 
   /* the editor stores lists as {items:[…]} — unwrap them for the site */
   const unwrap = v => (v && !Array.isArray(v) && Array.isArray(v.items)) ? v.items : v;

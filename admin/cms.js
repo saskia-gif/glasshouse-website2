@@ -718,6 +718,20 @@ function renderKeyed(parent, c){
 function renderMap(parent){
   /* 1. the homepage film and its still, which live in images.json */
   const film = el('div','records');
+  /* 0. the logo, which is on every page */
+  const brand = el('div','records');
+  brand.append(el('h3','sub','Your logo'));
+  brand.append(note('The wordmark in the top bar and on the loading screen, and the '
+    + 'lockup in the footer. A PNG with a transparent background works best.', ''));
+  [['_logoNav','Top bar and loading screen','image'],
+   ['_logoFooter','Footer','image']].forEach(([key,label,kind]) => {
+    const row = el('div','field');
+    row.append(el('label',null,label));
+    row.append(imagePicker(state.data, key, {kind}));
+    brand.append(row);
+  });
+  parent.append(brand);
+
   film.append(el('h3','sub','The homepage film'));
   [['_video','Film (mp4)','video'],['_poster','Still frame shown before it plays','image']].forEach(([key,label,kind]) => {
     const row = el('div','field');
