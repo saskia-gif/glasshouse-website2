@@ -47,6 +47,11 @@ const imgPath=v=>{
   if(!v) return '';
   return v.includes('/') ? v : (IMG[v]||'');   /* a path, or an old nickname */
 };
+/* A case study you have only half filled in must never take the site down.
+   Until now four places read metrics[0].fig directly, so one new entry with
+   no numbers yet threw before the router had run — no pages, and the build
+   that publishes the site failed with it. */
+const firstMetric=c=>(((c&&c.metrics)||[])[0])||null;
 const caseImg=slug=>{const c=CASES.find(x=>x.slug===slug)||{};
   return {card:imgPath(c.card), v:(c.gallery||[]).map(imgPath).filter(Boolean)};};
 const jrnImg=a=>imgPath(a&&a.img);
@@ -184,7 +189,7 @@ $q('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
   <a class="work-row" href="${U(F.work,c.slug)}">
     <span class="work-row__top">
       <span class="work-row__name display">${c.client}</span>
-      <span class="work-row__no">${String(i+1).padStart(2,'0')} / ${c.metrics[0].fig}</span>
+      <span class="work-row__no">${String(i+1).padStart(2,'0')}${firstMetric(c)?' / '+firstMetric(c).fig:''}</span>
     </span>
     <span class="work-row__reveal"><span class="work-row__body">
       <span>
@@ -235,7 +240,7 @@ $q('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
       ${c?`<a class="svc-block__proof" href="${U(F.work,c.slug)}">
             <span class="label">Seen in practice</span>
             <span class="display md">${c.client}</span>
-            <span class="svc-block__fig">${c.metrics[0].fig} ${c.metrics[0].lab}</span>
+            ${firstMetric(c)?`<span class="svc-block__fig">${firstMetric(c).fig} ${firstMetric(c).lab}</span>`:''}
           </a>`:''}
     </div>
     <div class="svc-block__media">${imgPath(d.img)?pic(imgPath(d.img),'r45',s.title):ph('r45','Replace — service image 4:5')}</div>
@@ -370,7 +375,7 @@ function renderCards(index){
     <a class="card rv" href="${U(F.work,c.slug)}">
       <span class="card__frame">
         ${caseImg(c.slug).card?pic(caseImg(c.slug).card,'r43',c.client.replace(/&amp;/g,'and')):ph('r43','Replace — hero 4:3')}
-        <span class="card__tag"><b>${c.metrics[0].fig}</b><span>${c.metrics[0].lab}</span></span>
+        ${firstMetric(c)?`<span class="card__tag"><b>${firstMetric(c).fig}</b><span>${firstMetric(c).lab}</span></span>`:''}
       </span>
       <span class="card__meta">
         <span class="card__name">${c.client}</span>
@@ -467,10 +472,10 @@ function renderCase(slug){
   <!-- results, straight after the opening -->
   <section class="room room-sage"><div class="wrap sec">
     <div class="sill"><span class="label">Results</span><span class="label">${c.period}</span></div>
-    <div class="metrics" style="grid-template-columns:repeat(${Math.min(3,c.metrics.length)},1fr)">
-      ${c.metrics.slice(0,3).map(metricHTML).join('')}
+    <div class="metrics" style="grid-template-columns:repeat(${Math.max(1,Math.min(3,(c.metrics||[]).length))},1fr)">
+      ${(c.metrics||[]).slice(0,3).map(metricHTML).join('')}
     </div>
-    ${c.metrics.length>3?`<div class="metrics metrics--sub" style="grid-template-columns:repeat(${c.metrics.length-3},1fr)">${c.metrics.slice(3).map(metricHTML).join('')}</div>`:''}
+    ${(c.metrics||[]).length>3?`<div class="metrics metrics--sub" style="grid-template-columns:repeat(${c.metrics.length-3},1fr)">${c.metrics.slice(3).map(metricHTML).join('')}</div>`:''}
     ${c.quote?`<blockquote class="quote quote--wide rv" style="margin:clamp(2.5rem,5vw,4rem) 0 0">"${c.quote}"<div class="attrib">${c.quoteBy}</div></blockquote>`:''}
   </div></section>
 
@@ -1176,7 +1181,7 @@ function renderService(slug){
     <div class="sill"><span class="label">Seen in practice</span></div>
     <a class="svc-block__proof" href="${U(F.work,c.slug)}">
       <span class="display md">${c.client}</span>
-      <span class="svc-block__fig">${c.metrics[0].fig} ${c.metrics[0].lab}</span>
+      ${firstMetric(c)?`<span class="svc-block__fig">${firstMetric(c).fig} ${firstMetric(c).lab}</span>`:''}
     </a>
   </div></section>`:''}
   <div class="wrap sec">
