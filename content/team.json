@@ -21,16 +21,6 @@
         "Caroline Montague"
       ],
       "note": "Ask her about: the first three seconds."
-    },
-    {
-      "name": "[Team member]",
-      "role": "Social media manager",
-      "img": "assets/img/team1.webp",
-      "bio": "Placeholder biography. What she runs day to day, and what she was doing before this.",
-      "leads": [
-        "Simple + Healthy"
-      ],
-      "note": "Ask her about: what the comments are really saying."
     }
   ]
 }
