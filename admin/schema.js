@@ -82,11 +82,9 @@ export const SCHEMA = [
       {key:'workPage', label:'Work page', type:'group', fields:[
         {key:'label', label:'Label', type:'text'},
         {key:'heading', label:'Heading', type:'text'},
-        {key:'showFilters', label:'Show the filter buttons', type:'bool',
-         help:'Turn this off and the Work page has no buttons at all \u2014 every case study simply shows.'},
         {key:'allLabel', label:'First filter button', type:'text'},
         {key:'filters', label:'Filter buttons', type:'list', of:'group', summary:'label',
-         help:'Add, remove and reorder the buttons on the Work page. Leave the whole list empty to build it automatically from the case studies.', fields:[
+         help:'Leave this empty and the Work page has no filters at all \u2014 just the case studies. Add one and the buttons appear, in this order, with \u201cAll\u201d in front.', fields:[
           {key:'label', label:'Button text', type:'text'},
           {key:'match', label:'Shows case studies with this service', type:'text',
            help:'Must match the Services text on your case studies. Separate several with commas.'}

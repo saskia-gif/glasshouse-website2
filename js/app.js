@@ -429,33 +429,19 @@ const WP=(COPY.workPage||{});
 const ALL_LABEL=WP.allLabel||'All';
 $q('#workCount').textContent=`${CASES.length} ${WP.countSuffix||'case studies'}`;
 
-/* Services are typed by hand on each case study, so the same one turns up as
-   "Social media management" on one and "Social Media Management" on another.
-   Left alone that built two buttons for one thing. Compare without case, and
-   keep the first spelling that appears. */
+/* The filter bar. There is none unless you add one in the editor — no buttons
+   invent themselves out of the Services typed on the case studies. Add filters
+   and they appear in the order you put them, with All in front. A filter
+   matches when any of its comma-separated terms appears in that case study's
+   Services; spelling is compared without case, so "Social media management"
+   and "Social Media Management" count as the same thing. */
 const norm = t => String(t||'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim().toLowerCase();
-const allServices = (() => {
-  const seen = new Map();
-  CASES.flatMap(c => c.services || []).forEach(sv => {
-    const k = norm(sv); if(k && !seen.has(k)) seen.set(k, sv);
-  });
-  return [...seen.values()];
-})();
+const FILTERS = (Array.isArray(WP.filters) ? WP.filters : [])
+  .filter(f => f && (f.label || f.match))
+  .map(f => ({label: f.label || f.match, match: (f.match || f.label || '')
+                     .split(',').map(x => norm(x)).filter(Boolean)}));
 
-/* The filter bar. Turn it off in the editor and there are no buttons at all —
-   every case study simply shows. Left on: the filters set in the editor, in
-   that order, or one button per service found on the case studies. A filter
-   matches when any of its comma-separated terms appears in that study's
-   Services. */
-const SHOW_FILTERS = WP.showFilters !== false;
-const FILTERS = !SHOW_FILTERS ? []
-  : (Array.isArray(WP.filters) && WP.filters.length)
-    ? WP.filters.filter(f => f && (f.label || f.match))
-                .map(f => ({label: f.label || f.match, match: (f.match || f.label || '')
-                                   .split(',').map(x => norm(x)).filter(Boolean)}))
-    : allServices.map(sv => ({label: sv, match: [norm(sv)]}));
-
-if(SHOW_FILTERS && FILTERS.length){
+if(FILTERS.length){
   $q('#filters').innerHTML = [{label:ALL_LABEL, match:null}, ...FILTERS]
     .map((f,i) => `<button aria-pressed="${i===0}" data-i="${i-1}">${f.label}</button>`).join('');
 } else if($('#filters')){
