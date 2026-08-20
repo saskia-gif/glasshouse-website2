@@ -28,7 +28,9 @@ export const PAGES = [
     parts: [
       {from:'copy', title:'Text on this page', keys:['servicesPage']},
       {from:'services', title:'The services'},
-      {from:'servicedetail', title:'Each service page'},
+      {from:'servicedetail', title:'Each service — the picture and the detail',
+       note:'This is where the picture or film beside each service lives. '
+            + 'Open a service to change it.'},
       {from:'faq', title:'FAQ'},
       {from:'seopages', pageKey:'services', title:'SEO — this page'}
     ]

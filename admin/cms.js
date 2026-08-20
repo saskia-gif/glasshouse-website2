@@ -153,13 +153,40 @@ function renderKeyedInto(parent, c, data){
   const box = el('div','records');
   Object.keys(data).forEach(key => {
     const card = el('details','record');
-    card.append(el('summary', null, key.replace(/-/g,' ')));
+    card.append(keyedSummary(c, key, data[key]));
     const body = el('div','record-body');
     renderGroup(body, c.fields, data[key]);
     card.append(body);
     box.append(card);
   });
   parent.append(box);
+}
+
+/* The row you see before you open it. If the section names a thumb field,
+   show that picture or film here, so which one is which is obvious without
+   opening all seven. */
+function keyedSummary(c, key, rec, raw){
+  const sum = el('summary');
+  if(c.thumb){
+    const src = rec && rec[c.thumb];
+    const holder = el('span','record-thumb');
+    if(src){
+      const node = isVideoPath(src)
+        ? (() => { const v = document.createElement('video');
+                   v.muted = true; v.loop = true; v.autoplay = true;
+                   v.playsInline = true; return v; })()
+        : el('img');
+      if(node.tagName === 'IMG') node.alt = '';
+      showMedia(node, src);
+      holder.append(node);
+    } else {
+      holder.classList.add('is-empty');
+    }
+    sum.append(holder);
+  }
+  const name = raw ? key : key.replace(/-/g,' ').replace(/^./, ch => ch.toUpperCase());
+  sum.append(el('span','record-name', name));
+  return sum;
 }
 
 function previewFollowPage(pg){
@@ -644,8 +671,7 @@ function renderList(parent, c, arr){
     arr.forEach((item, i) => {
       const card = el('details','record');
       const label = String(item[c.summary] ?? item[0] ?? '').trim();
-      const sum = el('summary', null, label || `New — give it a name`);
-      card.append(sum);
+      card.append(keyedSummary(c, label || 'New — give it a name', item, true));
       const body = el('div','record-body');
       if(Array.isArray(item)){
         c.fields.forEach(f => body.append(field({...f, key:Number(f.key)}, item)));
@@ -679,7 +705,7 @@ function renderKeyed(parent, c){
   const box = el('div','records');
   Object.keys(state.data).forEach(key => {
     const card = el('details','record');
-    card.append(el('summary', null, key.replace(/-/g,' ')));
+    card.append(keyedSummary(c, key, state.data[key]));
     const body = el('div','record-body');
     renderGroup(body, c.fields, state.data[key]);
     card.append(body);

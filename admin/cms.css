@@ -156,3 +156,15 @@ button:hover:not(:disabled){background:var(--ink)}
 .part:first-of-type{border-top:0;padding-top:0;margin-top:1.2rem}
 .part>.sub{margin-bottom:.9rem}
 .part>.muted{margin:-.5rem 0 1rem}
+
+/* a keyed row shows what is in it before you open it */
+.record>summary{display:flex;align-items:center;gap:.7rem;list-style:none}
+.record>summary::-webkit-details-marker{display:none}
+.record>summary::after{content:'+';margin-left:auto;font-weight:400;font-size:1.05rem;
+  color:var(--muted);line-height:1}
+.record[open]>summary::after{content:'–'}
+.record-thumb{width:34px;height:42px;flex:none;overflow:hidden;border-radius:2px;
+  background:rgba(20,20,15,.07);display:block}
+.record-thumb.is-empty{border:1px dashed rgba(20,20,15,.22);background:none}
+.record-thumb img,.record-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.record-name{flex:1;min-width:0}

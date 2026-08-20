@@ -221,7 +221,7 @@ export const SCHEMA = [
   {
     id:'cases', file:'content/case-studies.json', title:'Case studies',
     hint:'The Work page and every case-study page.',
-    shape:'list', summary:'client',
+    shape:'list', summary:'client', thumb:'card',
     fields:[
       {key:'client', label:'Client name', type:'text'},
       {key:'slug', label:'URL slug', type:'text', help:'lowercase, hyphens, no spaces'},
@@ -273,7 +273,7 @@ export const SCHEMA = [
   {
     id:'journal', file:'content/journal.json', title:'Journal',
     hint:'Articles. Newest first.',
-    shape:'list', summary:'title',
+    shape:'list', summary:'title', thumb:'img',
     fields:[
       {key:'title', label:'Title', type:'text'},
       {key:'slug', label:'URL slug', type:'text'},
@@ -346,13 +346,14 @@ export const SCHEMA = [
   },
   {
     id:'servicedetail', file:'content/service-detail.json', title:'Service pages',
-    hint:'The detail block under each service — the line, what it covers, and which case study it points at.',
-    shape:'keyed',
+    hint:'The picture or film beside each service, and the detail underneath it.',
+    shape:'keyed', thumb:'img',
     fields:[
+      {key:'img', label:'Picture or film', type:'image',
+       help:'Shown beside this service on the Services page and at the top of its own page. Tall shapes work best — 4:5 or 9:16.'},
       {key:'line', label:'Opening line', type:'area'},
       {key:'caps', label:'What it covers', type:'list', of:'text'},
-      {key:'proof', label:'Case study slug', type:'text', help:'e.g. gigi-clothing'},
-      {key:'img', label:'Image', type:'image'}
+      {key:'proof', label:'Case study slug', type:'text', help:'e.g. gigi-clothing'}
     ]
   },
   {
