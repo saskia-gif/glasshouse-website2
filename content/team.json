@@ -1,25 +1,19 @@
 {
   "people": [
     {
-      "name": "[Founder name]",
-      "role": "Co-founder — Strategy",
+      "name": "Saskia",
+      "role": "Co-founder",
       "img": "assets/img/founder1.webp",
-      "bio": "Placeholder biography. Two or three sentences on background, the accounts she leads and what she is known for internally.",
-      "leads": [
-        "Grace &amp; Form",
-        "Hip &amp; Healthy"
-      ],
+      "bio": "Saskia has spent over 15 years at the intersection of content, storytelling,\nand brand building- long before “social media strategy” became an\nindustry.\n\nOriginally building her own global platform as an influencer and founder, she went on to launch multiple ventures, including an award-winning wellness brand and a bestselling cookbook published by Penguin Random House.\n\nSince then, she has worked across fitness tech, wellness, lifestyle, and\npersonal brands—advising founders and companies on how to position,\ngrow, and scale with both cultural relevance and commercial impact.\n\nHaving operated on both sides of the industry, she brings a rare dual\nperspective—understanding what brands need, and what audiences\nactually respond to. This allows her to bridge the gap between strategy and\nexecution in a way that feels both intuitive and effective.\n\nSaskia leads on strategy, positioning, and brand direction - ensuring\neverything Glasshouse builds is not just visible, but meaningful.",
+      "leads": [],
       "note": "Ask her about: the audit that starts every account."
     },
     {
-      "name": "[Founder name]",
-      "role": "Co-founder — Creative",
+      "name": "Bella",
+      "role": "Co-founder",
       "img": "assets/img/founder2.webp",
-      "bio": "Placeholder biography. Two or three sentences on background, the accounts she leads and what she is known for internally.",
-      "leads": [
-        "Gigi Clothing",
-        "Caroline Montague"
-      ],
+      "bio": "Bella began in the fashion world, building her own brand and quickly turning content into serious commercial results - scaling to millions of views, with single posts driving tens of thousands in sales.\n\nWhat set her apart was a rare instinct: understanding not just what looks\ngood, but what moves - what people stop for, engage with, and buy into.\nShe has a natural ability to translate a brand into content that feels culturally relevant and impossible to ignore.\n\nWhat started as creating for her own brand evolved into leading campaigns\nfor others-and ultimately, founding Glasshouse.\n\nBella leads on creative execution, editing, and viral language; shaping\ncontent that doesn’t just perform, but defines the moment",
+      "leads": [],
       "note": "Ask her about: the first three seconds."
     }
   ]
