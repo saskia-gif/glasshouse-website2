@@ -297,7 +297,7 @@
       "slug": "wolfe-power-club",
       "client": "Wolfe Power Club",
       "featured": false,
-      "sector": "Energy &amp; industry",
+      "sector": "Energy Industry, Podcasting",
       "period": "90 days",
       "platforms": "Instagram, TikTok, Podcast",
       "territory": "UK",
@@ -328,8 +328,13 @@
       ],
       "quote": "",
       "quoteBy": "",
-      "card": "assets/img/wolfe.webp",
-      "gallery": []
+      "card": "assets/img/e35927_8e9f503cc8ea45bbaddb5c730baee094-mv2.webp",
+      "gallery": [
+        "assets/video/v24044gl0000d6fe5d7og65k4ji3o3kg.mp4",
+        "assets/video/v24044gl0000d1bdok7og65q04q22860.mp4",
+        "assets/video/v24044gl0000d7b3tvnog65pis0eft5g.mp4",
+        "assets/video/v24044gl0000d6g9oinog65sopdakndg.mp4"
+      ]
     },
     {
       "slug": "breaking-the-taboo",
