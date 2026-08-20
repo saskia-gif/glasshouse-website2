@@ -1014,6 +1014,56 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
    THE PHONE HOMEPAGE — seven full screens, one job each
    ============================================================ */
 #phoneReel{display:none}
+
+/* ============================================================
+   SELECTED WORK — one card, both screens.
+   The phone swipes it; the desktop swipes it too, by trackpad or by the
+   two arrows. A card is a link, so a tap or a click opens the case study.
+   Which case studies appear is the "Show on the homepage" tick in the
+   editor — there is no cap on the number.
+   ============================================================ */
+.pcards{display:flex;gap:.9rem;overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.pcards::-webkit-scrollbar{display:none}
+.pcard{flex:0 0 76%;scroll-snap-align:center;position:relative;overflow:hidden;
+  aspect-ratio:9/12;background:#111;display:block}
+.pcard .pic,.pcard img,.pcard video{width:100%;height:100%;object-fit:cover}
+.pcard::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(36,30,24,0) 38%,rgba(36,30,24,.86) 100%)}
+.pcard__in{position:absolute;left:0;right:0;bottom:0;padding:1.1rem;z-index:1;color:var(--cream)}
+.pcard__fig,.pcard__lab,.pcard__name{display:block}
+.pcard__fig{font-family:var(--display);font-weight:300;font-size:2.2rem;line-height:.9;letter-spacing:-.03em}
+.pcard__lab{font-size:.76rem;color:rgba(242,237,229,.78);margin-top:.3rem;max-width:20ch}
+.pcard__name{margin-top:.7rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(242,237,229,.7)}
+/* how far through the cards you are — and that there are more */
+.pcards__rail{position:relative;height:2px;background:rgba(20,20,15,.16);overflow:hidden}
+.pcards__bar{position:absolute;inset:0 auto 0 0;width:30%;background:var(--ink);
+  transition:transform .12s linear}
+
+/* ---- the desktop rail ---- */
+.wcards{padding:.2rem 0 1.4rem;gap:clamp(1rem,1.6vw,1.5rem);scroll-snap-type:x proximity}
+.wcards .pcard{flex:0 0 clamp(240px,25%,340px);scroll-snap-align:start;
+  transition:transform .5s var(--ease)}
+.wcards .pcard__fig{font-size:clamp(2rem,2.6vw,2.9rem)}
+.wcards__foot{display:flex;align-items:center;gap:1.4rem}
+.wcards__foot .pcards__rail{flex:1}
+.pcards__arrows{display:flex;gap:.5rem;flex:none}
+.pcards__arrow{width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer;padding:0;
+  transition:background .35s var(--ease),color .35s var(--ease),opacity .3s var(--ease)}
+.pcards__arrow:hover:not(:disabled){background:var(--brown);color:var(--cream);border-color:var(--brown)}
+.pcards__arrow:disabled{opacity:.3;cursor:default}
+@media(hover:hover){
+  .wcards .pcard:hover{transform:translateY(-6px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .wcards .pcard,.wcards .pcard:hover{transition:none;transform:none}
+}
+@media(max-width:700px){
+  .wcards__foot .pcards__arrows{display:none}
+}
+
 @media(max-width:700px){
   body.has-reel #phoneReel{display:block}
   /* the reel replaces the stacked homepage on a phone */
@@ -1066,25 +1116,10 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .ppanel--work .label{color:rgba(242,237,229,.55)}
   .pwork__h{font-family:var(--display);font-weight:300;font-size:clamp(1.9rem,8.5vw,2.5rem);
     line-height:1;letter-spacing:-.03em;margin-top:.7rem;max-width:14ch;color:var(--cream)}
-  .pcards{display:flex;gap:.9rem;overflow-x:auto;scroll-snap-type:x mandatory;
-    padding:1rem var(--pad) 1.1rem;-webkit-overflow-scrolling:touch}
-  .pcards::-webkit-scrollbar{display:none}
-  .pcard{flex:0 0 76%;scroll-snap-align:center;position:relative;overflow:hidden;
-    aspect-ratio:9/12;max-height:44svh;background:#111;display:block}
-  .pcard .pic,.pcard img{width:100%;height:100%;object-fit:cover}
-  .pcard::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(36,30,24,0) 38%,rgba(36,30,24,.86) 100%)}
-  .pcard__in{position:absolute;left:0;right:0;bottom:0;padding:1.1rem;z-index:1;color:var(--cream)}
-  .pcard__fig,.pcard__lab,.pcard__name{display:block}
-  .pcard__fig{font-family:var(--display);font-weight:300;font-size:2.2rem;line-height:.9;letter-spacing:-.03em}
-  .pcard__lab{font-size:.76rem;color:rgba(242,237,229,.78);margin-top:.3rem;max-width:20ch}
-  .pcard__name{margin-top:.7rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
-    color:rgba(242,237,229,.7)}
-  /* how far through the cards you are — and that there are more */
-  .pcards__rail{position:relative;height:2px;margin:0 var(--pad) 1.1rem;
-    background:rgba(242,237,229,.22);overflow:hidden}
-  .pcards__bar{position:absolute;inset:0 auto 0 0;width:30%;background:var(--cream);
-    transition:transform .12s linear}
+  .pcards{padding:1rem var(--pad) 1.1rem}
+  .pcard{flex:0 0 76%;max-height:44svh}
+  .pcards__rail{margin:0 var(--pad) 1.1rem;background:rgba(242,237,229,.22)}
+  .pcards__bar{background:var(--cream)}
   .pbtn--ghost{border-color:rgba(242,237,229,.45);color:var(--cream);background:none}
   /* the button must never crowd the arrow below it */
   .ppanel--work .ppanel__in:last-child{padding-bottom:.4rem}

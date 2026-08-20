@@ -52,6 +52,7 @@ const imgPath=v=>{
    no numbers yet threw before the router had run — no pages, and the build
    that publishes the site failed with it. */
 const firstMetric=c=>(((c&&c.metrics)||[])[0])||null;
+const strip=t=>String(t==null?'':t).replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
 const caseImg=slug=>{const c=CASES.find(x=>x.slug===slug)||{};
   return {card:imgPath(c.card), v:(c.gallery||[]).map(imgPath).filter(Boolean)};};
 const jrnImg=a=>imgPath(a&&a.img);
@@ -199,24 +200,69 @@ if($('#phGrid'))$q('#phGrid').innerHTML=PH_GRID.map(src=>pic(src,'r45','Client c
         'A founder shot through glass, so the reflection sits over her. Daylight, no studio lighting, mid-conversation rather than posed.');
 })();
 
-/* ---- home: work rows ---- */
-$q('#workRows').innerHTML=CASES.filter(c=>c.featured).map((c,i)=>`
-  <a class="work-row" href="${U(F.work,c.slug)}">
-    <span class="work-row__top">
-      <span class="work-row__name display">${c.client}</span>
-      <span class="work-row__no">${String(i+1).padStart(2,'0')}${firstMetric(c)?' / '+firstMetric(c).fig:''}</span>
-    </span>
-    <span class="work-row__reveal"><span class="work-row__body">
-      <span>
-        <span class="work-row__desc">${c.desc}</span>
-        <span class="work-row__tags">${c.services.slice(0,3).map(s=>`<span class="tag">${s}</span>`).join('')}</span>
-      </span>
-      <span class="work-row__media">
-        ${media(c.slug,0,'r916',c.client)}${media(c.slug,1,'r916',c.client)}${media(c.slug,2,'r916',c.client)}
-      </span>
-      <span class="work-row__go"><span class="btn btn--solid"><span>View case study</span><span class="arrow" aria-hidden="true">→</span></span></span>
-    </span></span>
-  </a>`).join('');
+/* ---- home: selected work ----
+   One card design for both screens. On a phone you swipe it; on a desktop
+   you swipe it too — trackpad, or the two arrows — and either way a card is
+   a link straight into the case study. Which ones appear is the "Show on the
+   homepage" tick in the editor, and there is no cap on how many. */
+const caseCard = c => {
+  const src = caseImg(c.slug).card;
+  const m = firstMetric(c) || {};
+  return `<a class="pcard" href="${U(F.work, c.slug)}">
+    ${src ? pic(src, '', strip(c.client)) : ph('r916','Replace — case image')}
+    <span class="pcard__in">
+      ${m.fig ? `<span class="pcard__fig">${m.fig}</span>` : ''}
+      ${m.lab ? `<span class="pcard__lab">${m.lab}</span>` : ''}
+      <span class="pcard__name">${c.client}</span>
+    </span></a>`;
+};
+const homeCases = () => CASES.filter(c => c.featured);
+
+/* the progress bar under a rail, and the arrows beside it */
+function wireCards(scope){
+  const cards = $('.pcards', scope), bar = $('.pcards__bar', scope),
+        railBox = $('.pcards__rail', scope);
+  if(!cards) return;
+  const prev = $('.pcards__arrow--prev', scope), next = $('.pcards__arrow--next', scope);
+  const draw = () => {
+    const frac = cards.clientWidth / cards.scrollWidth;
+    const max = cards.scrollWidth - cards.clientWidth;
+    const full = frac >= .999;
+    if(railBox) railBox.style.display = full ? 'none' : '';
+    [prev,next].forEach(b => { if(b) b.hidden = full; });
+    if(full) return;
+    if(bar){
+      const p = max > 0 ? cards.scrollLeft / max : 0;
+      bar.style.width = (frac * 100) + '%';
+      bar.style.transform = `translateX(${p * (1 - frac) / frac * 100}%)`;
+    }
+    if(prev) prev.disabled = cards.scrollLeft <= 2;
+    if(next) next.disabled = cards.scrollLeft >= max - 2;
+  };
+  const step = dir => {
+    const one = $('.pcard', cards);
+    const by = one ? one.getBoundingClientRect().width + 16 : cards.clientWidth * .8;
+    cards.scrollBy({left: dir * by, behavior: reduce ? 'auto' : 'smooth'});
+  };
+  if(prev) prev.addEventListener('click', ()=>step(-1));
+  if(next) next.addEventListener('click', ()=>step(1));
+  cards.addEventListener('scroll', draw, {passive:true});
+  window.addEventListener('resize', draw);
+  requestAnimationFrame(draw);
+}
+
+const arrowBtn = (dir,label) => `<button class="pcards__arrow pcards__arrow--${dir}" type="button"
+   aria-label="${label}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+   stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="${
+   dir === 'prev' ? 'M15 4 7 12l8 8' : 'M9 4l8 8-8 8'}"/></svg></button>`;
+
+$q('#workRows').innerHTML = `
+  <div class="pcards wcards">${homeCases().map(caseCard).join('')}</div>
+  <div class="wcards__foot">
+    <div class="pcards__rail"><span class="pcards__bar"></span></div>
+    <div class="pcards__arrows">${arrowBtn('prev','Previous case studies')}${arrowBtn('next','More case studies')}</div>
+  </div>`;
+if($('#workRows')) wireCards($('#workRows'));
 
 /* ---- home: metrics ---- */
 const metricHTML=m=>`<div class="metric rv"><span class="metric__rule"></span><span class="metric__fig" data-fig="${m.fig}">${m.fig}</span><span class="metric__lab">${m.lab}</span></div>`;
@@ -749,7 +795,6 @@ const META={
 const SITE=(SEO.site||{});
 const PAGES=(SEO.pages||[]);
 const pageByKey=k=>PAGES.find(p=>p.key===k)||{};
-const strip=t=>String(t==null?'':t).replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
 /* search engines cut descriptions around 155 characters */
 const clamp155=t=>{t=strip(t); if(t.length<=155) return t;
   const cut=t.slice(0,155); return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:\u2014-]$/,'')+'\u2026';};
@@ -1321,23 +1366,13 @@ route();
       fill="none" stroke="currentColor" stroke-width="1.1"><path d="${
       up ? 'M7 15V2M2 6.5 7 1.5 12 6.5' : 'M7 1v13M2 9.5 7 14.5 12 9.5'}"/></svg></span>`;
 
-  const featured = CASES.filter(c => c.featured).slice(0, 4);
+  const featured = homeCases();          /* the same set the desktop rail shows */
   const metrics  = (HOME_METRICS || []).slice(0, 3);
   const quote    = ((COPY.testimonials || {}).items || [])[0] || null;
   const hero     = COPY.hero || {};
   const cta      = COPY.cta  || {};
 
-  const card = c => {
-    const src = caseImg(c.slug).card;
-    const m = (c.metrics || [])[0] || {};
-    return `<a class="pcard" href="${U(F.work, c.slug)}">
-      ${src ? pic(src, '', strip(c.client)) : ph('r916','Replace — case image')}
-      <span class="pcard__in">
-        <span class="pcard__fig">${m.fig || ''}</span>
-        <span class="pcard__lab">${m.lab || ''}</span>
-        <span class="pcard__name">${c.client}</span>
-      </span></a>`;
-  };
+  const card = caseCard;                 /* one card design, both screens */
 
   reel.innerHTML = `
   <section class="ppanel ppanel--door" data-tone="dark">
@@ -1434,23 +1469,7 @@ route();
   }
 
   /* how far along the work cards you are, and that there is more of them */
-  const cards = $('.pcards', reel), bar = $('.pcards__bar', reel),
-        railBox = $('.pcards__rail', reel);
-  function cardBar(){
-    if(!cards || !bar || !railBox) return;
-    const frac = cards.clientWidth / cards.scrollWidth;
-    if(frac >= .999){ railBox.style.display = 'none'; return; }
-    railBox.style.display = '';
-    const max = cards.scrollWidth - cards.clientWidth;
-    const p = max > 0 ? cards.scrollLeft / max : 0;
-    bar.style.width = (frac * 100) + '%';
-    bar.style.transform = `translateX(${p * (1 - frac) / frac * 100}%)`;
-  }
-  if(cards){
-    cards.addEventListener('scroll', cardBar, {passive:true});
-    window.addEventListener('resize', cardBar);
-    requestAnimationFrame(cardBar);
-  }
+  wireCards(reel);
 
   nudgeFilms();
 

@@ -3,7 +3,7 @@
     {
       "client": "Villa Sartiano",
       "slug": "villa-sartiano",
-      "featured": false,
+      "featured": true,
       "sector": "Hospitality",
       "period": "2026-Present",
       "platforms": "TikTok, Instagram",
@@ -105,7 +105,7 @@
     {
       "slug": "caroline-montague",
       "client": "Caroline Montague",
-      "featured": false,
+      "featured": true,
       "sector": "Author & Countess",
       "period": "16 months",
       "platforms": "TikTok, Instagram",
@@ -249,7 +249,7 @@
     {
       "slug": "breige",
       "client": "Breige",
-      "featured": false,
+      "featured": true,
       "sector": "Hospitality",
       "period": "2023-present ",
       "platforms": "Instagram, TikTok",
@@ -296,7 +296,7 @@
     {
       "slug": "wolfe-power-club",
       "client": "Wolfe Power Club",
-      "featured": false,
+      "featured": true,
       "sector": "Energy Industry, Podcasting",
       "period": "90 days",
       "platforms": "Instagram, TikTok, Podcast",
@@ -371,7 +371,7 @@
     {
       "slug": "breaking-the-taboo",
       "client": "Breaking the Taboo",
-      "featured": false,
+      "featured": true,
       "sector": "Podcast &amp; advocacy",
       "period": "Ongoing",
       "platforms": "TikTok, Instagram",
