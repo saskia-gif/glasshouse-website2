@@ -1,6 +1,41 @@
 {
   "items": [
     {
+      "client": "Villa Sartiano",
+      "slug": "villa-sartiano",
+      "featured": false,
+      "sector": "Hospitality",
+      "period": "",
+      "platforms": "TikTok, Instagram",
+      "territory": "UK,USA, Italy",
+      "services": [
+        "Social Media Management",
+        "Social Media Strategy",
+        "Filming & Design"
+      ],
+      "card": "assets/img/IMG_6992.webp",
+      "gallery": [
+        "assets/video/copy_4DED2EF1-0144-43A2-910A-59832583A37E.mp4",
+        "assets/video/copy_337C2D4C-C8FF-4B2A-9511-4C900DB9086F.mp4",
+        ""
+      ],
+      "statement": "",
+      "desc": "",
+      "brief": "",
+      "objective": "",
+      "strategy": "",
+      "activity": "",
+      "metrics": [],
+      "seoTitle": "",
+      "seoDescription": "",
+      "robots": "",
+      "canonical": "",
+      "prev": "",
+      "next": "",
+      "quote": "",
+      "quoteBy": ""
+    },
+    {
       "slug": "gigi-clothing",
       "client": "Gigi Clothing",
       "featured": true,
