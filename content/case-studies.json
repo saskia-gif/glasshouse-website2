@@ -247,45 +247,50 @@
       ]
     },
     {
-      "slug": "simple-healthy",
-      "client": "Simple + Healthy",
+      "slug": "breige",
+      "client": "Breige",
       "featured": false,
-      "sector": "Nutrition &amp; wellness",
-      "period": "3 months",
-      "platforms": "Instagram, TikTok, Web",
+      "sector": "Hospitality",
+      "period": "2023-present ",
+      "platforms": "Instagram, TikTok",
       "territory": "UK",
       "services": [
         "Social strategy",
         "Content creation",
         "Creative campaigns"
       ],
-      "statement": "Brand repositioning, social media management and creation.",
+      "statement": "Turning floral artistry into a social destination.",
       "desc": "A complete rebrand for nutritional therapist Stéphanie Achar — visual identity, tone of voice, colour and social strategy.",
-      "brief": "Stéphanie’s existing brand felt outdated and misaligned with her vision. She needed to reposition as credible, approachable and elevated.",
-      "objective": "Reposition Stéphanie as a trusted, empathetic voice in women’s health, particularly perimenopause and midlife wellness.",
-      "strategy": "A clean, modern identity: muted French-inspired colours drawn from nutrient-dense foods — berries, beetroot, radishes — grounded by navy. A tone of voice that is warm, informed and empowering, balancing science with lifestyle.",
-      "activity": "Full rebrand across visual identity, tone of voice and colour palette; social direction built on three pillars — education, lifestyle and personal connection; video-first content strategy and production.",
+      "brief": "BREIGE creates extraordinary, season-led floral installations for luxury weddings and events. The work was already exceptional; our job was to build a social presence that communicated the scale, artistry and distinctive British sensibility of the brand to a much wider audience.",
+      "objective": "Establish BREIGE as a recognisable name in luxury floral and event design, grow awareness beyond its existing audience, and put the work in front of prospective couples, planners, venues and design-led audiences.",
+      "strategy": "Treat every wedding as a visual story. We combined breathtaking transformations with simple, highly shareable hooks that made the scale of the work instantly understandable. Content moved between the finished spectacle, the creative process and Breige herself, positioning her not simply as a florist, but as the artist and creative force behind each environment.",
+      "activity": "Social strategy and creative direction; concepting and hook development; short-form editing and publishing; wedding and event storytelling; founder-led content; trend-led formats; community growth; and ongoing optimisation around reach, saves and shares.",
       "metrics": [
         {
-          "fig": "16,000+",
-          "lab": "Instagram views per month"
+          "fig": "658K+ ",
+          "lab": "views across just 12 pieces of content"
         },
         {
-          "fig": "300,000+",
-          "lab": "views on the CNM collaboration, with 275,000+ likes"
+          "fig": "227.7K",
+          "lab": "views on a single TikTok"
         },
         {
-          "fig": "15,000+",
-          "lab": "TikTok views per month"
+          "fig": "45.2K",
+          "lab": "likes on one piece of content"
+        },
+        {
+          "fig": "9.3K+",
+          "lab": "saves on a single video"
         }
       ],
-      "quote": "The rebrand positioned Stéphanie as a trusted authority in midlife wellness and opened doors to high-profile collaborations — CNM, The Sloane Club and Hip &amp; Healthy.",
-      "quoteBy": "Account summary — replace with client testimonial",
-      "card": "assets/img/simple.webp",
+      "quote": "",
+      "quoteBy": "",
+      "card": "assets/img/Screenshot-2026-08-20-at-20.39.18.webp",
       "gallery": [
-        "assets/img/simpleA.webp",
-        "assets/img/simpleB.webp",
-        "assets/img/simpleC.webp"
+        "assets/video/copy_0A637A4E-75FB-4061-A253-4B97DCB4563E.mp4",
+        "assets/video/copy_2F9A4FBE-63C5-4BF6-9C21-8010D5AAEF0F.mp4",
+        "assets/video/copy_9B1CA4F4-5559-4D3C-BE06-2DB4DA480A9C.mp4",
+        "assets/video/copy_89018798-14E1-4AC1-BF75-2B6B155B1A4E.mp4"
       ]
     },
     {
