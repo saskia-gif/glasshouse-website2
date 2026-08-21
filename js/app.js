@@ -281,6 +281,7 @@ const metricHTML=m=>`<div class="metric rv"><span class="metric__rule"></span><s
 $q('#homeMetrics').innerHTML=HOME_METRICS.map(metricHTML).join('');
 
 /* ---- services (home preview + full) ---- */
+const svcPhone = window.matchMedia('(max-width:700px)');
 const svcHTML=(s,i,full)=>`
   <div class="svc${full&&i===0?' open':''}">
     <button class="svc__hd" aria-expanded="${full&&i===0}" aria-controls="pn-${s.slug}${full?'-f':''}">
@@ -294,7 +295,11 @@ const svcHTML=(s,i,full)=>`
 $q('#svcIndex').innerHTML=SERVICES.map((s,i)=>
   `<button data-go="svc-${s.slug}"><span class="svc-index__n">${String(i+1).padStart(2,'0')}</span>${s.title}</button>`).join('');
 
-$q('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
+/* Two renderings of the same seven services, and only ever one of them in the
+   page at a time — so a phone never carries the desktop films and the desktop
+   never carries the phone's. Which one is drawn follows the width, and it
+   redraws if the width crosses over. */
+const svcBlockHTML = (s,i) => {
   const d=SERVICE_DETAIL[s.slug]||{caps:[],line:''};
   const c=d.proof&&CASES.find(x=>x.slug===d.proof);
   return `
@@ -318,7 +323,44 @@ $q('#svcBlocks').innerHTML=SERVICES.map((s,i)=>{
     </div>
     <div class="svc-block__media">${imgPath(d.img)?pic(imgPath(d.img),'r45',s.title):ph('r45','Replace — service image 4:5')}</div>
   </article>`;
-}).join('');
+};
+
+/* On a phone the seven are cards you swipe, the film filling each one, the way
+   the work does on the homepage. Tapping one opens that service's own page,
+   which is where what-it-covers lives. */
+const svcCardHTML = (s,i) => {
+  const d = SERVICE_DETAIL[s.slug] || {};
+  const src = imgPath(d.img);
+  return `<a class="pcard svccard" href="${U(F.services,s.slug)}">
+    ${src ? pic(src,'',strip(s.title)) : ph('r916','Replace — service image')}
+    <span class="pcard__in">
+      <span class="svccard__n">${String(i+1).padStart(2,'0')}</span>
+      <span class="svccard__t">${s.title}</span>
+      <span class="svccard__l">${d.line || s.text || ''}</span>
+    </span></a>`;
+};
+
+let svcIsPhone = null;
+function drawServices(){
+  const phone = svcPhone.matches;
+  if(svcIsPhone === phone) return;
+  svcIsPhone = phone;
+  const blocks = $('#svcBlocks'), rail = $('#svcRail');
+  if(!blocks && !rail) return;
+  if(phone){
+    if(blocks) blocks.innerHTML = '';
+    if(rail){
+      rail.innerHTML =
+        `<div class="pcards svcards">${SERVICES.map(svcCardHTML).join('')}</div>
+         <div class="pcards__rail"><span class="pcards__bar"></span></div>`;
+      wireCards(rail);
+    }
+  } else {
+    if(rail) rail.innerHTML = '';
+    if(blocks) blocks.innerHTML = SERVICES.map(svcBlockHTML).join('');
+  }
+  observeReveals(); playClips(); nudgeFilms();
+}
 
 /* the seal is a control, not an ornament */
 function toProof(){
@@ -332,29 +374,27 @@ function toProof(){
    left exactly as the desktop grid expects it — the header is one extra child,
    hidden above 700px — because wrapping the block in a <details> stops its
    children being grid items in Chrome (::details-content). */
-const svcPhone = window.matchMedia('(max-width:700px)');
 function setFold(block, open){
   block.classList.toggle('is-folded', !open);
   const b = block.querySelector('.svc-fold__sum');
   if(b) b.setAttribute('aria-expanded', open ? 'true' : 'false');
 }
-function foldServices(){
-  const blocks = $$('#svcBlocks .svc-block');
-  blocks.forEach(b => setFold(b, !svcPhone.matches));
-}
-foldServices();
-svcPhone.addEventListener ? svcPhone.addEventListener('change', foldServices)
-                          : svcPhone.addListener(foldServices);
-$$('#svcBlocks .svc-fold__sum').forEach(btn => btn.addEventListener('click', ()=>{
+drawServices();
+svcPhone.addEventListener ? svcPhone.addEventListener('change', drawServices)
+                          : svcPhone.addListener(drawServices);
+
+/* delegated, because the blocks are redrawn when the width crosses over */
+const svcBlocksEl = $('#svcBlocks');
+if(svcBlocksEl) svcBlocksEl.addEventListener('click', e => {
+  const btn = e.target.closest('.svc-fold__sum'); if(!btn) return;
   const block = btn.closest('.svc-block');
   const willOpen = block.classList.contains('is-folded');
-  if(svcPhone.matches) $$('#svcBlocks .svc-block').forEach(o => { if(o !== block) setFold(o, false); });
   setFold(block, willOpen);
   if(willOpen) requestAnimationFrame(()=>{
     const top = window.scrollY + block.getBoundingClientRect().top - navH() - 8;
     if(window.scrollY > top) window.scrollTo({top, behavior: reduce ? 'auto' : 'smooth'});
   });
-}));
+});
 
 /* the index jumps rather than links, so the router is left alone */
 $q('#svcIndex').addEventListener('click',e=>{

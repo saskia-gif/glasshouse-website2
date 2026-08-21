@@ -1233,6 +1233,9 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .cs-phone__badge,.cs-feed__badge{font-size:11px}
 
   /* --- the services page folds ----------------------------------------- */
+  /* the jump list said the same seven names as the list right below it */
+  .svc-index{display:none}
+  .svc-top{display:block}
   .svc-block{display:block;padding-block:0}
   .svc-fold__sum{display:flex;align-items:baseline;gap:.9rem;width:100%;
     padding:1.05rem .1rem;text-align:left;background:none;border:0;color:inherit;
@@ -1251,6 +1254,26 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .svc-block__media{margin-top:1.4rem;padding-bottom:1.9rem}
 }
 
+
+
+/* ============================================================
+   SERVICES ON A PHONE — the seven as cards you swipe.
+   Same card frame as the work, so the three main pages move the same way.
+   The rail is only ever built under 700px; above it the page keeps the
+   two-column blocks it has always had.
+   ============================================================ */
+.svc-rail-wrap:empty{display:none}
+.svc-rail-wrap{margin-top:-1.75rem}
+.svcards{padding:.4rem var(--pad) 1.1rem;gap:.7rem}
+.svcards .pcard{flex:0 0 76%;aspect-ratio:9/13;max-height:none;scroll-snap-align:center}
+.svccard__n,.svccard__t,.svccard__l{display:block}
+.svccard__n{font-size:9.5px;letter-spacing:.2em;color:rgba(242,237,229,.6)}
+.svccard__t{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
+  margin:.3rem 0 .5rem;color:rgba(242,237,229,.92)}
+.svccard__l{font-family:var(--display);font-weight:300;font-size:1.22rem;line-height:1.12;
+  letter-spacing:-.02em}
+.svc-rail-wrap .pcards__rail{margin:0 var(--pad) 1.6rem;background:rgba(20,20,15,.16)}
+.svc-rail-wrap .pcards__bar{background:var(--ink)}
 
 /* ============================================================
    Contact
