@@ -76,14 +76,21 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 def absolutise(html):
-    """Relative references break at a nested path, so anchor them to the base."""
-    if not BASE:
-        return html
+    """Relative references break at a nested path, so anchor them to the base.
+
+    index.html writes href="css/site.css". Read at /work/ a browser asks for
+    /work/css/site.css, which does not exist. This used to be skipped entirely
+    when there was no sub-folder — which was fine on github.io, where there
+    always was one, and broke the moment the site moved to a domain root:
+    every page below the homepage lost its stylesheet and its JavaScript, so
+    the build could not render them and failed. With no sub-folder the base is
+    simply "", and the anchoring still has to happen."""
     # relative references
     html = re.sub(r'(src|href)="(?!https?:|//|mailto:|tel:|#|/|data:)', rf'\1="{BASE}/', html)
-    # root-absolute ones written by hand in index.html, e.g. href="/work/"
-    html = re.sub(rf'(src|href)="/(?!{re.escape(BASE.lstrip("/"))}/|{re.escape(BASE.lstrip("/"))}")',
-                  rf'\1="{BASE}/', html)
+    if BASE:
+        # root-absolute ones written by hand in index.html, e.g. href="/work/"
+        html = re.sub(rf'(src|href)="/(?!{re.escape(BASE.lstrip("/"))}/|{re.escape(BASE.lstrip("/"))}")',
+                      rf'\1="{BASE}/', html)
     return re.sub(r'url\((["\']?)(?!https?:|//|data:|/)', rf'url(\1{BASE}/', html)
 
 
