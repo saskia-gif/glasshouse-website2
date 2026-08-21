@@ -177,7 +177,15 @@
     "ctaButton": "Get in touch"
   },
   "homeWall": {
-    "images": [],
+    "images": [
+      "assets/img/Screenshot-2026-08-21-at-15.37.11.webp",
+      "assets/img/IMG_7032.webp",
+      "assets/img/IMG_7645.webp",
+      "assets/img/ManieroDiSorbello-030.webp",
+      "assets/img/101523_NaturallySassy_0396_HR.webp",
+      "",
+      ""
+    ],
     "phoneImages": []
   },
   "mobileHome": {
