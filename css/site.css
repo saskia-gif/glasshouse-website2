@@ -1237,6 +1237,16 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .cs-phone__badge,.cs-feed__badge{font-size:11px}
 
   /* --- the services page folds ----------------------------------------- */
+  /* Contact, on a phone: the form comes before "What happens next".
+     Someone on a phone should meet the three boxes straight after the
+     invitation, not scroll past a three-step explanation to reach them.
+     The two sit in the same column on a wide screen, where they are read
+     side by side with the form and the order does not arise. */
+  .contact-aside{display:contents;opacity:1;transform:none}
+  .contact-panel{order:1}
+  .contact-form-col{order:2}
+  .contact-next{order:3;margin-top:.4rem}
+
   /* A bio written for a wide screen is a screen and a half in this column.
      First paragraph, then the rest behind a button. */
   .person__rest{display:none}
