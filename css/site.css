@@ -714,6 +714,10 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap}
 .person p+p{margin-top:.75rem}
 .person__note{margin-top:1.1rem!important}
+/* the fold is a phone thing only — above 700px the whole bio prints */
+.person__rest{display:block}
+.person__rest p:first-child{margin-top:.75rem}   /* what p+p gave it before */
+.person__more{display:none}
 
 /* With only one or two of you, three columns leave a third of the panel bare.
    Two across instead, each with the portrait beside the words, which also
@@ -1233,6 +1237,18 @@ html:not(.js) .work-row__body{opacity:1;padding-top:1.4rem}
   .cs-phone__badge,.cs-feed__badge{font-size:11px}
 
   /* --- the services page folds ----------------------------------------- */
+  /* A bio written for a wide screen is a screen and a half in this column.
+     First paragraph, then the rest behind a button. */
+  .person__rest{display:none}
+  .person__words.is-open .person__rest{display:block}
+  .person__more{display:inline-flex;align-items:center;gap:.45rem;align-self:flex-start;
+    margin-top:.9rem;padding:.4rem 0 .5rem;min-height:44px;background:none;border:0;
+    border-bottom:1px solid rgba(36,30,24,.3);color:var(--brown);cursor:pointer;
+    font-family:var(--ui);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    font-weight:500;-webkit-tap-highlight-color:transparent}
+  .person__more b{font-weight:400;font-size:1.05rem;line-height:1}
+  .person__words.is-open .person__more b{font-size:1.15rem}
+
   /* the jump list said the same seven names as the list right below it */
   .svc-index{display:none}
   .svc-top{display:block}

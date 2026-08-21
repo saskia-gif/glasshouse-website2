@@ -444,9 +444,24 @@ $q('#aboutFacts').innerHTML=ABOUT_FACTS.map(([k,v])=>`<div><dt>${k}</dt><dd>${v}
    A bio is written with blank lines between paragraphs, so it is set as
    paragraphs rather than run together into one slab. Anything not filled in
    — a note, a list of accounts — is left out rather than printed empty. */
-const paras = t => String(t || '').trim().split(/\n\s*\n/)
-  .map(x => x.trim().replace(/\n+/g, ' ')).filter(Boolean)
-  .map(x => `<p>${x}</p>`).join('');
+const paraList = t => String(t || '').trim().split(/\n\s*\n/)
+  .map(x => x.trim().replace(/\n+/g, ' ')).filter(Boolean);
+const paras = t => paraList(t).map(x => `<p>${x}</p>`).join('');
+
+/* A bio written for a wide screen is a screen and a half in a phone's narrow
+   column, and the two of them were 41% of the About page. So on a phone the
+   first paragraph shows and the rest waits behind "Read more" — every word
+   still there, none of it in the way. Above 700px the whole bio prints as it
+   always has; the button is not shown and the rest is never hidden. */
+const bioHTML = t => {
+  const ps = paraList(t);
+  if(!ps.length) return '';
+  if(ps.length === 1) return `<p>${ps[0]}</p>`;
+  return `<p>${ps[0]}</p>
+    <div class="person__rest">${ps.slice(1).map(x => `<p>${x}</p>`).join('')}</div>
+    <button class="person__more" type="button" aria-expanded="false">
+      <span>Read more</span><b aria-hidden="true">+</b></button>`;
+};
 
 const people = TEAM.people || [];
 $q('#people').innerHTML = people.map(p => `
@@ -455,12 +470,26 @@ $q('#people').innerHTML = people.map(p => `
     <div class="person__words">
       <h3 class="display">${p.name}</h3>
       <span class="label">${p.role || ''}</span>
-      ${paras(p.bio)}
+      ${bioHTML(p.bio)}
       ${p.note ? `<p class="person__note">${p.note}</p>` : ''}
       ${(p.leads||[]).length
         ? `<div class="person__leads"><span class="label">Leads</span> ${p.leads.join(' · ')}</div>` : ''}
     </div>
   </article>`).join('');
+
+const peopleEl = $('#people');
+if(peopleEl) peopleEl.addEventListener('click', e => {
+  const btn = e.target.closest('.person__more'); if(!btn) return;
+  const words = btn.closest('.person__words');
+  const open = !words.classList.contains('is-open');
+  words.classList.toggle('is-open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const lab = btn.querySelector('span'); if(lab) lab.textContent = open ? 'Read less' : 'Read more';
+  if(!open){                                   /* closing must not leave you stranded */
+    const top = window.scrollY + words.closest('.person').getBoundingClientRect().top - navH() - 8;
+    if(window.scrollY > top) window.scrollTo({top, behavior: reduce ? 'auto' : 'smooth'});
+  }
+});
 /* one or two people in a three-across grid leaves a third of the room empty */
 if($('#people')) $('#people').classList.toggle('people--few', people.length <= 2);
 
