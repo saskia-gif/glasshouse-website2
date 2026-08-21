@@ -69,7 +69,7 @@ build/generate.py     the static site generator
 ```
 
 **Routing is real paths**, not hash fragments: `/work/gigi-clothing/`,
-`/services/paid-social/`, `/journal/<slug>/`. Old `#/…` links redirect
+`/services/content-creation/`, `/journal/<slug>/`. Old `#/…` links redirect
 automatically.
 
 **The generator loads the real site in a real browser**, renders each route,

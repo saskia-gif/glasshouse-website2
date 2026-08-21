@@ -67,7 +67,7 @@
       "path": "/services/",
       "name": "Services",
       "title": "Social media services — London",
-      "description": "Social media management, strategy, content creation, creative campaigns, community management, influencer campaigns and paid social.",
+      "description": "Social media management, strategy, content creation, creative campaigns, community management and influencer campaigns.",
       "robots": "index, follow",
       "canonical": "",
       "prev": "",
@@ -123,6 +123,11 @@
       "breadcrumb": "Contact"
     }
   ],
-  "redirects": [],
+  "redirects": [
+    {
+      "from": "/services/paid-social/",
+      "to": "/services/"
+    }
+  ],
   "robotsTxt": "User-agent: *\nAllow: /\n\nSitemap: {{SITEMAP}}\n"
 }

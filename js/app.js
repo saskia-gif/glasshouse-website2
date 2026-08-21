@@ -859,7 +859,7 @@ window.addEventListener('resize',updateInside);
 const META={
   home:['Glasshouse — Social media agency, London','We create social strategies that invite people inside — building brands by making audiences feel part of the story.'],
   work:['Work — Glasshouse social media agency','Social media case studies: TikTok and Instagram growth, content creation and creator campaigns for lifestyle brands and founders.'],
-  services:['Services — social media management, strategy and content','Social media management, social strategy, content creation, creative campaigns, community management, influencer campaigns and paid social.'],
+  services:['Services — social media management, strategy and content','Social media management, social strategy, content creation, creative campaigns, community management and influencer campaigns.'],
   about:['About — inside the Glasshouse','A social-first creative agency in London. Community over audience, clarity and creativity, built in the open.'],
   journal:['Journal — social media insight and trends','Social media insights, trend reports, platform updates and campaign analysis from the Glasshouse team.'],
   careers:['Careers — come inside','Roles, freelance collaboration and open applications at Glasshouse, a social media agency in London.'],
@@ -1074,14 +1074,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   const f = $('#contactForm'); if(!f) return;
   const CP = (COPY.contactPage || {});
 
-  /* --- the service chips --- */
-  const need = $('#needChips');
-  if(need){
-    const opts = SERVICES.map(s => s.title).concat(CP.needOther || 'Something else');
-    need.innerHTML = opts.map((t,i) =>
-      `<label class="chip"><input type="checkbox" name="need" value="${t.replace(/"/g,'&quot;')}"
-        id="need-${i}"><span>${t}</span></label>`).join('');
-  }
+  /* The form asks for a name, an address and a sentence, and nothing else.
+     Company, website, which services and — above all — monthly budget used to
+     sit here. Every one of them is a reason to close the tab before writing
+     anything, and all of them are easier to ask on the call. */
 
   /* --- errors sit under the field they belong to --- */
   const fieldOf = el => el.closest('.field');
@@ -1142,7 +1138,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     say('Sending…');
     f.classList.add('is-sending');
     const data = new FormData(f);
-    data.set('need', $$('input[name="need"]:checked', f).map(i => i.value).join(', ') || '—');
     data.set('_subject', `Enquiry from ${f.name.value.trim()}`);
     try{
       const r = await fetch(/^https?:/.test(id) ? id : `https://formspree.io/f/${id}`,
