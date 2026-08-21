@@ -1,7 +1,7 @@
 {
   "site": {
-    "domain": "https://saskia-gif.github.io",
-    "basePath": "/glasshouse-website2",
+    "domain": "https://theglasshouse.agency",
+    "basePath": "",
     "titleTemplate": "%s | Glasshouse",
     "defaultDescription": "Glasshouse is a social-first creative agency in London. We build brands by making audiences feel part of the story.",
     "shareImage": "assets/img/logo-lockup.png",
